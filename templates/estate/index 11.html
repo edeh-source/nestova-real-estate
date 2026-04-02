@@ -1,0 +1,4344 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block extra_head %}
+{% if featured_properties %}
+{% with featured_properties|first as hero_prop %}
+<link rel="preload" as="image"
+  href="{% if hero_prop.featured_image %}{{ hero_prop.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-3.webp' %}{% endif %}">
+{% endwith %}
+{% else %}
+<link rel="preload" as="image" href="{% static 'assets/img/real-estate/property-exterior-3.webp' %}">
+{% endif %}
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap"
+  rel="stylesheet">
+
+<style>
+  /* ============================================
+   NESTOVA - LUXURY GLASSMORPHISM DESIGN SYSTEM
+   ============================================ */
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96E;
+    --gold-dark: #9A7A2E;
+    --obsidian: #0A0A0F;
+    --charcoal: #12121A;
+    --deep-blue: #0D1B3E;
+    --midnight: #060B1A;
+    --glass-white: rgba(255, 255, 255, 0.07);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-highlight: rgba(255, 255, 255, 0.18);
+    --glass-shadow: rgba(0, 0, 0, 0.4);
+    --text-primary: #F5F0E8;
+    --text-muted: rgba(245, 240, 232, 0.6);
+    --accent-glow: rgba(201, 168, 76, 0.25);
+    --card-radius: 24px;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--obsidian);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* ============================================
+   AMBIENT BACKGROUND ORBS
+   ============================================ */
+  .ambient-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    animation: orbFloat 20s ease-in-out infinite;
+    opacity: 0.15;
+  }
+
+  .orb-1 {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, #1a3a6e, transparent);
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: 40%;
+    right: -150px;
+    animation-delay: -7s;
+    opacity: 0.08;
+  }
+
+  .orb-3 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #0D1B3E, transparent);
+    bottom: -100px;
+    left: 30%;
+    animation-delay: -14s;
+    opacity: 0.2;
+  }
+
+  @keyframes orbFloat {
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(40px, -30px) scale(1.05);
+    }
+
+    66% {
+      transform: translate(-20px, 40px) scale(0.95);
+    }
+  }
+
+  .search-section {
+    position: relative;
+    z-index: 30;
+    padding: 0 5vw;
+    margin-top: -80px;
+  }
+
+  .search-glass-card {
+    background: rgba(12, 12, 18, 0.88);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 24px;
+    padding: 40px 48px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .search-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .search-tab {
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .search-tab.active,
+  .search-tab:hover {
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.06));
+    border-color: rgba(201, 168, 76, 0.45);
+    color: var(--gold-light);
+  }
+
+  .search-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+
+  .search-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-field label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .search-field select,
+  .search-field input {
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+  }
+
+  .search-field select:focus,
+  .search-field input:focus {
+    border-color: rgba(201, 168, 76, 0.5);
+    background: rgba(201, 168, 76, 0.06);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+  }
+
+  .search-field select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .search-field select option {
+    background: #12121a;
+    color: #F5F0E8;
+  }
+
+  .search-btn-wrap {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .search-btn {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.03em;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(201, 168, 76, 0.45);
+  }
+
+  /* ─── Search responsive ─── */
+  @media (max-width: 1200px) {
+    .search-fields {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .search-btn-wrap {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .search-fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .search-btn-wrap {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .search-section {
+      padding: 0 16px;
+      margin-top: -40px;
+    }
+
+    .search-glass-card {
+      padding: 28px 24px;
+    }
+
+    .search-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .search-btn-wrap {
+      grid-column: 1;
+    }
+
+    .search-tab {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .search-section {
+      padding: 0 12px;
+      margin-top: -28px;
+    }
+
+    .search-glass-card {
+      padding: 22px 16px;
+      border-radius: 16px;
+    }
+
+    .search-field input,
+    .search-field select {
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+
+    .search-tab {
+      padding: 7px 13px;
+      font-size: 0.75rem;
+    }
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SHARED SECTION UTILITIES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .section-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .section-eyebrow span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .section-eyebrow::before,
+  .section-eyebrow::after {
+    content: '';
+    flex: 0 0 64px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.5));
+  }
+
+  .section-eyebrow::after {
+    background: linear-gradient(to left, transparent, rgba(201, 168, 76, 0.5));
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+    font-weight: 400;
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .section-sub {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.93rem;
+    line-height: 1.75;
+    max-width: 500px;
+    margin: 0 auto 56px;
+  }
+
+
+  /* ============================================
+   GLASSMORPHISM UTILITIES
+   ============================================ */
+  .glass {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--card-radius);
+  }
+
+  .glass-dark {
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--card-radius);
+  }
+
+  .glass-gold {
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(201, 168, 76, 0.05));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: var(--card-radius);
+  }
+
+  /* ============================================
+   HERO CAROUSEL — IMMERSIVE 3D
+   ============================================ */
+  .hero-universe {
+    position: relative;
+    margin-top: 0;
+    padding-top: 80px; /* exactly the fixed navbar height */
+    overflow: hidden;
+  }
+
+  .hero-scene {
+    position: relative;
+    width: 100%;
+    /* Subtract navbar height so carousel fills exactly from navbar-bottom to viewport-bottom.
+       100dvh = dynamic viewport height — the iOS Safari fix. iOS Safari gives 100vh a constant
+       "large viewport" value (URL-bar-hidden state) which was causing the extra gap vs Android
+       (Android Chrome adapts 100vh to the current visible viewport). dvh always reflects
+       the actual visible area on both platforms. */
+    height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
+    max-height: 820px;
+  }
+
+  .hero-carousel-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    perspective: 1200px;
+  }
+
+  .carousel-3d-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Full-bleed background slide */
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .hero-slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .hero-slide-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.08);
+    transition: transform 8s cubic-bezier(0.0, 0.0, 0.2, 1);
+    will-change: transform;
+  }
+
+  .hero-slide.active .hero-slide-bg {
+    transform: scale(1);
+  }
+
+  /* Multi-layer overlay for cinematic depth */
+  .hero-slide-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, rgba(6, 11, 26, 0.92) 0%, rgba(6, 11, 26, 0.6) 50%, rgba(6, 11, 26, 0.2) 100%),
+      linear-gradient(to top, rgba(6, 11, 26, 0.85) 0%, transparent 50%);
+  }
+
+  /* Animated noise grain overlay */
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Hero content */
+  .hero-content-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .hero-content {
+    padding: 0 6vw;
+    max-width: 760px;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s, opacity 1s ease 0.3s;
+  }
+
+  .hero-slide.active .hero-content {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.08));
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    color: var(--gold-light);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    50% {
+      transform: scale(1.5);
+      opacity: 0.6;
+    }
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 22px;
+    letter-spacing: -1px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-light);
+    font-weight: 400;
+  }
+
+  .hero-location {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1rem;
+    margin-bottom: 30px;
+    font-weight: 300;
+  }
+
+  .hero-location i {
+    color: var(--gold);
+  }
+
+  /* Hero features strip */
+  .hero-features {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .hero-feat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .hero-feat:hover {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.4);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .hero-feat i {
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  /* Hero CTA */
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 50px rgba(201, 168, 76, 0.5), 0 12px 32px rgba(0, 0, 0, 0.4);
+    color: #0A0A0F;
+  }
+
+  .cta-primary:hover::before {
+    left: 100%;
+  }
+
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  /* Price pill — floating glass card */
+  .hero-price-pill {
+    position: absolute;
+    top: 40%;
+    right: 6vw;
+    transform: translateY(-50%);
+    z-index: 20;
+    padding: 28px 32px;
+    width: 220px;
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 1s ease 0.6s, transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s;
+    transform: translateY(-50%) translateX(20px);
+  }
+
+  .hero-slide.active .hero-price-pill {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .price-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .price-amount {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .price-period {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .price-divider {
+    height: 1px;
+    background: linear-gradient(to right, rgba(201, 168, 76, 0.4), transparent);
+    margin: 16px 0;
+  }
+
+  .price-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.05));
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 50px;
+    color: var(--gold-light);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Carousel navigation */
+  .hero-nav {
+    position: absolute;
+    bottom: 60px;
+    left: 6vw;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .hero-nav-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .hero-nav-btn:hover {
+    background: var(--gold);
+    color: #0A0A0F;
+    border-color: var(--gold);
+    transform: scale(1.1);
+  }
+
+  /* Slide counter */
+  .hero-counter {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-counter span {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* Scroll indicator */
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 60px;
+    right: 6vw;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, rgba(201, 168, 76, 0.6), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollLine {
+    0% {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+
+    50% {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+
+    51% {
+      transform: scaleY(1);
+      transform-origin: bottom;
+    }
+
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+  }
+
+  /* Dots indicator */
+  .hero-dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+  }
+
+  .hero-dot {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: all 0.4s ease;
+    width: 24px;
+  }
+
+  .hero-dot.active {
+    background: var(--gold);
+    width: 48px;
+  }
+
+  /* ============================================
+   FLOATING STATS BAR
+   ============================================ */
+  .stats-float-bar {
+    position: relative;
+    z-index: 30;
+    margin-top: -60px;
+    padding: 0 5vw 80px;
+  }
+
+  .stats-bar-inner {
+    background: rgba(12, 12, 18, 0.85);
+    backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px 48px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    text-align: center;
+    position: relative;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  .stat-number {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1;
+    display: block;
+  }
+
+  .stat-label {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ============================================
+   SECTION SYSTEM
+   ============================================ */
+  .section-wrap {
+    padding: 100px 5vw;
+    position: relative;
+  }
+
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(201, 168, 76, 0.05));
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .section-title-xl {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+
+  .section-title-xl em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .section-subtitle {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 580px;
+    margin-top: 14px;
+  }
+
+  /* ============================================
+   PROPERTY CARDS — 3D GLASSMORPHISM
+   ============================================ */
+  .properties-section {
+    background: var(--obsidian);
+  }
+
+  .prop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+    margin-top: 52px;
+  }
+
+  .prop-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(18, 18, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .prop-card:hover {
+    transform: translateY(-14px) rotateX(2deg);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6), 0 0 40px rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.25);
+  }
+
+  .prop-card-img {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+  }
+
+  .prop-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .prop-card:hover .prop-card-img img {
+    transform: scale(1.12);
+  }
+
+  /* Image overlay with gradient */
+  .prop-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 10, 15, 0.9) 0%, rgba(10, 10, 15, 0.2) 50%, transparent 100%);
+  }
+
+  /* Status badge */
+  .prop-status {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    backdrop-filter: blur(16px);
+    z-index: 2;
+  }
+
+  .prop-status.for-sale {
+    background: rgba(201, 168, 76, 0.2);
+    border: 1px solid rgba(201, 168, 76, 0.5);
+    color: var(--gold-light);
+  }
+
+  .prop-status.for-rent {
+    background: rgba(30, 100, 200, 0.2);
+    border: 1px solid rgba(60, 130, 255, 0.4);
+    color: #7EB8FF;
+  }
+
+  .prop-status.premium {
+    background: rgba(180, 30, 100, 0.2);
+    border: 1px solid rgba(220, 60, 130, 0.4);
+    color: #FF7EB8;
+  }
+
+  /* Wishlist button */
+  .prop-wishlist {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .prop-wishlist:hover {
+    background: rgba(220, 50, 50, 0.3);
+    border-color: rgba(220, 50, 50, 0.5);
+    color: #ff6b6b;
+    transform: scale(1.1);
+  }
+
+  /* Card body */
+  .prop-card-body {
+    padding: 24px 26px 26px;
+  }
+
+  .prop-price {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .prop-price small {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 400;
+  }
+
+  .prop-title {
+    font-size: 1.08rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .prop-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .prop-location i {
+    color: var(--gold);
+    font-size: 0.85rem;
+  }
+
+  /* Feature row */
+  .prop-features {
+    display: flex;
+    gap: 16px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .prop-feat {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.82rem;
+  }
+
+  .prop-feat i {
+    color: var(--gold);
+    font-size: 0.95rem;
+  }
+
+  /* ============================================
+   WHY US — CINEMATIC SECTION
+   ============================================ */
+  .why-section {
+    position: relative;
+    padding: 120px 0;
+    overflow: hidden;
+  }
+
+  .why-bg-accent {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13, 27, 62, 0.6), transparent);
+    top: -200px;
+    right: -200px;
+    pointer-events: none;
+  }
+
+  .why-video-frame {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 76, 0.2),
+      0 30px 80px rgba(0, 0, 0, 0.6),
+      0 0 120px rgba(201, 168, 76, 0.06);
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+  }
+
+  .why-video-frame:hover {
+    transform: perspective(1200px) rotateY(-4deg) rotateX(2deg) scale(1.02);
+  }
+
+  .why-video-frame iframe {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: block;
+    pointer-events: none;
+  }
+
+  .unmute-btn-glass {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    z-index: 10;
+    pointer-events: all;
+    transition: all 0.3s ease;
+  }
+
+  .unmute-btn-glass:hover {
+    background: rgba(201, 168, 76, 0.3);
+    border-color: rgba(201, 168, 76, 0.5);
+  }
+
+  /* Floating stat cards on video */
+  .video-stat-card {
+    position: absolute;
+    padding: 16px 22px;
+    background: rgba(10, 10, 15, 0.75);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+  }
+
+  .video-stat-card.card-years {
+    bottom: -24px;
+    left: -24px;
+  }
+
+  .video-stat-card.card-clients {
+    top: -24px;
+    right: -24px;
+  }
+
+  .vsc-number {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+
+  .vsc-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Benefits */
+  .benefit-item-3d {
+    padding: 28px 30px;
+    border-radius: 18px;
+    background: rgba(18, 18, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .benefit-item-3d::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .benefit-item-3d:hover {
+    transform: translateX(8px);
+    border-color: rgba(201, 168, 76, 0.2);
+    background: rgba(25, 25, 35, 0.8);
+  }
+
+  .benefit-item-3d:hover::before {
+    opacity: 1;
+  }
+
+  .benefit-icon-3d {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.05));
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.3rem;
+    color: var(--gold);
+  }
+
+  .benefit-text h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 6px;
+  }
+
+  .benefit-text p {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.6;
+  }
+
+  /* ============================================
+   TESTIMONIALS — GLASS CARDS
+   ============================================ */
+  .testimonials-section {
+    padding: 100px 5vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 52px;
+  }
+
+  .testi-card {
+    padding: 36px;
+    background: rgba(18, 18, 26, 0.7);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 20px;
+    position: relative;
+    transition: all 0.4s ease;
+    overflow: hidden;
+  }
+
+  .testi-card::after {
+    content: '"';
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-family: var(--font-display);
+    font-size: 8rem;
+    color: rgba(201, 168, 76, 0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .testi-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201, 168, 76, 0.2);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Star rating */
+  .testi-stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+  }
+
+  .testi-stars i {
+    color: var(--gold);
+    font-size: 0.85rem;
+  }
+
+  .testi-text {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 28px;
+  }
+
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .testi-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(201, 168, 76, 0.3);
+  }
+
+  .testi-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .testi-role {
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+
+  /* ============================================
+   CTA BAND
+   ============================================ */
+  .cta-band {
+    margin: 0 5vw 100px;
+    padding: 80px 60px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(13, 27, 62, 0.9), rgba(10, 10, 15, 0.8));
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    backdrop-filter: blur(32px);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(201, 168, 76, 0.03) 60deg, transparent 120deg);
+    animation: rotateConic 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes rotateConic {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .cta-band h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: #fff;
+    margin-bottom: 18px;
+  }
+
+  .cta-band h2 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .cta-band p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-band-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ============================================
+   SEARCH PANEL
+   ============================================ */
+  .search-section {
+    padding: 0 5vw 80px;
+    position: relative;
+    z-index: 40;
+  }
+
+  .search-panel {
+    background: rgba(12, 12, 18, 0.85);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 40px 44px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+
+  .search-panel h3 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 28px;
+  }
+
+  .search-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px;
+    border-radius: 12px;
+    width: fit-content;
+  }
+
+  .search-tab {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.05em;
+  }
+
+  .search-tab.active {
+    background: var(--gold);
+    color: #0A0A0F;
+  }
+
+  .search-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .search-field label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .search-field input,
+  .search-field select {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+  }
+
+  .search-field input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  .search-field input:focus,
+  .search-field select:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(201, 168, 76, 0.4);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
+  }
+
+  .search-field select option {
+    background: #12121A;
+    color: #fff;
+  }
+
+  .search-btn-main {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 12px;
+    color: #0A0A0F;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .search-btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3);
+  }
+
+  .partners-section {
+    position: relative;
+    z-index: 10;
+    padding: 100px 0 80px;
+    overflow: hidden;
+  }
+
+  .partners-section::before {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 auto 64px;
+  }
+
+  /* ── Infinite scroll track ── */
+  .partners-track-wrap {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  }
+
+  .partners-track {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    animation: pScroll 36s linear infinite;
+  }
+
+  .partners-track.reverse {
+    animation-direction: reverse;
+    animation-duration: 42s;
+  }
+
+  .partners-track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes pScroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .partners-row+.partners-row {
+    margin-top: 18px;
+  }
+
+  /* ── Partner card ── */
+  .partner-card {
+    flex-shrink: 0;
+    width: 210px;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .partner-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: inherit;
+  }
+
+  .partner-card:hover {
+    border-color: rgba(201, 168, 76, 0.38);
+    background: rgba(201, 168, 76, 0.07);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(201, 168, 76, 0.18);
+  }
+
+  .partner-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Image container inside card */
+  .partner-img-wrap {
+    width: 100%;
+    max-width: 130px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .partner-img-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    /* Full colour — no filter */
+    filter: none;
+    opacity: 0.85;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .partner-card:hover .partner-img-wrap img {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+
+
+  /* Text fallback (shown when no img present) */
+  .partner-text-fallback {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .partner-name-text {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+    transition: color 0.4s ease;
+  }
+
+  .partner-type-text {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.2);
+    transition: color 0.4s ease;
+    margin-top: 3px;
+  }
+
+  .partner-card:hover .partner-name-text {
+    color: var(--gold-light);
+  }
+
+  .partner-card:hover .partner-type-text {
+    color: rgba(201, 168, 76, 0.65);
+  }
+
+  /* ─── Partners responsive ─── */
+  @media (max-width: 768px) {
+    .partners-section {
+      padding: 70px 0 60px;
+    }
+
+    .partner-card {
+      width: 170px;
+      height: 94px;
+      padding: 14px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .partner-card {
+      width: 148px;
+      height: 82px;
+    }
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LICENSED BY SECTION
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .licensed-section {
+    position: relative;
+    z-index: 10;
+    padding: 60px 5vw 100px;
+  }
+
+  .licensed-glass {
+    background: rgba(12, 12, 18, 0.75);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 28px;
+    padding: 60px 56px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Gold top accent line */
+  .licensed-glass::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.45), transparent);
+  }
+
+  /* Ambient glow orb */
+  .licensed-glass::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.07), transparent 70%);
+    bottom: -220px;
+    right: -160px;
+    pointer-events: none;
+  }
+
+  .licensed-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .licensed-header-text .section-eyebrow {
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .licensed-header-text .section-eyebrow::before {
+    display: none;
+  }
+
+  .licensed-header-text h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 3vw, 2.4rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+
+  .licensed-header-text h2 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .licensed-header-text p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 420px;
+    line-height: 1.75;
+  }
+
+  .license-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 48px;
+    margin-bottom: 48px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 36px;
+  }
+
+  .license-cards-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .compliance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(201, 168, 76, 0.05));
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 50px;
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    align-self: flex-start;
+    flex-shrink: 0;
+  }
+
+  .compliance-badge i {
+    font-size: 1rem;
+  }
+
+  /* ── License carousel card ── */
+  .license-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 32px 24px 28px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    min-height: 230px;
+    justify-content: center;
+  }
+
+  .license-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .license-card:hover {
+    border-color: rgba(201, 168, 76, 0.32);
+    background: rgba(201, 168, 76, 0.06);
+    transform: translateY(-6px);
+    box-shadow: 0 28px 56px rgba(0, 0, 0, 0.45);
+  }
+
+  .license-card:hover::after {
+    opacity: 1;
+  }
+
+  /* Image / logo circle */
+  .license-logo-circle {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .license-card:hover .license-logo-circle {
+    border-color: rgba(201, 168, 76, 0.45);
+    background: rgba(201, 168, 76, 0.1);
+    box-shadow: 0 0 28px rgba(201, 168, 76, 0.18);
+  }
+
+  /* Image inside circle */
+  .license-logo-circle img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 4px;
+    /* Desaturate / muted by default */
+    filter: grayscale(1) opacity(0.5);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+
+  .license-card:hover .license-logo-circle img {
+    filter: grayscale(0) opacity(1);
+    transform: scale(1.07);
+  }
+
+  /* Icon fallback */
+  .license-logo-circle i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.3);
+    transition: color 0.4s ease;
+  }
+
+  .license-card:hover .license-logo-circle i {
+    color: var(--gold-light);
+  }
+
+  .license-org-name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.2;
+    transition: color 0.4s ease;
+  }
+
+  .license-card:hover .license-org-name {
+    color: var(--gold-light);
+  }
+
+  .license-org-desc {
+    font-size: 0.77rem;
+    color: rgba(255, 255, 255, 0.35);
+    line-height: 1.6;
+    max-width: 180px;
+    transition: color 0.4s ease;
+  }
+
+  .license-card:hover .license-org-desc {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .license-verified-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 50px;
+    color: #4ade80;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── Owl overrides ── */
+  .licensed-carousel-wrap {
+    position: relative;
+  }
+
+  .licensed-owl .owl-stage-outer {
+    overflow: hidden;
+  }
+
+  .licensed-owl .owl-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .licensed-owl .owl-dot span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+    transition: all 0.35s ease;
+  }
+
+  .licensed-owl .owl-dot.active span,
+  .licensed-owl .owl-dot:hover span {
+    background: var(--gold);
+    width: 42px;
+  }
+
+  /* Custom nav row */
+  .licensed-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .lc-nav-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .lc-nav-btn:hover {
+    background: var(--gold);
+    color: #0A0A0F;
+    border-color: var(--gold);
+    transform: scale(1.1);
+  }
+
+  /* ─── Licensed responsive ─── */
+  @media (max-width: 1024px) {
+    .licensed-glass {
+      padding: 48px 36px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .licensed-section {
+      padding: 40px 16px 80px;
+    }
+
+    .licensed-glass {
+      padding: 36px 24px;
+      border-radius: 20px;
+    }
+
+    .licensed-header {
+      flex-direction: column;
+    }
+
+    .compliance-badge {
+      align-self: flex-start;
+    }
+
+    .licensed-header-text h2 {
+      font-size: 1.65rem;
+    }
+
+    .license-body-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .license-cards-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .licensed-glass {
+      padding: 28px 18px;
+      border-radius: 18px;
+    }
+
+    .license-cards-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ============================================
+   RESPONSIVE
+   ============================================ */
+  @media (max-width: 1199px) {
+    .hero-price-pill {
+      display: none;
+    }
+
+    .search-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 991px) {
+    .hero-scene {
+      max-height: 700px;
+    }
+
+    .stats-bar-inner {
+      padding: 28px 32px;
+    }
+
+    .why-video-frame {
+      margin-bottom: 48px;
+    }
+
+    .section-wrap {
+      padding: 80px 5vw;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero-features {
+      gap: 10px;
+    }
+
+    .hero-feat {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 8vw, 3rem);
+    }
+
+    .stats-bar-inner {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .stat-item::after {
+      display: none;
+    }
+
+    .stat-item {
+      min-width: 100px;
+    }
+
+    .prop-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .search-row {
+      grid-template-columns: 1fr;
+    }
+
+    .search-panel {
+      padding: 28px 24px;
+    }
+
+    .cta-band {
+      padding: 60px 30px;
+    }
+
+    .hero-scroll-hint {
+      display: none;
+    }
+
+    .section-wrap {
+      padding: 60px 5vw;
+    }
+
+    .testi-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-float-bar {
+      margin-top: -30px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .hero-scene {
+      max-height: 500px;
+    }
+
+    .hero-cta-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-content {
+      padding: 0 24px;
+    }
+
+    .hero-features {
+      display: none;
+    }
+
+    .stats-bar-inner {
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+    }
+
+    .cta-band-btns {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cta-band {
+      margin: 0 4vw 60px;
+    }
+  }
+
+  /* ============================================
+   UTILITY ANIMATIONS
+   ============================================ */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-reveal-delay="100"] {
+    transition-delay: 0.1s;
+  }
+
+  [data-reveal-delay="200"] {
+    transition-delay: 0.2s;
+  }
+
+  [data-reveal-delay="300"] {
+    transition-delay: 0.3s;
+  }
+
+  [data-reveal-delay="400"] {
+    transition-delay: 0.4s;
+  }
+
+  [data-reveal-delay="500"] {
+    transition-delay: 0.5s;
+  }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BLOG POSTS SECTION
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .blog-section {
+    position: relative;
+    z-index: 10;
+    padding: 100px 5vw;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 52px;
+  }
+
+  .blog-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(18, 18, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .blog-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), 0 0 40px rgba(201, 168, 76, 0.1);
+    border-color: rgba(201, 168, 76, 0.22);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-img {
+    position: relative;
+    height: 230px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .blog-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .blog-card:hover .blog-img img {
+    transform: scale(1.1);
+  }
+
+  .blog-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 10, 15, 0.85) 0%, rgba(10, 10, 15, 0.15) 60%, transparent 100%);
+  }
+
+  .blog-cat {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    padding: 6px 16px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.25), rgba(201, 168, 76, 0.08));
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    color: var(--gold-light);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    backdrop-filter: blur(12px);
+    z-index: 2;
+  }
+
+  .blog-read-time {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 2;
+  }
+
+  .blog-body {
+    padding: 26px 26px 28px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .blog-date {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .blog-title {
+    font-family: var(--font-display);
+    font-size: 1.22rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
+  }
+
+  .blog-card:hover .blog-title {
+    color: var(--gold-light);
+  }
+
+  .blog-excerpt {
+    font-size: 0.86rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.7;
+    flex: 1;
+    margin-bottom: 22px;
+  }
+
+  .blog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .blog-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .blog-author-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(201, 168, 76, 0.3);
+  }
+
+  .blog-author-avatar-default {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.25), rgba(201, 168, 76, 0.08));
+    border: 1.5px solid rgba(201, 168, 76, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 0.85rem;
+  }
+
+  .blog-author-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .blog-read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: gap 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+  }
+
+  .blog-card:hover .blog-read-link {
+    gap: 10px;
+    color: var(--gold-light);
+  }
+
+  @media (max-width: 1100px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .blog-section {
+      padding: 70px 16px;
+    }
+  }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   EVENTS GALLERY SECTION
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .events-section {
+    position: relative;
+    z-index: 10;
+    padding: 100px 5vw;
+    background: rgba(6, 11, 26, 0.45);
+  }
+
+  .events-intro {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 52px;
+    flex-wrap: wrap;
+  }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 220px;
+    gap: 14px;
+  }
+
+  .event-cell:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .event-cell:nth-child(4) {
+    grid-column: span 2;
+  }
+
+  .event-cell {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgba(18, 18, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.4s ease;
+  }
+
+  .event-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: block;
+  }
+
+  .event-cell:hover img {
+    transform: scale(1.09);
+  }
+
+  .event-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(6, 11, 26, 0.92) 0%, rgba(6, 11, 26, 0.25) 55%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 22px 20px;
+  }
+
+  .event-cell:hover .event-overlay {
+    opacity: 1;
+  }
+
+  .event-name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .event-date {
+    font-size: 0.7rem;
+    color: var(--gold-light);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+  }
+
+  .event-cell:hover .event-name,
+  .event-cell:hover .event-date {
+    transform: translateY(0);
+  }
+
+  .event-cell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    border: 1.5px solid rgba(201, 168, 76, 0);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    pointer-events: none;
+  }
+
+  .event-cell:hover::after {
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow: inset 0 0 40px rgba(201, 168, 76, 0.07);
+  }
+
+  .event-expand {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 5;
+  }
+
+  .event-cell:hover .event-expand {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Lightbox */
+  #eventsLightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(14px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  #eventsLightbox.lb-open {
+    display: flex;
+  }
+
+  .lb-inner {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(201, 168, 76, 0.2);
+  }
+
+  .lb-inner img {
+    width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    display: block;
+  }
+
+  .lb-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    z-index: 10;
+  }
+
+  .lb-close:hover {
+    background: rgba(201, 168, 76, 0.35);
+    transform: rotate(90deg);
+  }
+
+  @media (max-width: 1024px) {
+    .events-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .event-cell:nth-child(1) {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .event-cell:nth-child(4) {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .events-section {
+      padding: 70px 14px;
+    }
+
+    .events-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .event-cell:nth-child(1) {
+      grid-column: 1 / -1;
+    }
+
+    .event-overlay {
+      opacity: 1;
+    }
+
+    .event-name,
+    .event-date {
+      transform: none;
+    }
+  }
+
+  /* ============================================
+   TOP EXCOS SECTION
+   ============================================ */
+  .excos-section {
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .excos-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201, 168, 76, 0.06), transparent);
+    pointer-events: none;
+  }
+
+  .exco-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.38s ease,
+      border-color 0.38s ease;
+    will-change: transform;
+    margin-bottom: 28px;
+  }
+
+  .exco-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(201, 168, 76, 0.35);
+    border-color: rgba(201, 168, 76, 0.45);
+  }
+
+  .exco-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a2a1e, #0A0A0F);
+  }
+
+  .exco-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+
+  .exco-card:hover .exco-img-wrap img {
+    transform: scale(1.08);
+  }
+
+  .exco-img-wrap .exco-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: rgba(201, 168, 76, 0.35);
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(10, 10, 15, 0.6));
+  }
+
+  .exco-gold-bar {
+    height: 3px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .exco-card:hover .exco-gold-bar {
+    opacity: 1;
+  }
+
+  .exco-body {
+    padding: 20px 16px 24px;
+  }
+
+  .exco-position {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 50px;
+    padding: 4px 12px;
+    margin-bottom: 10px;
+  }
+
+  .exco-name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+
+  .exco-dept {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 575.98px) {
+    .excos-section {
+      padding: 70px 0;
+    }
+
+    .exco-card {
+      margin-bottom: 20px;
+    }
+
+    .exco-name {
+      font-size: 0.96rem;
+    }
+  }
+
+  /* ============================================================
+     HERO — SMALL SCREEN FIXES
+     Targets ≤ 767px (phones + small tablets)
+  ============================================================ */
+  @media (max-width: 767px) {
+
+    /* ── Image: show from top so the building is fully visible ── */
+    .hero-slide-bg {
+      background-position: center top;
+      background-size: cover;
+      /* Reduce Ken Burns scale so it doesn't crop the image edges */
+      transform: scale(1.03);
+    }
+    .hero-slide.active .hero-slide-bg {
+      transform: scale(1);
+    }
+
+    /* Darken overlay uniformly on mobile so centered text stays legible
+       regardless of which part of the image is behind it */
+    .hero-slide-overlay {
+      background:
+        linear-gradient(to bottom, rgba(6,11,26,0.55) 0%, rgba(6,11,26,0.3) 40%, rgba(6,11,26,0.75) 100%),
+        rgba(6,11,26,0.35);
+    }
+
+    /* ── Content: centered horizontally and vertically ── */
+    .hero-content-wrap {
+      align-items: center;          /* vertical: middle of slide */
+      justify-content: center;      /* horizontal: centered */
+      padding-top: 0;               /* reset the top-anchor from previous rules */
+      padding-bottom: 100px;        /* lift centre point up to clear nav arrows */
+    }
+
+    .hero-content {
+      padding: 0 24px;
+      max-width: 100%;
+      text-align: center;           /* center all text */
+    }
+
+    /* Eyebrow badge: center it */
+    .hero-eyebrow {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Location line: center */
+    .hero-location {
+      justify-content: center;
+    }
+
+    /* Feature pills row: center */
+    .hero-features {
+      justify-content: center;
+    }
+
+    /* CTA buttons: center */
+    .hero-cta-row {
+      justify-content: center;
+      flex-direction: row;          /* keep side-by-side if space allows */
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  }
+
+  /* ── Phones (≤ 480px): stack CTA buttons to avoid wrapping ── */
+  @media (max-width: 480px) {
+    .hero-content-wrap {
+      padding-bottom: 90px;
+    }
+
+    .hero-content {
+      padding: 0 18px;
+    }
+
+    .hero-cta-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ======================== AMBIENT BACKGROUND ======================== -->
+<div class="ambient-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main class="main" style="position: relative; z-index: 1;">
+
+  <!-- ======================== HERO SECTION ======================== -->
+  <section class="hero-universe">
+    <div class="hero-scene">
+      <div class="hero-carousel-wrap">
+        <div class="carousel-3d-track">
+
+          {% if premium_properties %}
+          {% for property in premium_properties %}
+          <div class="hero-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+            <div class="hero-slide-bg"
+              style="background-image: url('{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-7.webp' %}{% endif %}');">
+            </div>
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Premium Listing</div>
+                <h1 class="hero-title">{{ property.title|truncatewords:7 }}</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>{{ property.city.name }}, {{ property.state.name }}</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>{{ property.bedrooms }}
+                      Bed{{property.bedrooms|pluralize }}</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>{{ property.bathrooms }}
+                      Bath{{property.bathrooms|pluralize }}</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>{{ property.square_feet|floatformat:0}} sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{{ property.get_absolute_url }}" class="cta-primary">
+                    View Property <i class="bi bi-arrow-right"></i>
+                  </a>
+                  <a href="{% url 'properties' %}" class="cta-secondary">
+                    <i class="bi bi-grid-3x3-gap"></i> Browse All
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Listing Price</div>
+              <div class="price-amount">₦{{ property.price|intcomma }}</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">{% if property.listing_type %}{{ property.listing_type }}{% else %}For Sale{% endif %}</div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <!-- Fallback slides -->
+          <div class="hero-slide active" data-index="0">
+            <div class="hero-slide-bg"
+              style="background-image: url('{% static 'assets/img/real-estate/property-exterior-7.webp' %}');"></div>
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Premium Listing</div>
+                <h1 class="hero-title">Luxury Modern <em>Estate</em> with Pool</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Lekki Phase 1, Lagos</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>5 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>6 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>4,500 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">Browse Properties <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'about' %}" class="cta-secondary"><i class="bi bi-play-circle"></i> Our Story</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦280M</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Sale</div>
+            </div>
+          </div>
+
+          <div class="hero-slide" data-index="1">
+            <div class="hero-slide-bg"
+              style="background-image: url('{% static 'assets/img/real-estate/property-exterior-8.webp' %}');"></div>
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Featured Property</div>
+                <h1 class="hero-title">Contemporary <em>Villa</em> with Garden</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Banana Island, Ikoyi</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>4 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>5 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>3,800 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">View All Properties <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'contact' %}" class="cta-secondary"><i class="bi bi-telephone"></i> Contact Us</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦195M</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Sale</div>
+            </div>
+          </div>
+
+          <div class="hero-slide" data-index="2">
+            <div class="hero-slide-bg"
+              style="background-image: url('{% static 'assets/img/real-estate/property-interior-7.webp' %}');"></div>
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Exclusive Interior</div>
+                <h1 class="hero-title">Exquisite <em>Interior</em> Finishes</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Victoria Island, Lagos</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>3 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>4 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>2,800 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">Explore Listings <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'agents' %}" class="cta-secondary"><i class="bi bi-person-check"></i> Find Agent</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦120M</div>
+              <div class="price-period">Per annum</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Rent</div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Navigation -->
+          <div class="hero-nav">
+            <button class="hero-nav-btn" id="heroPrev" aria-label="Previous slide">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="hero-counter">
+              <span id="currentSlide">1</span> / <span id="totalSlides">3</span>
+            </div>
+            <button class="hero-nav-btn" id="heroNext" aria-label="Next slide">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Dots -->
+          <div class="hero-dots" id="heroDots"></div>
+
+          <!-- Scroll hint -->
+          <div class="hero-scroll-hint">
+            <div class="scroll-line"></div>
+            <span>Scroll</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== STATS BAR ======================== -->
+  <div class="stats-float-bar mt-4">
+    <div class="stats-bar-inner" data-reveal>
+      <div class="stat-item">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Properties Listed</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">5+</span>
+        <span class="stat-label">Years of Excellence</span>
+      </div>
+
+      <div class="stat-item">
+        <span class="stat-number">98%</span>
+        <span class="stat-label">Client Satisfaction</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEARCH PANEL ======================== -->
+  <section class="search-section" id="search">
+    <div class="search-glass-card">
+
+      <!-- Tabs -->
+      <div class="search-tabs" id="searchTabs">
+        <button type="button" class="search-tab active" data-type="buy">Buy</button>
+        <button type="button" class="search-tab" data-type="shortlet">Shortlet</button>
+        <button type="button" class="search-tab" data-type="commercial">Commercial</button>
+        <button type="button" class="search-tab" data-type="land">Land</button>
+      </div>
+
+      <!-- Functional Search Form -->
+      <form method="GET" action="{% url 'properties' %}" class="search-fields" id="searchForm">
+
+        <!-- Hidden listing_type updated by JS when tab is clicked -->
+        <input type="hidden" name="listing_type" id="listingTypeInput" value="buy">
+
+        <!-- ── State Select ── -->
+        <div class="search-field">
+          <label for="state_type">State</label>
+          <select id="state_type" name="state_type">
+            <option value="">Any State</option>
+            {% for state in states %}
+            <option value="{{ state.id }}">{{ state.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- ── City Select (populated dynamically) ── -->
+        <div class="search-field">
+          <label for="city_type">City</label>
+          <select id="city_type" name="city_type" disabled>
+            <option value="">Select State First</option>
+          </select>
+        </div>
+
+        <div class="search-field">
+          <label for="property_type">Property Type</label>
+          <select id="property_type" name="type">
+            <option value="">Any Type</option>
+            {% for pt in property_types %}
+            <option value="{{ pt.name }}">{{ pt.get_name_display }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="search-field">
+          <label for="price_range">Price Range</label>
+          <select id="price_range" name="price_range">
+            <option value="">Any Budget</option>
+            <option value="0-5000000">Under ₦5M</option>
+            <option value="5000000-20000000">₦5M – ₦20M</option>
+            <option value="20000000-50000000">₦20M – ₦50M</option>
+            <option value="50000000-100000000">₦50M – ₦100M</option>
+            <option value="100000000-500000000">₦100M – ₦500M</option>
+            <option value="500000000-999999999">Above ₦500M</option>
+          </select>
+        </div>
+
+        <div class="search-btn-wrap">
+          <button type="submit" class="search-btn">
+            <i class="bi bi-search"></i>
+            Search Properties
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ======================== FEATURED PROPERTIES ======================== -->
+  <section class="properties-section section-wrap">
+    <div data-reveal>
+      <div class="section-badge"><i class="bi bi-gem"></i> Curated Selection</div>
+      <h2 class="section-title-xl">Featured <em>Properties</em></h2>
+      <p class="section-subtitle">Hand-picked luxury properties from Nigeria's most prestigious neighbourhoods.</p>
+    </div>
+
+    <div class="prop-grid">
+      {% if featured_properties %}
+      {% for property in featured_properties %}
+      <div class="prop-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="prop-card-img">
+          <img
+            src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-3.webp' %}{% endif %}"
+            alt="{{ property.title }}" loading="lazy">
+          <div class="prop-img-overlay"></div>
+          <div
+            class="prop-status {% if property.listing_type == 'rent' %}for-rent{% elif property.is_premium %}premium{% else %}for-sale{% endif %}">
+            {% if property.listing_type == 'rent' %}For Rent{% elif property.is_premium %}Premium{% else %}For
+            Sale{%endif %}
+          </div>
+          <div class="prop-wishlist"><i class="bi bi-heart"></i></div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-price">
+            ₦{{ property.price|intcomma }}
+            {% if property.listing_type == 'rent' %}<small>/month</small>{% endif %}
+          </div>
+          <div class="prop-title">{{ property.title }}</div>
+          <div class="prop-location">
+            <i class="bi bi-geo-alt-fill"></i>
+            {{ property.city.name }}, {{ property.state.name }}
+          </div>
+          <div class="prop-features">
+            <div class="prop-feat"><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed{{property.bedrooms|pluralize }}</div>
+            <div class="prop-feat"><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath{{ property.bathrooms|pluralize }}</div>
+            <div class="prop-feat"><i class="bi bi-aspect-ratio"></i> {{ property.square_feet|floatformat:0 }} sq ft
+            </div>
+          </div>
+        </div>
+        <a href="{{ property.get_absolute_url }}" class="stretched-link" aria-label="View {{ property.title }}"></a>
+      </div>
+      {% endfor %}
+      {% else %}
+      <!-- Fallback cards -->
+      {% for i in "123" %}
+      <div class="prop-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="prop-card-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="Property" loading="lazy">
+          <div class="prop-img-overlay"></div>
+          <div class="prop-status for-sale">For Sale</div>
+          <div class="prop-wishlist"><i class="bi bi-heart"></i></div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-price">₦185,000,000</div>
+          <div class="prop-title">Stunning 5-Bedroom Duplex in Lekki</div>
+          <div class="prop-location"><i class="bi bi-geo-alt-fill"></i> Lekki Phase 1, Lagos</div>
+          <div class="prop-features">
+            <div class="prop-feat"><i class="bi bi-door-open"></i> 5 Beds</div>
+            <div class="prop-feat"><i class="bi bi-droplet"></i> 6 Baths</div>
+            <div class="prop-feat"><i class="bi bi-aspect-ratio"></i> 4,200 sq ft</div>
+          </div>
+        </div>
+        <a href="{% url 'properties' %}" class="stretched-link"></a>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 48px;" data-reveal>
+      <a href="{% url 'properties' %}" class="cta-primary">
+        View All Properties <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================== WHY NESTOVA ======================== -->
+  <section class="why-section">
+    <div class="why-bg-accent"></div>
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-5" data-reveal>
+          <div style="position: relative; padding: 30px;">
+            <div class="why-video-frame">
+              <iframe id="yt-player"
+                src="https://www.youtube-nocookie.com/embed/VXKUW1W-qTc?autoplay=1&mute=1&loop=1&playlist=VXKUW1W-qTc&controls=0&rel=0&playsinline=1"
+                title="Nestova Groups and Properties" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+              </iframe>
+              <button class="unmute-btn-glass" onclick="toggleMute()" id="unmute-btn" title="Toggle sound">🔇</button>
+            </div>
+
+            <!-- Floating stat cards -->
+
+          </div>
+        </div>
+
+        <div class="col-lg-7" data-reveal data-reveal-delay="200">
+          <div style="padding: 0 40px 0 20px;">
+            <div class="section-badge"><i class="bi bi-star-fill"></i> Why Choose Us</div>
+            <h2 class="section-title-xl" style="margin-bottom: 16px; color: white;">Your Gateway to
+              <em>Exceptional</em> Real Estate
+            </h2>
+            <p class="section-subtitle" style="margin-bottom: 36px; color: white;">Nestova combines deep local market
+              knowledge with international service standards, providing a secure and transparent marketplace for all
+              your real estate needs.</p>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-geo-alt-fill"></i></div>
+              <div class="benefit-text">
+                <h4>Prime Locations</h4>
+                <p>Exclusive access to the most sought-after neighbourhoods and emerging markets across Nigeria.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-shield-fill-check"></i></div>
+              <div class="benefit-text">
+                <h4>Guaranteed Results</h4>
+                <p>Our proven track record ensures successful transactions and fully satisfied clients every time.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-person-check-fill"></i></div>
+              <div class="benefit-text">
+                <h4>Expert Agents</h4>
+                <p>A dedicated team of certified professionals committed to finding your perfect property match.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-graph-up-arrow"></i></div>
+              <div class="benefit-text">
+                <h4>Investment Insights</h4>
+                <p>Real-time market data and expert analysis to help you make smarter investment decisions.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== TESTIMONIALS ======================== -->
+  <section class="testimonials-section mb-4">
+    <div style="text-align: center;" data-reveal>
+      <div class="section-badge"><i class="bi bi-chat-quote-fill"></i> Testimonials</div>
+      <h2 class="section-title-xl" style="color: white;">What Our <em>Clients</em> Say</h2>
+      <p class="section-subtitle" style="margin: 14px auto 0;">Real stories from real people who found their dream homes
+        with Nestova.</p>
+    </div>
+
+    <div class="testi-grid">
+      {% if testimonials %}
+      {% for testimonial in testimonials %}
+      <div class="testi-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">{{ testimonial.message }}</p>
+        <div class="testi-author">
+          {% if testimonial.image %}
+          <img src="{{ testimonial.image.url }}" class="testi-avatar" alt="{{ testimonial.name }}">
+          {% else %}
+          <div class="testi-avatar"
+            style="background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1)); display:flex; align-items:center; justify-content:center; font-size:1.2rem; color: var(--gold);">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          {% endif %}
+          <div>
+            <div class="testi-name">{{ testimonial.name }}</div>
+            <div class="testi-role">{{ testimonial.role|default:"Verified Client" }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <!-- Fallback testimonials -->
+      <div class="testi-card" data-reveal data-reveal-delay="100">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"Working with Nestova was an absolute pleasure. They found us our dream home in Lekki
+          within two weeks. The process was seamless and their team was incredibly professional."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(201,168,76,0.3),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Adaeze Okafor</div>
+            <div class="testi-role">Property Buyer, Lagos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card" data-reveal data-reveal-delay="200">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"Nestova's market insights helped me make a brilliant investment decision. My property
+          value has grown 40% in just 18 months. Truly exceptional guidance and support."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(30,100,200,0.3),rgba(30,100,200,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#7EB8FF;">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Emeka Nwosu</div>
+            <div class="testi-role">Real Estate Investor, Abuja</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card" data-reveal data-reveal-delay="300">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"From shortlisting to closing, Nestova handled everything flawlessly. Their knowledge of
+          the VI market is unmatched. We couldn't be happier with our new home."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(180,30,100,0.3),rgba(180,30,100,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#FF7EB8;">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Tunde & Bisi Adeleke</div>
+            <div class="testi-role">Homeowners, Victoria Island</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ======================== CTA BAND ======================== -->
+  <div class="cta-band" data-reveal>
+    <h2>Ready to Find Your <em>Dream Property?</em></h2>
+    <p>Join thousands of satisfied clients who trusted Nestova with their most important real estate decisions.</p>
+    <div class="cta-band-btns">
+      <a href="{% url 'properties' %}" class="cta-primary">
+        Browse Properties <i class="bi bi-arrow-right"></i>
+      </a>
+      <a href="{% url 'contact' %}" class="cta-secondary">
+        <i class="bi bi-telephone"></i> Speak to an Expert
+      </a>
+    </div>
+  </div>
+  <!-- ======================== LICENSE & COMPLIANCE ======================== -->
+  <section class="licensed-section" id="licensing" data-reveal>
+    <div class="licensed-glass">
+
+      <!-- Header -->
+      <div class="licensed-header">
+        <div class="licensed-header-text">
+          <div class="section-eyebrow"><span>Regulatory Standing</span></div>
+          <h2>Licensed, Regulated &amp; <em>Fully Compliant</em></h2>
+          <p>
+            Nestova operates under the highest standards of professional conduct,
+            regulatory oversight, and ethical real estate practice in Nigeria.
+            Every transaction is protected, transparent, and fully compliant with
+            all applicable statutes.
+          </p>
+        </div>
+        <div class="compliance-badge">
+          <i class="bi bi-patch-check-fill"></i> Verified &amp; Accredited
+        </div>
+      </div>
+
+      <!-- Professional body copy -->
+      <div class="license-body-grid">
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-building" style="color:var(--gold);margin-right:8px;"></i>
+            NIESV Membership &amp; Registration
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            Nestova is a registered member of the <strong style="color:rgba(255,255,255,0.75);">Nigerian Institution of
+              Estate Surveyors and Valuers (NIESV)</strong>,
+            Nigeria's foremost professional body for real estate practitioners. This membership affirms
+            that all our estate surveyors hold valid practising licences, adhere to the NIESV Code of
+            Professional Conduct, and complete mandatory continuing professional development every year.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-award" style="color:var(--gold);margin-right:8px;"></i>
+            Corporate Affairs Commission (CAC) Filing
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            Nestova is duly incorporated under the <strong style="color:rgba(255,255,255,0.75);">Companies and Allied
+              Matters Act (CAMA 2020)</strong>
+            with the Corporate Affairs Commission of Nigeria. Our corporate filings are fully
+            up-to-date, ensuring that clients engage with a legally recognised and accountable
+            entity backed by Nigerian law.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-shield-lock" style="color:var(--gold);margin-right:8px;"></i>
+            Client Fund Protection &amp; Escrow
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            All client funds are held in dedicated <strong style="color:rgba(255,255,255,0.75);">ring-fenced escrow
+              accounts</strong>
+            with a CBN-licensed financial institution, ensuring complete separation of client
+            monies from operating funds. No disbursement is made without a written instruction
+            from both parties, providing an ironclad layer of transactional security.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-file-earmark-check" style="color:var(--gold);margin-right:8px;"></i>
+            Anti-Money Laundering &amp; EFCC Compliance
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            In accordance with the <strong style="color:rgba(255,255,255,0.75);">Money Laundering (Prevention and
+              Prohibition) Act 2022</strong>,
+            Nestova maintains a robust AML/CFT framework overseen by a certified compliance
+            officer. We conduct rigorous KYC verification, transaction monitoring, and
+            Suspicious Transaction Reporting (STR) to the NFIU as required by law.
+          </p>
+        </div>
+      </div>
+
+      <!-- Accreditation Cards Row -->
+      <div class="license-cards-row">
+
+        <div class="license-card" data-reveal data-reveal-delay="100">
+          <div class="license-logo-circle">
+            <i class="bi bi-building-check"></i>
+          </div>
+          <div class="license-org-name">NIESV</div>
+          <div class="license-org-desc">Nigerian Institution of Estate Surveyors and Valuers — Full Corporate Member
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Active</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="200">
+          <div class="license-logo-circle">
+            <i class="bi bi-briefcase-fill"></i>
+          </div>
+          <div class="license-org-name">CAC</div>
+          <div class="license-org-desc">Corporate Affairs Commission — Registered Company, RC No. Filed &amp; Current
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Registered</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="300">
+          <div class="license-logo-circle">
+            <i class="bi bi-bank"></i>
+          </div>
+          <div class="license-org-name">CBN Escrow</div>
+          <div class="license-org-desc">Central Bank of Nigeria — Licensed Escrow Partner for Client Fund Protection
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Protected</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="400">
+          <div class="license-logo-circle">
+            <i class="bi bi-shield-fill-check"></i>
+          </div>
+          <div class="license-org-name">AML / EFCC</div>
+          <div class="license-org-desc">EFCC-Aligned AML/CFT Framework — Full KYC Verification on All Transactions</div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Compliant</div>
+        </div>
+
+      </div>
+
+      <!-- CTA Strip -->
+      <div
+        style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:44px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div>
+          <p style="font-size:0.92rem;color:var(--text-muted);line-height:1.7;max-width:560px;">
+            Transparency is our cornerstone. All our regulatory certificates, practising licences, and compliance
+            documentation are available for inspection upon request. We believe informed clients make confident
+            decisions.
+          </p>
+        </div>
+        <a href="{% url 'contact' %}" class="cta-primary" style="flex-shrink:0;">
+          Request Our Credentials <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================== BLOG POSTS ======================== -->
+  <section class="blog-section" id="insights">
+    <div data-reveal>
+      <div class="section-badge"><i class="bi bi-journal-richtext"></i> Insights &amp; Resources</div>
+      <h2 class="section-title-xl">From Our <em>Blog</em></h2>
+      <p class="section-subtitle">Expert perspectives on the Nigerian real estate market, investment trends, and
+        homeownership guides.</p>
+    </div>
+
+    <div class="blog-grid">
+
+      {% if latest_posts %}
+      {% for post in latest_posts %}
+      <a href="{{ post.get_absolute_url }}" class="blog-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="blog-img">
+          {% if post.image %}
+          <img src="{{ post.image.url }}" alt="{{ post.name }}" loading="lazy">
+          {% else %}
+          <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="{{ post.name }}"
+            loading="lazy">
+          {% endif %}
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">{{ post.category.name }}</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 6 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">{{ post.publish|date:"F j, Y" }}</div>
+          <div class="blog-title">{{ post.name }}</div>
+          <p class="blog-excerpt">{{ post.text|striptags|truncatewords:22 }}</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">{{ post.author.user.get_full_name|default:post.author.user.username }}</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+
+      {% else %}
+      <!-- Fallback static blog cards -->
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="100">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-9.webp' %}"
+            alt="Lagos Property Market Outlook 2025" loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Market Insights</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 6 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">February 14, 2025</div>
+          <div class="blog-title">Lagos Property Market Outlook: What Buyers Need to Know in 2025</div>
+          <p class="blog-excerpt">As supply constraints ease in Lekki and Ikoyi, smart investors are repositioning
+            portfolios. We break down the data, the opportunities, and the risks to watch.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Chukwuemeka Adeyemi</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="200">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-interior-4.webp' %}" alt="First-Time Buyer Guide Nigeria"
+            loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Buyer's Guide</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 8 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">January 28, 2025</div>
+          <div class="blog-title">The Complete First-Time Buyer's Guide to Property Ownership in Nigeria</div>
+          <p class="blog-excerpt">From documentation and due diligence to negotiation and perfection of title —
+            everything a first-time buyer needs to navigate Nigeria's real estate process with confidence.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Amara Oduola</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="300">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-10.webp' %}"
+            alt="Real Estate Investment Nigeria" loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Investment</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 7 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">January 10, 2025</div>
+          <div class="blog-title">Why Short-Let Properties Are Outperforming Traditional Rentals in Abuja</div>
+          <p class="blog-excerpt">The short-let market in Abuja's Maitama and Wuse II districts delivered an average 34%
+            higher yield than long-term rentals in 2024. Here's how to capitalise on this trend.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Damilola Fashola</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+      {% endif %}
+
+    </div>
+
+    <div style="text-align:center;margin-top:52px;" data-reveal>
+      <a href="{% url 'post_list' %}" class="cta-secondary" style="display:inline-flex;align-items:center;gap:10px;">
+        <i class="bi bi-journal-text"></i> View All Articles
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================== EVENTS GALLERY ======================== -->
+  <section class="events-section" id="events">
+    <div class="events-intro">
+      <div data-reveal>
+        <div class="section-badge"><i class="bi bi-camera-fill"></i> In The Community</div>
+        <h2 class="section-title-xl">Nestova <em>in Action</em></h2>
+        <p class="section-subtitle" style="margin-top:12px;">Behind every deal is a story. A glimpse into our property
+          launches, client events, open houses, and community initiatives.</p>
+      </div>
+      <a href="{% url 'about' %}" class="cta-secondary" data-reveal
+        style="display:inline-flex;align-items:center;gap:10px;flex-shrink:0;">
+        <i class="bi bi-calendar-event"></i> See All Events
+      </a>
+    </div>
+
+    <div class="events-grid" data-reveal>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real2.jpg' %}"
+          alt="Nestova Property Launch — Lekki Phase 1" loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Grand Property Launch — Lekki Phase 1</div>
+          <div class="event-date">November 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real3.jpg' %}" alt="VIP Open House — Victoria Island"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">VIP Open House — Victoria Island Penthouse</div>
+          <div class="event-date">October 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real4.jpg' %}" alt="Investor Forum — Abuja"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nestova Investor Forum — Abuja Hilton</div>
+          <div class="event-date">September 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real5.jpg' %}" alt="Client Appreciation Night 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Client Appreciation Night 2024</div>
+          <div class="event-date">August 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real6.jpg' %}" alt="Ikoyi Development Showcase"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Ikoyi Premium Development Showcase</div>
+          <div class="event-date">July 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real7.jpg' %}" alt="First-Time Buyer Workshop"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">First-Time Buyer Workshop — Lagos</div>
+          <div class="event-date">June 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real9.jpg' %}" alt="Banana Island Site Tour"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Exclusive Banana Island Site Tour</div>
+          <div class="event-date">May 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real8.jpg' %}" alt="Real Estate Awards Gala 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nigerian Real Estate Awards Gala 2024</div>
+          <div class="event-date">April 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="eventsLightbox" onclick="closeLightbox(event)">
+    <div class="lb-inner">
+      <img id="lbImg" src="" alt="Event photo">
+      <button class="lb-close" onclick="closeLightbox()" aria-label="Close lightbox">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================== PARTNERS / TRUSTED BY ======================== -->
+  <section class="partners-section cta-band aria-label=" Our Partners">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:56px;" data-reveal>
+        <div class="section-eyebrow"><span>Trusted Partners</span></div>
+        <h2 class="section-title" style="color: white;">Companies That <em>Trust</em> Us</h2>
+        <p class="section-sub" style="">We collaborate with Nigeria's most respected real estate institutions,
+          developers, and
+          financial organisations to deliver excellence at every stage.</p>
+      </div>
+    </div>
+
+    <!-- Row 1 — scrolls left -->
+    <div class="partners-track-wrap">
+      <div class="partners-track" id="partnersRow1">
+        <!-- set duplicated for seamless loop -->
+        <a href="#" class="partner-card" aria-label="Knight Frank Nigeria">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/cubana.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Consultancy</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="JLL Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/Aidens.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Real Estate Services</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="UPDC Plc">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/adozil.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Development</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Lekki Gardens">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/billion.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Luxury Estates</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Brains &amp; Hammers">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/fidelity.webp' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Integrated Developer</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Grenadines Homes">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/harmony.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Premium Residences</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Prestige Realty">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/lagos.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Brokerage &amp; Advisory</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Veritasi Homes">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/zylus.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Urban Development</div>
+          </div>
+        </a>
+        <!-- duplicates for seamless loop -->
+        <a href="#" class="partner-card" aria-label="Knight Frank Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/zental.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Consultancy</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="JLL Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/nedcomoks.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Real Estate Services</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="UPDC Plc">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/regnarock.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Development</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Lekki Gardens">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/propertyylinks.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Luxury Estates</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Row 2 — scrolls right (reverse) -->
+   
+  </section>
+
+  <!-- ======================== TOP EXCOS ======================== -->
+  <section class="excos-section" id="excos" aria-label="Our Top Excos">
+    <div class="container">
+
+      <!-- Heading -->
+      <div style="text-align:center; margin-bottom:60px;" data-reveal>
+        <div class="section-eyebrow"><span>Meet The Team</span></div>
+        <h2 class="section-title" style="color: white">Our Top <em>Excos</em></h2>
+        <p class="section-sub" style="max-width:620px; margin:0 auto; color: white;">
+          The seasoned executives driving Nestova's vision forward — a team
+          of proven leaders committed to redefining Nigerian real estate.
+        </p>
+      </div>
+
+      <!-- 12 Exec Cards — 4 per row on lg+, 3 on md, 2 on sm, 1 on xs -->
+      <div class="row">
+
+        <!-- 1 -->
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/HRM.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Hrm Oba Akintoye Adeoye</div>
+              <div class="exco-dept" style="color: white;">President &amp; Chairman REDAN Council</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/adekunle.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Abikoye Emmanuel Adekunle</div>
+              <div class="exco-dept" style="color: white;">President BRG</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/effc.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">EFCC Unit</div>
+              <div class="exco-name" style="color: white;">Oseni Kazeem </div>
+              <div class="exco-dept" style="color: white;">Compliance &amp; Enforcement Unit</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/sahed.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Saheed Mosadoluwa Audullahi</div>
+              <div class="exco-dept" style="color: white;">Gardens&amp; Estate Development Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/tony.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chairman Of REDEAN Lagos Chapter</div>
+              <div class="exco-name" style="color: white;">Dr.Tony Aspire Kolewole</div>
+              <div class="exco-dept" style="color: white;">REDEAN Lagos Chapter</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/ernest.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Ernest Bassy</div>
+              <div class="exco-dept" style="color: white;">Ologiri Concept And Properties</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/obi.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Obi Cubana</div>
+              <div class="exco-dept" style="color: white;">Cubana Groups</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/okonkwo.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Kennedy Okonkwo</div>
+              <div class="exco-dept" style="color: white;">Nedcomoaks Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/segun-2.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Segun Philips</div>
+              <div class="exco-dept" style="color: white;">Sabreworks Realty Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/abiodun.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr. Abiodun Afolayan</div>
+              <div class="exco-dept" style="color: white;">Zenytal Properties Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/endurance.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Endurance Cletus Agonor</div>
+              <div class="exco-dept" style="color: white;">ACEROYAL Estate Ltd</div>
+            </div>
+          </div>
+        </div>
+        
+
+        
+        
+
+        
+
+        
+
+      
+        
+
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  </section>
+
+</main>
+
+
+<!-- ======================== HERO CAROUSEL JS ======================== -->
+<script>
+  (function () {
+    const slides = document.querySelectorAll('.hero-slide');
+    const totalEl = document.getElementById('totalSlides');
+    const currentEl = document.getElementById('currentSlide');
+    const dotsWrap = document.getElementById('heroDots');
+    let current = 0;
+    let autoTimer;
+
+    if (!slides.length) return;
+
+    totalEl.textContent = slides.length;
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      dotsWrap.children[current].classList.remove('active');
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsWrap.children[current].classList.add('active');
+      currentEl.textContent = current + 1;
+      resetAuto();
+    }
+
+    function resetAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => goTo(current + 1), 7000);
+    }
+
+    document.getElementById('heroPrev').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('heroNext').addEventListener('click', () => goTo(current + 1));
+
+    resetAuto();
+
+    // Touch swipe
+    let startX = 0;
+    const track = document.querySelector('.carousel-3d-track');
+    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1);
+    }, { passive: true });
+  })();
+
+  // Toggle mute
+  let muted = true;
+  function toggleMute() {
+    const iframe = document.getElementById('yt-player');
+    const btn = document.getElementById('unmute-btn');
+    if (!iframe) return;
+    const src = iframe.src;
+    if (muted) {
+      iframe.src = src.replace('&mute=1', '&mute=0');
+      btn.textContent = '🔊';
+    } else {
+      iframe.src = src.replace('&mute=0', '&mute=1');
+      btn.textContent = '🔇';
+    }
+    muted = !muted;
+  }
+
+  // ── State → City cascade ────────────────────────────────────────────────
+  (function () {
+    const stateSelect = document.getElementById('state_type');
+    const citySelect  = document.getElementById('city_type');
+
+    if (!stateSelect || !citySelect) return;
+
+    stateSelect.addEventListener('change', function () {
+      const stateId = this.value;
+
+      // Reset city dropdown immediately
+      citySelect.innerHTML = '<option value="">Loading…</option>';
+      citySelect.disabled = true;
+
+      if (!stateId) {
+        citySelect.innerHTML = '<option value="">Select State First</option>';
+        return;
+      }
+
+      fetch(`/api/get-cities/?state_id=${encodeURIComponent(stateId)}`)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
+        .then(function (data) {
+          citySelect.innerHTML = '<option value="">Any City</option>';
+          if (data.cities && data.cities.length > 0) {
+            data.cities.forEach(function (city) {
+              const opt = document.createElement('option');
+              opt.value = city.id;
+              opt.textContent = city.name;
+              citySelect.appendChild(opt);
+            });
+            citySelect.disabled = false;
+          } else {
+            citySelect.innerHTML = '<option value="">No Cities Found</option>';
+          }
+        })
+        .catch(function () {
+          citySelect.innerHTML = '<option value="">Error loading cities</option>';
+        });
+    });
+  })();
+
+  // ── Search tab switching ── wires hidden listing_type input
+  document.querySelectorAll('.search-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const typeInput = document.getElementById('listingTypeInput');
+      if (typeInput) typeInput.value = tab.dataset.type || 'buy';
+    });
+  });
+
+  // ── Events lightbox ──
+  function openLightbox(cell) {
+    const img = cell.querySelector('img');
+    if (!img) return;
+    document.getElementById('lbImg').src = img.src;
+    document.getElementById('eventsLightbox').classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(e) {
+    if (e && e.target !== document.getElementById('eventsLightbox') && !e.target.closest('.lb-close')) return;
+    document.getElementById('eventsLightbox').classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('eventsLightbox').classList.remove('lb-open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Make openLightbox / closeLightbox available globally
+  window.openLightbox = openLightbox;
+  window.closeLightbox = closeLightbox;
+
+  // Reveal on scroll
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+  // Property card 3D tilt effect
+  document.querySelectorAll('.prop-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+      card.style.transform = `translateY(-14px) rotateX(${y}deg) rotateY(${x}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>
+
+{% endblock %}

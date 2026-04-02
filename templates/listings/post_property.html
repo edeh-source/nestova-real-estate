@@ -1,0 +1,1626 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+
+    /* ==================== CSS VARIABLES ==================== */
+    :root {
+        /* Premium Color Palette */
+        --primary-hue: 155;
+        --primary-sat: 70%;
+        --primary-light: 45%;
+
+        --primary-color: hsl(var(--primary-hue), var(--primary-sat), var(--primary-light));
+        --primary-light: hsl(var(--primary-hue), var(--primary-sat), 55%);
+        --primary-dark: hsl(var(--primary-hue), var(--primary-sat), 35%);
+        --primary-gradient: linear-gradient(135deg, hsl(155, 70%, 45%) 0%, hsl(155, 65%, 35%) 100%);
+
+        --accent-hue: 220;
+        --accent-color: hsl(var(--accent-hue), 80%, 60%);
+        --accent-gradient: linear-gradient(135deg, hsl(220, 80%, 60%) 0%, hsl(260, 75%, 65%) 100%);
+
+        /* Neutral Colors */
+        --surface-light: hsl(0, 0%, 98%);
+        --surface-dark: hsl(220, 15%, 12%);
+        --text-primary: hsl(220, 15%, 15%);
+        --text-secondary: hsl(220, 10%, 45%);
+        --border-color: hsl(220, 15%, 90%);
+
+        /* Glassmorphism */
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --glass-border: rgba(255, 255, 255, 0.3);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+        --shadow-primary: 0 8px 24px rgba(46, 202, 106, 0.25);
+
+        /* Spacing */
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 1.5rem;
+        --spacing-lg: 2rem;
+        --spacing-xl: 3rem;
+
+        /* Border Radius */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 20px;
+        --radius-xl: 28px;
+
+        /* Transitions */
+        --transition-fast: 150ms ease;
+        --transition-base: 250ms ease;
+        --transition-slow: 400ms ease;
+    }
+
+    /* ==================== GLOBAL STYLES ==================== */
+    .post-property-wrapper {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(220, 70%, 98%) 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .post-property-wrapper h1,
+    .post-property-wrapper h2,
+    .post-property-wrapper h3,
+    .post-property-wrapper h4,
+    .post-property-wrapper h5,
+    .post-property-wrapper h6 {
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* ==================== BREADCRUMBS ==================== */
+    .modern-breadcrumbs {
+        background: transparent;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .modern-breadcrumbs .breadcrumb {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.5rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 0;
+    }
+
+    .modern-breadcrumbs .breadcrumb-item a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
+
+    .modern-breadcrumbs .breadcrumb-item a:hover {
+        color: var(--primary-color);
+    }
+
+    .modern-breadcrumbs .breadcrumb-item.active {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* ==================== WIZARD CONTAINER ==================== */
+    .wizard-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .wizard-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ==================== WIZARD HEADER ==================== */
+    .wizard-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .wizard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0) translateX(0);
+        }
+
+        50% {
+            transform: translateY(-20px) translateX(10px);
+        }
+    }
+
+    .wizard-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wizard-header p {
+        margin: 0;
+        opacity: 0.95;
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ==================== PROGRESS BAR ==================== */
+    .wizard-progress {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--border-color);
+        z-index: 0;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        height: 3px;
+        background: var(--primary-gradient);
+        transition: width var(--transition-slow);
+        z-index: 1;
+    }
+
+    .progress-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        flex: 1;
+    }
+
+    .step-circle {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        transition: all var(--transition-base);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .progress-step.active .step-circle {
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
+        color: white;
+        transform: scale(1.15);
+        box-shadow: var(--shadow-primary);
+    }
+
+    .progress-step.completed .step-circle {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .progress-step.completed .step-circle i {
+        display: block;
+    }
+
+    .step-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        transition: color var(--transition-base);
+    }
+
+    .progress-step.active .step-label {
+        color: var(--primary-color);
+    }
+
+    /* ==================== FORM STEPS ==================== */
+    .wizard-body {
+        padding: 2.5rem 2rem;
+    }
+
+    .form-step {
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .step-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .step-title i {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+    }
+
+    .step-description {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    /* ==================== FORM CONTROLS ==================== */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        transition: all var(--transition-base);
+        background: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(46, 202, 106, 0.1);
+        outline: none;
+    }
+
+    .form-control:hover,
+    .form-select:hover {
+        border-color: var(--primary-light);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    /* ==================== AMENITIES GRID ==================== */
+    .amenities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .amenity-card {
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        position: relative;
+    }
+
+    .amenity-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .amenity-card input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .amenity-card input[type="checkbox"]:checked+.amenity-content {
+        color: var(--primary-color);
+    }
+
+    .amenity-card input[type="checkbox"]:checked~.check-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .amenity-card.selected {
+        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(155, 70%, 98%) 100%);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .amenity-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color var(--transition-base);
+    }
+
+    .amenity-content i {
+        font-size: 1.75rem;
+        color: var(--primary-color);
+    }
+
+    .amenity-content span {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .check-indicator {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 24px;
+        height: 24px;
+        background: var(--primary-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        opacity: 0;
+        transform: scale(0);
+        transition: all var(--transition-base);
+    }
+
+    /* ==================== FILE UPLOAD ==================== */
+    .upload-zone {
+        border: 3px dashed var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        background: white;
+        position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, hsl(155, 70%, 98%) 0%, hsl(155, 70%, 99%) 100%);
+        transform: scale(1.02);
+    }
+
+    .upload-zone i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .upload-zone h4 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .upload-zone p {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .upload-zone input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+
+    .file-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .preview-item {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .preview-remove {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 28px;
+        height: 28px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+    }
+
+    .preview-remove:hover {
+        background: #dc3545;
+    }
+
+    /* ==================== WIZARD NAVIGATION ==================== */
+    .wizard-footer {
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-wizard {
+        padding: 0.875rem 2rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        border: none;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-wizard-primary {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-wizard-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-wizard-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-wizard-secondary {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+    .btn-wizard-secondary:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .btn-wizard-success {
+        background: linear-gradient(135deg, hsl(155, 70%, 45%) 0%, hsl(155, 65%, 35%) 100%);
+        color: white;
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-wizard-success:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-primary);
+    }
+
+    /* ==================== RESPONSIVE DESIGN ==================== */
+    @media (max-width: 768px) {
+        .wizard-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .wizard-progress {
+            padding: 1.5rem 1rem;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            font-size: 0.8rem;
+        }
+
+        .wizard-body {
+            padding: 2rem 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+        }
+
+        .amenities-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .wizard-footer {
+            flex-direction: column-reverse;
+        }
+
+        .btn-wizard {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .progress-steps {
+            gap: 0;
+        }
+
+        .step-label {
+            display: none;
+        }
+
+        .amenities-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .upload-zone {
+            padding: 2rem 1rem;
+        }
+    }
+
+    /* ==================== VALIDATION & ERRORS ==================== */
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    .is-invalid~.invalid-feedback {
+        display: block;
+    }
+
+    /* ==================== SUCCESS ANIMATION ==================== */
+    .success-checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .success-checkmark .check-icon {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid var(--primary-color);
+        animation: scaleUp 0.5s ease;
+    }
+
+    .success-checkmark .check-icon::before {
+        top: 3px;
+        left: -2px;
+        width: 30px;
+        transform-origin: 100% 50%;
+        border-radius: 100px 0 0 100px;
+    }
+
+    .success-checkmark .check-icon::after {
+        top: 0;
+        left: 30px;
+        width: 60px;
+        transform-origin: 0 50%;
+        border-radius: 0 100px 100px 0;
+        animation: rotateCircle 4.25s ease-in;
+    }
+
+    .success-checkmark .icon-line {
+        height: 5px;
+        background-color: var(--primary-color);
+        display: block;
+        border-radius: 2px;
+        position: absolute;
+        z-index: 10;
+    }
+
+    .success-checkmark .icon-line.line-tip {
+        top: 43px;
+        left: 14px;
+        width: 25px;
+        transform: rotate(45deg);
+        animation: iconLineTip 0.75s;
+    }
+
+    .success-checkmark .icon-line.line-long {
+        top: 38px;
+        right: 8px;
+        width: 47px;
+        transform: rotate(-45deg);
+        animation: iconLineLong 0.75s;
+    }
+
+    @keyframes scaleUp {
+        0% {
+            transform: scale(0);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes iconLineTip {
+        0% {
+            width: 0;
+            left: 1px;
+            top: 19px;
+        }
+
+        54% {
+            width: 0;
+            left: 1px;
+            top: 19px;
+        }
+
+        70% {
+            width: 50px;
+            left: -8px;
+            top: 37px;
+        }
+
+        84% {
+            width: 17px;
+            left: 21px;
+            top: 48px;
+        }
+
+        100% {
+            width: 25px;
+            left: 14px;
+            top: 43px;
+        }
+    }
+
+    @keyframes iconLineLong {
+        0% {
+            width: 0;
+            right: 46px;
+            top: 54px;
+        }
+
+        65% {
+            width: 0;
+            right: 46px;
+            top: 54px;
+        }
+
+        84% {
+            width: 55px;
+            right: 0px;
+            top: 35px;
+        }
+
+        100% {
+            width: 47px;
+            right: 8px;
+            top: 38px;
+        }
+    }
+</style>
+
+<div class="post-property-wrapper">
+    <!-- Breadcrumbs -->
+    <section class="modern-breadcrumbs">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{% url 'listings:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Post Property</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Wizard Container -->
+    <div class="wizard-container">
+        <div class="wizard-card">
+            <!-- Header -->
+            <div class="wizard-header">
+                <h1><i class="bi bi-building-{% if is_edit %}check{% else %}add{% endif %} me-2"></i>{% if is_edit %}Edit Property{% else %}List Your Property{% endif %}</h1>
+                <p>{% if is_edit %}Update your property details{% else %}Follow these simple steps to showcase your
+                    property to thousands of potential buyers{% endif %}</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="wizard-progress">
+                <div class="progress-steps">
+                    <div class="progress-line" id="progressLine"></div>
+
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Basic Info</div>
+                    </div>
+
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Location</div>
+                    </div>
+
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Features</div>
+                    </div>
+
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Media</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" enctype="multipart/form-data" id="propertyForm">
+                {% csrf_token %}
+
+                <div class="wizard-body">
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step active" data-step="1">
+                        <h3 class="step-title"><i class="bi bi-info-circle-fill"></i>Basic Information</h3>
+                        <p class="step-description">Let's start with the essential details of your property</p>
+
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        <i class="bi bi-tag-fill text-primary"></i>Property Title *
+                                    </label>
+                                    {{ form.title }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: "Luxury 4-Bedroom Duplex in
+                                        Lekki Phase 1" or "Modern 3-Bed Apartment in Victoria Island"</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.property_type.id_for_label }}" class="form-label">
+                                        <i class="bi bi-house-fill text-primary"></i>Property Type *
+                                    </label>
+                                    {{ form.property_type }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
+                                        the type that best matches your property</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.status.id_for_label }}" class="form-label">
+                                        <i class="bi bi-toggles text-primary"></i>Listing Status *
+                                    </label>
+                                    {{ form.status }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Are you
+                                        selling or renting this property?</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.price.id_for_label }}" class="form-label">
+                                        <i class="bi bi-currency-exchange text-primary"></i>Price (₦) *
+                                    </label>
+                                    {{ form.price }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: 45000000 or 45000000.00 (for
+                                        ₦45M). Enter numbers without commas</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.square_feet.id_for_label }}" class="form-label">
+                                        <i class="bi bi-aspect-ratio text-primary"></i>Total Area (sq ft) *
+                                    </label>
+                                    {{ form.square_feet }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: 2500 (for a 2,500 sq ft
+                                        property)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Location & Details -->
+                    <div class="form-step" data-step="2">
+                        <h3 class="step-title"><i class="bi bi-geo-alt-fill"></i>Location & Details</h3>
+                        <p class="step-description">Help buyers find your property with accurate location information
+                        </p>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label">
+                                        <i class="bi bi-map text-primary"></i>State *
+                                    </label>
+                                    {{ form.state }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
+                                        the state where the property is located</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label">
+                                        <i class="bi bi-pin-map text-primary"></i>City *
+                                    </label>
+                                    {{ form.city }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
+                                        the city within the chosen state</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.address.id_for_label }}" class="form-label">
+                                        <i class="bi bi-signpost text-primary"></i>Full Address *
+                                    </label>
+                                    {{ form.address }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: "15 Admiralty Way, Lekki Phase
+                                        1" or "Plot 234, Gwarinpa Estate"</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.zip_code.id_for_label }}" class="form-label">
+                                        <i class="bi bi-mailbox text-primary"></i>Zip/Postal Code
+                                    </label>
+                                    {{ form.zip_code }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: 101245 (if available for your
+                                        area)</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.year_built.id_for_label }}" class="form-label">
+                                        <i class="bi bi-calendar-event text-primary"></i>Year Built
+                                    </label>
+                                    {{ form.year_built }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example: 2020 or 2018 (year of
+                                        construction)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Features & Amenities -->
+                    <div class="form-step" data-step="3">
+                        <h3 class="step-title"><i class="bi bi-stars"></i>Features & Amenities</h3>
+                        <p class="step-description">Highlight what makes your property special</p>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.bedrooms.id_for_label }}" class="form-label">
+                                        <i class="bi bi-door-closed text-primary"></i>Bedrooms *
+                                    </label>
+                                    {{ form.bedrooms }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
+                                        of bedrooms (e.g., 4)</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.bathrooms.id_for_label }}" class="form-label">
+                                        <i class="bi bi-droplet text-primary"></i>Bathrooms *
+                                    </label>
+                                    {{ form.bathrooms }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
+                                        of bathrooms (e.g., 5)</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.parking_spaces.id_for_label }}" class="form-label">
+                                        <i class="bi bi-car-front text-primary"></i>Parking Spaces
+                                    </label>
+                                    {{ form.parking_spaces }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
+                                        of parking spaces (e.g., 2)</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.lot_size.id_for_label }}" class="form-label">
+                                        <i class="bi bi-grid-3x3 text-primary"></i>Lot Size (sq ft)
+                                    </label>
+                                    {{ form.lot_size }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Total
+                                        land size in sq ft (e.g., 3500)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="form-label mb-3"><i class="bi bi-check2-square text-primary"></i> Select
+                            Amenities</label>
+                        <div class="amenities-grid">
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.has_garage.id_for_label }}')">
+                                {{ form.has_garage }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-car-garage"></i>
+                                    <span>Garage</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_pool.id_for_label }}')">
+                                {{ form.has_pool }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-water"></i>
+                                    <span>Pool</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.has_garden.id_for_label }}')">
+                                {{ form.has_garden }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-flower1"></i>
+                                    <span>Garden</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.has_security.id_for_label }}')">
+                                {{ form.has_security }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span>Security</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_gym.id_for_label }}')">
+                                {{ form.has_gym }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-bicycle"></i>
+                                    <span>Gym</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.has_balcony.id_for_label }}')">
+                                {{ form.has_balcony }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-sunset"></i>
+                                    <span>Balcony</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.is_furnished.id_for_label }}')">
+                                {{ form.is_furnished }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-lamp"></i>
+                                    <span>Furnished</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_ac.id_for_label }}')">
+                                {{ form.has_ac }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-snow"></i>
+                                    <span>AC</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.has_heating.id_for_label }}')">
+                                {{ form.has_heating }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-thermometer-sun"></i>
+                                    <span>Heating</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+
+                            <div class="amenity-card"
+                                onclick="toggleAmenity(this, '{{ form.pet_friendly.id_for_label }}')">
+                                {{ form.pet_friendly }}
+                                <div class="amenity-content">
+                                    <i class="bi bi-emoji-heart-eyes"></i>
+                                    <span>Pet Friendly</span>
+                                </div>
+                                <div class="check-indicator"><i class="bi bi-check"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Media & Description -->
+                    <div class="form-step" data-step="4">
+                        <h3 class="step-title"><i class="bi bi-images"></i>Media & Description</h3>
+                        <p class="step-description">Add photos and details to make your listing stand out</p>
+
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        <i class="bi bi-text-paragraph text-primary"></i>Property Description *
+                                    </label>
+                                    {{ form.description }}
+                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Use the
+                                        rich text editor to describe key features, location benefits,
+                                        nearby amenities (schools, malls, hospitals), finishes, and what makes this
+                                        property special</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-camera-fill text-primary"></i>Primary Image (Featured) *
+                                    </label>
+                                    <div class="upload-zone" id="uploadZone">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <h4>Drag & Drop your primary image here</h4>
+                                        <p>or click to browse (JPG, PNG, max 5MB)</p>
+                                        {{ form.featured_image }}
+                                    </div>
+                                    <div class="file-preview" id="filePreview"></div>
+                                    {% if is_edit and property.featured_image %}
+                                    <div class="mt-3">
+                                        <p class="text-muted">Current primary image:</p>
+                                        <img src="{{ property.featured_image.url }}" alt="Current"
+                                            style="max-width: 200px; border-radius: 8px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-images text-primary"></i>Secondary Images (Gallery)
+                                    </label>
+                                    <div class="upload-zone" id="secondaryUploadZone">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <h4>Drag & Drop multiple images here</h4>
+                                        <p>or click to browse (JPG, PNG, max 5MB each)</p>
+                                        <input type="file" name="secondary_images" id="secondaryImages" multiple
+                                            accept="image/*"
+                                            style="position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;">
+                                    </div>
+                                    <div class="file-preview" id="secondaryPreview"></div>
+                                    {% if is_edit and existing_images %}
+                                    <div class="mt-3">
+                                        <p class="text-muted">Existing secondary images:</p>
+                                        <div class="file-preview">
+                                            {% for img in existing_images %}
+                                            <div class="preview-item">
+                                                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="{{ form.video_url.id_for_label }}" class="form-label">
+                                        <i class="bi bi-play-circle text-primary"></i>YouTube Video URL (Optional)
+                                    </label>
+                                    {{ form.video_url }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example:
+                                        https://youtube.com/watch?v=abc123 or https://youtu.be/abc123</small>
+                                    <div id="videoPreview" class="mt-3" style="display: none;">
+                                        <p class="text-muted mb-2">Video Preview:</p>
+                                        <div class="ratio ratio-16x9" style="max-width: 560px;">
+                                            <iframe id="youtubeEmbed" src="" frameborder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.virtual_tour_url.id_for_label }}" class="form-label">
+                                        <i class="bi bi-badges-3d text-primary"></i>Virtual Tour URL (Optional)
+                                    </label>
+                                    {{ form.virtual_tour_url }}
+                                    <small class="text-muted d-block mt-1"><i
+                                            class="bi bi-info-circle me-1"></i>Example:
+                                        https://my.matterport.com/show/?m=abc123 (360° virtual tour link)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="wizard-footer">
+                    <button type="button" class="btn-wizard btn-wizard-secondary" id="prevBtn" style="display: none;">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <div style="flex: 1;"></div>
+                    <button type="button" class="btn-wizard btn-wizard-primary" id="nextBtn">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn-wizard btn-wizard-success" id="submitBtn" style="display: none;">
+                        <i class="bi bi-check-circle me-2"></i> {% if is_edit %}Update Property{% else %}Publish
+                        Property{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== WIZARD STATE ====================
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    // ==================== DOM ELEMENTS ====================
+    const formSteps = document.querySelectorAll('.form-step');
+    const progressSteps = document.querySelectorAll('.progress-step');
+    const progressLine = document.getElementById('progressLine');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const propertyForm = document.getElementById('propertyForm');
+
+    // ==================== FUNCTIONS ====================
+    function updateWizard() {
+        // Update form steps
+        formSteps.forEach((step, index) => {
+            step.classList.toggle('active', index + 1 === currentStep);
+        });
+
+        // Update progress steps
+        progressSteps.forEach((step, index) => {
+            const stepNum = index + 1;
+            step.classList.toggle('active', stepNum === currentStep);
+            step.classList.toggle('completed', stepNum < currentStep);
+
+            // Update circle content for completed steps
+            const circle = step.querySelector('.step-circle');
+            if (stepNum < currentStep) {
+                circle.innerHTML = '<i class="bi bi-check"></i>';
+            } else {
+                circle.textContent = stepNum;
+            }
+        });
+
+        // Update progress line
+        const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        progressLine.style.width = progressPercent + '%';
+
+        // Update buttons
+        prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-flex';
+        nextBtn.style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
+        submitBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
+
+        // Smooth scroll to top
+        document.querySelector('.wizard-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function nextStep() {
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateWizard();
+            }
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateWizard();
+        }
+    }
+
+    function validateStep(step) {
+        const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        return isValid;
+    }
+
+    // ==================== AMENITY TOGGLE ====================
+    function toggleAmenity(card, checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        checkbox.checked = !checkbox.checked;
+        card.classList.toggle('selected', checkbox.checked);
+    }
+
+    // Make function global for onclick handlers
+    window.toggleAmenity = toggleAmenity;
+
+    // ==================== FILE UPLOAD ====================
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.querySelector('input[type="file"]');
+    const filePreview = document.getElementById('filePreview');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+            uploadZone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+            uploadZone.classList.remove('dragover');
+        }, false);
+    });
+
+    // Handle dropped files
+    uploadZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        handleFiles(files);
+    });
+
+    // Handle file input change
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+        filePreview.innerHTML = '';
+        [...files].forEach(previewFile);
+    }
+
+    function previewFile(file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+            const img = document.createElement('div');
+            img.className = 'preview-item';
+            img.innerHTML = `
+                <img src="${reader.result}" alt="Preview">
+                <button type="button" class="preview-remove" onclick="removePreview(this)">
+                    <i class="bi bi-x"></i>
+                </button>
+            `;
+            filePreview.appendChild(img);
+        }
+    }
+
+    window.removePreview = function (btn) {
+        btn.closest('.preview-item').remove();
+        fileInput.value = '';
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    nextBtn.addEventListener('click', nextStep);
+    prevBtn.addEventListener('click', prevStep);
+
+    // Remove invalid class on input
+    document.querySelectorAll('.form-control, .form-select').forEach(field => {
+        field.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+
+    // Initialize amenity checkboxes state
+    document.querySelectorAll('.amenity-card input[type="checkbox"]').forEach(checkbox => {
+        const card = checkbox.closest('.amenity-card');
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        }
+    });
+
+    // Initialize wizard
+    updateWizard();
+
+    // ==================== FORM ENHANCEMENT ====================
+    // Add Bootstrap classes to all form controls
+    document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="url"], textarea').forEach(el => {
+        if (!el.classList.contains('form-control')) {
+            el.classList.add('form-control');
+        }
+        el.setAttribute('placeholder', el.getAttribute('placeholder') || 'Enter ' + (el.previousElementSibling?.textContent || 'value'));
+    });
+
+    document.querySelectorAll('select').forEach(el => {
+        if (!el.classList.contains('form-select')) {
+            el.classList.add('form-select');
+        }
+    });
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+        if (!el.classList.contains('form-check-input')) {
+            el.classList.add('form-check-input');
+        }
+    });
+
+    // ==================== SECONDARY IMAGES UPLOAD ====================
+    const secondaryUploadZone = document.getElementById('secondaryUploadZone');
+    const secondaryImagesInput = document.getElementById('secondaryImages');
+    const secondaryPreview = document.getElementById('secondaryPreview');
+
+    if (secondaryUploadZone && secondaryImagesInput) {
+        // Prevent default drag behaviors for secondary upload
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            secondaryUploadZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight drop zone
+        ['dragenter', 'dragover'].forEach(eventName => {
+            secondaryUploadZone.addEventListener(eventName, () => {
+                secondaryUploadZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            secondaryUploadZone.addEventListener(eventName, () => {
+                secondaryUploadZone.classList.remove('dragover');
+            }, false);
+        });
+
+        // Handle dropped files
+        secondaryUploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            secondaryImagesInput.files = files;
+            handleSecondaryFiles(files);
+        });
+
+        // Handle file input change
+        secondaryImagesInput.addEventListener('change', (e) => {
+            handleSecondaryFiles(e.target.files);
+        });
+
+        function handleSecondaryFiles(files) {
+            secondaryPreview.innerHTML = '';
+            [...files].forEach(previewSecondaryFile);
+        }
+
+        function previewSecondaryFile(file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const img = document.createElement('div');
+                img.className = 'preview-item';
+                img.innerHTML = `
+                    <img src="${reader.result}" alt="Preview">
+                    <button type="button" class="preview-remove" onclick="removeSecondaryPreview(this)">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+                secondaryPreview.appendChild(img);
+            }
+        }
+
+        window.removeSecondaryPreview = function (btn) {
+            btn.closest('.preview-item').remove();
+        }
+    }
+
+    // ==================== YOUTUBE VIDEO PREVIEW ====================
+    const videoUrlInput = document.querySelector('input[name="video_url"]');
+    const videoPreview = document.getElementById('videoPreview');
+    const youtubeEmbed = document.getElementById('youtubeEmbed');
+
+    if (videoUrlInput && videoPreview && youtubeEmbed) {
+        // Extract YouTube video ID from URL
+        function extractYouTubeID(url) {
+            if (!url) return null;
+
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+                /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+            ];
+
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+
+            // Check if it's already just the ID
+            if (url.length === 11 && /^[a-zA-Z0-9_-]+$/.test(url)) {
+                return url;
+            }
+
+            return null;
+        }
+
+        // Update video preview
+        function updateVideoPreview() {
+            const url = videoUrlInput.value.trim();
+            const videoId = extractYouTubeID(url);
+
+            if (videoId) {
+                youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}`;
+                videoPreview.style.display = 'block';
+            } else {
+                videoPreview.style.display = 'none';
+                youtubeEmbed.src = '';
+            }
+        }
+
+        // Listen for input changes
+        videoUrlInput.addEventListener('input', updateVideoPreview);
+        videoUrlInput.addEventListener('blur', updateVideoPreview);
+
+        // Initialize on page load if there's already a value
+        if (videoUrlInput.value) {
+            updateVideoPreview();
+        }
+    }
+</script>
+
+<!-- CKEditor Script -->
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+    // Initialize CKEditor for description field
+    document.addEventListener('DOMContentLoaded', function () {
+        const descriptionTextarea = document.querySelector('textarea[name="description"]');
+        if (descriptionTextarea && typeof CKEDITOR !== 'undefined') {
+            CKEDITOR.replace(descriptionTextarea, {
+                height: 300,
+                toolbar: [
+                    { name: 'document', items: ['Source'] },
+                    { name: 'clipboard', items: ['Undo', 'Redo'] },
+                    { name: 'editing', items: ['Find', 'Replace'] },
+                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
+                    { name: 'links', items: ['Link', 'Unlink'] },
+                    { name: 'insert', items: ['Table', 'HorizontalRule'] },
+                    { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
+                    { name: 'colors', items: ['TextColor', 'BGColor'] },
+                    { name: 'tools', items: ['Maximize'] }
+                ]
+            });
+        }
+    });
+</script>
+
+{% endblock %}

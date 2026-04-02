@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<!-- Service Form Custom CSS -->
+<link href="{% static 'assets/css/service_form.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- Add service-page class to body for background animation -->
+<script>document.body.classList.add('service-page');</script>
+
+<div class="service-container">
+    <div class="glass-card">
+        <!-- Form Header -->
+        <div class="form-header">
+            <h1>Interior Design Request</h1>
+            <p>Transform your space with our premium design services. Let's create something beautiful together.</p>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <!-- Progress Tracker -->
+            <div class="progress-container">
+                <div class="progress-bg"></div>
+                <div class="progress-step active" data-title="Client Info">1</div>
+                <div class="progress-step" data-title="Project Details">2</div>
+                <div class="progress-step" data-title="Preferences">3</div>
+                <div class="progress-step" data-title="Finalize">4</div>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert"
+                        style="border-radius: 12px; border: none;">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Multi-step Form -->
+            <form method="post" enctype="multipart/form-data" id="wizard-form">
+                {% csrf_token %}
+
+                <!-- Step 1: Client Information -->
+                <div class="form-step active" data-step="1">
+                    <h3 class="mb-4 text-center" style="font-weight: 600; color: var(--text-primary);">Who are we
+                        designing for?</h3>
+
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="form-floating">
+                                {{ form.full_name }}
+                                <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+                            </div>
+                            {% if form.full_name.errors %}
+                            <div class="text-danger small mt-1 ps-2">{{ form.full_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.email }}
+                                <label for="{{ form.email.id_for_label }}">Email Address</label>
+                            </div>
+                            {% if form.email.errors %}
+                            <div class="text-danger small mt-1 ps-2">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.phone }}
+                                <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                            </div>
+                            {% if form.phone.errors %}
+                            <div class="text-danger small mt-1 ps-2">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Project Details -->
+                <div class="form-step" data-step="2">
+                    <h3 class="mb-4 text-center" style="font-weight: 600; color: var(--text-primary);">Tell us about the
+                        property</h3>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label mb-2">Service Type</label>
+                            <div class="option-grid">
+                                <label class="option-card-label">
+                                    <input type="radio" name="service_type" value="residential" class="option-card-input" required
+                                        {% if form.service_type.value == 'residential' or not form.service_type.value %}checked{% endif %}>
+                                    <div class="option-card">
+                                        <i class="bi bi-house-heart"></i>
+                                        <span>Residential</span>
+                                    </div>
+                                </label>
+                                <label class="option-card-label">
+                                    <input type="radio" name="service_type" value="commercial" class="option-card-input" required
+                                        {% if form.service_type.value == 'commercial' %}checked{% endif %}>
+                                    <div class="option-card">
+                                        <i class="bi bi-building"></i>
+                                        <span>Commercial</span>
+                                    </div>
+                                </label>
+                                <label class="option-card-label">
+                                    <input type="radio" name="service_type" value="renovation" class="option-card-input" required
+                                        {% if form.service_type.value == 'renovation' %}checked{% endif %}>
+                                    <div class="option-card">
+                                        <i class="bi bi-tools"></i>
+                                        <span>Renovation</span>
+                                    </div>
+                                </label>
+                                <label class="option-card-label">
+                                    <input type="radio" name="service_type" value="consultation" class="option-card-input" required
+                                        {% if form.service_type.value == 'consultation' %}checked{% endif %}>
+                                    <div class="option-card">
+                                        <i class="bi bi-chat-dots"></i>
+                                        <span>Consultation</span>
+                                    </div>
+                                </label>
+                            </div>
+                            {% if form.service_type.errors %}
+                            <div class="text-danger small mt-2 text-center">{{ form.service_type.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.property_address }}
+                                <label for="{{ form.property_address.id_for_label }}">Property Address</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.property_size }}
+                                <label for="{{ form.property_size.id_for_label }}">Size (e.g. 2000 sq ft)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.budget_range }}
+                                <label for="{{ form.budget_range.id_for_label }}">Budget Range</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Design Preferences -->
+                <div class="form-step" data-step="3">
+                    <h3 class="mb-4 text-center" style="font-weight: 600; color: var(--text-primary);">Your Design
+                        Vision</h3>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.preferred_style }}
+                                <label for="{{ form.preferred_style.id_for_label }}">Preferred Style (Modern, Classic,
+                                    etc.)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.project_description }}
+                                <label for="{{ form.project_description.id_for_label }}">Describe your vision...</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.preferred_start_date }}
+                                <label for="{{ form.preferred_start_date.id_for_label }}">Preferred Start Date</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.project_deadline }}
+                                <label for="{{ form.project_deadline.id_for_label }}">Desired Completion Date</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Additional Info -->
+                <div class="form-step" data-step="4">
+                    <h3 class="mb-4 text-center" style="font-weight: 600; color: var(--text-primary);">Finishing Touches
+                    </h3>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label mb-2">Reference Images (Optional)</label>
+                            <label class="file-upload-wrapper" for="{{ form.reference_images.id_for_label }}">
+                                <div class="file-upload-content">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <p>Drag & Drop or Click to Upload</p>
+                                </div>
+                                {{ form.reference_images }}
+                            </label>
+                            <div class="file-preview"></div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.special_requirements }}
+                                <label for="{{ form.special_requirements.id_for_label }}">Any Special
+                                    Requirements?</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-nav btn-prev">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-nav btn-next">
+                        Next Step <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script src="{% static 'assets/js/service_form.js' %}"></script>
+{% endblock %}

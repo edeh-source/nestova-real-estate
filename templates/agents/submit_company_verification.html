@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .verify-form-section {
+        padding: 80px 0;
+        background: #f8fafc;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 12px 15px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .upload-box {
+        border: 2px dashed #e2e8f0;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .upload-box:hover {
+        border-color: #20c997;
+        background: #f0fdf4;
+    }
+
+    .upload-icon {
+        font-size: 32px;
+        color: #94a3b8;
+        margin-bottom: 10px;
+    }
+
+    .btn-submit {
+        background: #20c997;
+        color: white;
+        padding: 15px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        border: none;
+    }
+
+    .info-tip {
+        background: #fffbeb;
+        padding: 15px;
+        border-radius: 10px;
+        color: #92400e;
+        font-size: 14px;
+        margin-bottom: 30px;
+        display: flex;
+    }
+</style>
+
+<section class="verify-form-section">
+    <div class="container">
+        <div class="form-card" data-aos="fade-up">
+            <div class="form-header">
+                <h2>Company Business Verification</h2>
+                <p>Register your real estate firm to start listing properties</p>
+            </div>
+
+            <div class="info-tip">
+                <i class="bi bi-shield-lock-fill me-2 mt-1"></i>
+                <div>
+                    <strong>Required Documentation:</strong> You must upload a scanned copy of your CAC Registration
+                    Certificate
+                    and a recent utility bill (within the last 3 months) that matches the company's address.
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label">CAC Registration (RC) Number</label>
+                    <input type="text" name="rc_number" class="form-control" placeholder="RC1234567" required
+                        value="{{ company.rc_number|default:'' }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">CAC Certificate of Incorporation</label>
+                    <div class="upload-box" onclick="document.getElementById('cac_cert').click()">
+                        <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+                        <p class="mb-0" id="cac-text">Click to upload CAC Certificate (PDF or Image)</p>
+                        <input type="file" id="cac_cert" name="cac_certificate" hidden accept=".pdf,image/*" required
+                            onchange="updateFileName(this, 'cac-text')">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Recent Utility Bill</label>
+                    <div class="upload-box" onclick="document.getElementById('bill').click()">
+                        <div class="upload-icon"><i class="bi bi-receipt"></i></div>
+                        <p class="mb-0" id="bill-text">Upload address proof (e.g., NEPA bill)</p>
+                        <input type="file" id="bill" name="utility_bill" hidden accept=".pdf,image/*" required
+                            onchange="updateFileName(this, 'bill-text')">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit mt-3">Submit for Verification</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    function updateFileName(input, targetId) {
+        if (input.files && input.files[0]) {
+            document.getElementById(targetId).innerText = input.files[0].name;
+            document.getElementById(targetId).parentElement.style.borderColor = '#20c997';
+        }
+    }
+</script>
+{% endblock %}

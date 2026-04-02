@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Contacting Us</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .email-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .email-header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .email-body {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+
+        .message-text {
+            color: #495057;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .summary-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .summary-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .summary-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #495057;
+            display: inline-block;
+            width: 80px;
+        }
+
+        .summary-value {
+            color: #212529;
+        }
+
+        .highlight-box {
+            background-color: #e7f3ff;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: #004085;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .contact-info h4 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #495057;
+        }
+
+        .contact-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-item i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+        .contact-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .social-links {
+            margin-bottom: 15px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+            background-color: #667eea;
+            color: #ffffff;
+            border-radius: 50%;
+            margin: 0 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 5px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .email-body {
+                padding: 30px 20px;
+            }
+
+            .email-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>✉️ Thank You for Reaching Out!</h1>
+            <p>We've received your message</p>
+        </div>
+
+        <div class="email-body">
+            <div class="greeting">
+                Hello {{ name }},
+            </div>
+
+            <div class="message-text">
+                Thank you for contacting {{ site_name|default:"Nestova" }}! We appreciate you taking the time to reach
+                out to us.
+            </div>
+
+            <div class="message-text">
+                We have successfully received your message and our team will review it shortly. We strive to respond to
+                all inquiries within 24-48 hours during business days.
+            </div>
+
+            <div class="summary-box">
+                <h3>Your Message Summary:</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Subject:</span>
+                    <span class="summary-value">{{ subject }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Email:</span>
+                    <span class="summary-value">{{ email }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Submitted:</span>
+                    <span class="summary-value">{{ submitted_at|date:"F d, Y \a\t h:i A" }}</span>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p><strong>⏱️ Expected Response Time:</strong><br>
+                    Our team typically responds within 24-48 hours during business days (Monday-Friday).</p>
+            </div>
+
+            <div class="message-text">
+                If your inquiry is urgent, please don't hesitate to contact us directly using the information below.
+            </div>
+
+            <div class="contact-info">
+                <h4>Contact Information:</h4>
+                {% if contact_phone %}
+                <div class="contact-item">
+                    📞 Phone: <a href="tel:{{ contact_phone }}">{{ contact_phone }}</a>
+                </div>
+                {% endif %}
+                {% if contact_email %}
+                <div class="contact-item">
+                    📧 Email: <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+                </div>
+                {% endif %}
+                {% if contact_address %}
+                <div class="contact-item">
+                    📍 Address: {{ contact_address }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="message-text" style="margin-top: 25px;">
+                We look forward to assisting you!
+            </div>
+
+            <div class="message-text" style="margin-top: 15px;">
+                Best regards,<br>
+                <strong>The {{ site_name|default:"Nestova" }} Team</strong>
+            </div>
+        </div>
+
+        <div class="email-footer">
+            {% if social_links %}
+            <div class="social-links">
+                {% if social_links.facebook %}<a href="{{ social_links.facebook }}">f</a>{% endif %}
+                {% if social_links.twitter %}<a href="{{ social_links.twitter }}">𝕏</a>{% endif %}
+                {% if social_links.linkedin %}<a href="{{ social_links.linkedin }}">in</a>{% endif %}
+                {% if social_links.instagram %}<a href="{{ social_links.instagram }}">📷</a>{% endif %}
+            </div>
+            {% endif %}
+            <p class="footer-text">© {{ current_year }} {{ site_name|default:"Nestova" }}. All rights reserved.</p>
+            <p class="footer-text">This email was sent because you contacted us through our website.</p>
+        </div>
+    </div>
+</body>
+
+</html>

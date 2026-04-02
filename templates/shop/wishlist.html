@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    :root {
+        --emerald-green: #046A38;
+        --emerald-light: #058a48;
+        --metallic-gold: #D4AF37;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+        padding: 80px 0 50px;
+        color: white;
+    }
+
+    .wishlist-section {
+        padding: 60px 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 100vh;
+    }
+
+    .wishlist-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(4, 106, 56, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(4, 106, 56, 0.2);
+    }
+
+    .wishlist-image {
+        height: 250px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .btn-add-cart {
+        background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-add-cart:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(4, 106, 56, 0.4);
+    }
+
+    .btn-remove {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-icon {
+        font-size: 5rem;
+        color: #cbd5e0;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <h1 class="text-center"><i class="fas fa-heart me-3"></i>My Wishlist</h1>
+        <p class="text-center mb-0">Your saved items</p>
+    </div>
+</div>
+
+<section class="wishlist-section">
+    <div class="container">
+        {% if wishlist_items %}
+        <div class="row gy-4">
+            {% for item in wishlist_items %}
+            <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                <div class="card wishlist-card h-100">
+                    <img src="{{ item.product.main_image.url }}" class="wishlist-image" alt="{{ item.product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.product.name|truncatewords:5 }}</h5>
+                        <p class="text-success fw-bold fs-5">₦{{ item.product.get_price|floatformat:0 }}</p>
+                        <form method="post" action="{% url 'add_to_cart' item.product.id %}" class="mb-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-add-cart w-100">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'wishlist_add' item.product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-remove w-100">
+                                <i class="fas fa-trash me-2"></i>Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-heart-crack empty-icon"></i>
+            <h3>Your Wishlist is Empty</h3>
+            <p class="text-muted mb-4">Start adding products you love!</p>
+            <a href="{% url 'product_list' %}" class="btn btn-add-cart btn-lg">
+                <i class="fas fa-shopping-bag me-2"></i>Browse Products
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

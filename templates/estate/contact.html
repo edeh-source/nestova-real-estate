@@ -1,0 +1,753 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us — Nestova Real Estate{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   CONTACT PAGE — LUXURY GLASSMORPHISM DESIGN SYSTEM
+   ============================================================ */
+
+/* ---- PAGE HERO ---- */
+.page-hero {
+  position: relative;
+  margin-top: 80px;
+  padding: 90px 0 70px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #0A0A0F 0%, #0D1B3E 50%, #0A0A0F 100%);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
+  top: -200px; right: -150px;
+  pointer-events: none;
+}
+
+.page-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+}
+
+.page-hero-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.page-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.page-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.page-hero-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.5; }
+}
+
+.page-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.page-hero h1 em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.page-hero p {
+  color: rgba(255,255,255,0.5);
+  font-size: 1rem;
+  max-width: 560px;
+  margin: 0 auto 32px;
+  line-height: 1.75;
+}
+
+.breadcrumbs-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  font-size: 0.82rem;
+}
+
+.breadcrumbs-glass a {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.breadcrumbs-glass a:hover { color: var(--gold-light); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.2); font-size: 0.7rem; }
+.breadcrumbs-glass .current { color: var(--gold-light); font-weight: 500; }
+
+/* ============================================================
+   CONTACT SECTION
+   ============================================================ */
+.contact-section {
+  padding: 72px 0 100px;
+  background: var(--obsidian);
+  position: relative;
+}
+
+/* ============================================================
+   ALERT MESSAGES
+   ============================================================ */
+.msg-alert {
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.msg-alert.success {
+  background: rgba(30,140,80,0.15);
+  border: 1px solid rgba(60,200,110,0.3);
+  color: #6DFFA8;
+}
+
+.msg-alert.error,
+.msg-alert.danger {
+  background: rgba(220,50,50,0.15);
+  border: 1px solid rgba(220,50,50,0.3);
+  color: #ff8a8a;
+}
+
+.msg-alert.info,
+.msg-alert.warning {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold-light);
+}
+
+/* ============================================================
+   INFO CARDS
+   ============================================================ */
+.contact-info-card {
+  background: rgba(18,18,26,0.85);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 28px 24px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.35), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.contact-info-card:hover {
+  border-color: rgba(201,168,76,0.18);
+  transform: translateY(-5px);
+  box-shadow: 0 28px 56px rgba(0,0,0,0.4);
+}
+
+.contact-info-card:hover::before { opacity: 1; }
+
+.contact-icon-wrap {
+  width: 50px; height: 50px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.06));
+  border: 1px solid rgba(201,168,76,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--gold-light);
+  flex-shrink: 0;
+  transition: all 0.35s ease;
+}
+
+.contact-info-card:hover .contact-icon-wrap {
+  background: linear-gradient(135deg, rgba(201,168,76,0.28), rgba(201,168,76,0.1));
+  box-shadow: 0 6px 20px rgba(201,168,76,0.18);
+}
+
+.contact-info-text h4 {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.contact-info-text p {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ============================================================
+   MAP
+   ============================================================ */
+.map-wrap {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  margin: 56px 0;
+}
+
+.map-wrap iframe { display: block; width: 100%; }
+
+/* ============================================================
+   CONTACT FORM CARD
+   ============================================================ */
+.contact-form-card {
+  background: rgba(18,18,26,0.85);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 28px;
+  padding: 52px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
+}
+
+.contact-form-card::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.04), transparent 65%);
+  bottom: -150px; right: -100px;
+  pointer-events: none;
+}
+
+.form-card-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-card-eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.form-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+
+.form-card-title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.form-card-subtitle {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  margin-bottom: 40px;
+  line-height: 1.65;
+}
+
+/* Form groups */
+.form-field {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-field-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-wrap .field-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(255,255,255,0.22);
+  font-size: 0.95rem;
+  pointer-events: none;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.input-icon-wrap .field-icon.top-icon {
+  top: 14px;
+  align-self: flex-start;
+}
+
+.input-icon-wrap .form-control {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 13px 14px 13px 42px;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+}
+
+.input-icon-wrap .form-control::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+.input-icon-wrap .form-control:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,168,76,0.45);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.09);
+  color: #fff;
+}
+
+.input-icon-wrap .form-control:focus + .field-icon,
+.input-icon-wrap:focus-within .field-icon {
+  color: var(--gold);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 160px;
+}
+
+/* Status messages */
+.form-status {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.form-status.loading {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.45);
+}
+
+.form-status.success {
+  background: rgba(30,140,80,0.15);
+  border: 1px solid rgba(60,200,110,0.3);
+  color: #6DFFA8;
+}
+
+.form-status.error {
+  background: rgba(220,50,50,0.15);
+  border: 1px solid rgba(220,50,50,0.3);
+  color: #ff8a8a;
+}
+
+/* Submit button */
+.btn-submit-form {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 38px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  border-radius: 14px;
+  color: #0A0A0F;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(201,168,76,0.3);
+}
+
+.btn-submit-form::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.55s ease;
+}
+
+.btn-submit-form:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(201,168,76,0.45);
+}
+
+.btn-submit-form:hover::before { left: 100%; }
+
+.btn-submit-form:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================================
+   ANIMATION
+   ============================================================ */
+.info-card-anim {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.info-card-anim:nth-child(1) { animation-delay: 0.08s; }
+.info-card-anim:nth-child(2) { animation-delay: 0.16s; }
+.info-card-anim:nth-child(3) { animation-delay: 0.24s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 991px) {
+  .page-hero { padding: 70px 0 50px; }
+  .contact-form-card { padding: 36px 28px; }
+}
+
+@media (max-width: 767px) {
+  .contact-form-card { padding: 28px 20px; }
+  .contact-info-card { padding: 22px 18px; }
+}
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+<main class="main">
+
+  <!-- ============================================================
+       PAGE HERO
+       ============================================================ -->
+  <section class="page-hero">
+    <div class="page-hero-grain"></div>
+    <div class="container">
+      <div class="page-hero-content">
+        <div class="page-hero-eyebrow">Get In Touch</div>
+        <h1>Contact <em>Us</em></h1>
+        <p>Have questions or need assistance? We're here to help. Reach out to our team and we'll get back to you as soon as possible.</p>
+        <div class="breadcrumbs-glass">
+          <a href="{% url 'home' %}">Home</a>
+          <span class="sep">›</span>
+          <span class="current">Contact</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTACT SECTION
+       ============================================================ -->
+  <section class="contact-section" id="contact">
+    <div class="container">
+
+      <!-- Django Messages -->
+      {% if messages %}
+      {% for message in messages %}
+      <div class="msg-alert {{ message.tags }}" role="alert">
+        <i class="bi {% if 'success' in message.tags %}bi-check-circle-fill{% elif 'error' in message.tags or 'danger' in message.tags %}bi-x-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <!-- ---- INFO CARDS ---- -->
+      <div class="row gy-4 mb-0">
+
+        <div class="col-lg-4 info-card-anim">
+          <div class="contact-info-card">
+            <div class="contact-icon-wrap">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div class="contact-info-text">
+              <h4>Our Address</h4>
+              {% if contact_info %}
+              <p>
+                {{ contact_info.address_line1 }}
+                {% if contact_info.address_line2 %}<br>{{ contact_info.address_line2 }}{% endif %}
+                <br>{{ contact_info.city }}, {{ contact_info.state }} {{ contact_info.postal_code }}
+              </p>
+              {% else %}
+              <p>1842 Maple Avenue<br>Portland, Oregon 97204</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 info-card-anim">
+          <div class="contact-info-card">
+            <div class="contact-icon-wrap">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div class="contact-info-text">
+              <h4>Email Address</h4>
+              {% if contact_info %}
+              <p>
+                {{ contact_info.email }}
+                {% if contact_info.support_email %}<br>{{ contact_info.support_email }}{% endif %}
+              </p>
+              {% else %}
+              <p>info@nestova.ng<br>support@nestova.ng</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 info-card-anim">
+          <div class="contact-info-card">
+            <div class="contact-icon-wrap">
+              <i class="bi bi-clock-fill"></i>
+            </div>
+            <div class="contact-info-text">
+              <h4>Hours of Operation</h4>
+              {% if contact_info %}
+              <p>
+                Sunday–Friday: {{ contact_info.weekday_hours }}<br>
+                Saturday: {{ contact_info.weekend_hours }}
+              </p>
+              {% else %}
+              <p>Sunday–Friday: 9 AM – 6 PM<br>Saturday: 9 AM – 4 PM</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---- MAP ---- -->
+      {% if contact_info and contact_info.google_maps_embed_url %}
+      <div class="map-wrap" data-aos="fade-up" data-aos-delay="150">
+        <iframe
+          src="{{ contact_info.google_maps_embed_url }}"
+          width="100%" height="460"
+          style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      {% endif %}
+
+      <!-- ---- CONTACT FORM ---- -->
+      <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="200">
+        <div class="col-lg-9">
+          <div class="contact-form-card">
+
+            <div class="form-card-eyebrow">Send a Message</div>
+            <h2 class="form-card-title">Get in <em>Touch</em></h2>
+            <p class="form-card-subtitle">Fill out the form below and one of our specialists will reach out within 24 hours.</p>
+
+            <!-- Status messages -->
+            <div class="form-status loading" id="formLoading">
+              <i class="bi bi-arrow-repeat"></i> Sending your message…
+            </div>
+            <div class="form-status error" id="formError"></div>
+            <div class="form-status success" id="formSuccess">
+              <i class="bi bi-check-circle-fill"></i> Your message has been sent. Thank you!
+            </div>
+
+            <form method="post" action="{% url 'contact' %}" id="contactForm">
+              {% csrf_token %}
+              <div class="row g-4">
+
+                <div class="col-md-6">
+                  <div class="form-field">
+                    <label class="form-field-label">Full Name</label>
+                    <div class="input-icon-wrap">
+                      <input type="text" class="form-control" name="name" placeholder="John Doe" required>
+                      <i class="bi bi-person field-icon"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-field">
+                    <label class="form-field-label">Email Address</label>
+                    <div class="input-icon-wrap">
+                      <input type="email" class="form-control" name="email" placeholder="you@example.com" required>
+                      <i class="bi bi-envelope field-icon"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-field">
+                    <label class="form-field-label">Subject</label>
+                    <div class="input-icon-wrap">
+                      <input type="text" class="form-control" name="subject" placeholder="How can we help?" required>
+                      <i class="bi bi-chat-square-text field-icon"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-field">
+                    <label class="form-field-label">Message</label>
+                    <div class="input-icon-wrap" style="align-items:flex-start;">
+                      <textarea class="form-control" name="message" placeholder="Write your message here…" style="height:180px;" required></textarea>
+                      <i class="bi bi-chat-dots field-icon top-icon"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 text-center" style="padding-top:8px;">
+                  <button type="submit" class="btn-submit-form" id="submitBtn">
+                    <i class="bi bi-send-fill"></i> Send Message
+                  </button>
+                </div>
+
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const contactForm  = document.getElementById('contactForm');
+  const loadingEl    = document.getElementById('formLoading');
+  const errorEl      = document.getElementById('formError');
+  const successEl    = document.getElementById('formSuccess');
+  const submitBtn    = document.getElementById('submitBtn');
+
+  if (!contactForm) return;
+
+  contactForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Reset state
+    [loadingEl, errorEl, successEl].forEach(el => el.style.display = 'none');
+    loadingEl.style.display = 'flex';
+    submitBtn.disabled = true;
+
+    const formData = new FormData(this);
+
+    fetch("{% url 'contact_ajax' %}", {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      loadingEl.style.display = 'none';
+      submitBtn.disabled = false;
+
+      if (data.success) {
+        successEl.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + (data.message || 'Your message has been sent. Thank you!');
+        successEl.style.display = 'flex';
+        contactForm.reset();
+      } else {
+        errorEl.innerHTML = '<i class="bi bi-x-circle-fill"></i> ' + (data.message || 'Something went wrong. Please try again.');
+        errorEl.style.display = 'flex';
+      }
+    })
+    .catch(() => {
+      loadingEl.style.display = 'none';
+      submitBtn.disabled = false;
+      errorEl.innerHTML = '<i class="bi bi-x-circle-fill"></i> An error occurred. Please try again later.';
+      errorEl.style.display = 'flex';
+    });
+  });
+});
+</script>
+{% endblock %}

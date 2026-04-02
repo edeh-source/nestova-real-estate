@@ -1,0 +1,1662 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block extra_head %}
+{% if premium_properties %}
+{% with premium_properties|first as hero_prop %}
+<link rel="preload" as="image" fetchpriority="high"
+  href="{% if hero_prop.featured_image %}{{ hero_prop.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-7.webp' %}{% endif %}">
+{% endwith %}
+{% else %}
+<link rel="preload" as="image" fetchpriority="high" href="{% static 'assets/img/real-estate/property-exterior-7.webp' %}">
+{% endif %}
+
+<link rel="stylesheet" href="{% static 'assets/css/nestova-index.css' %}">
+<style>
+  /* ============================================================
+     HERO CAROUSEL — RESPONSIVE FIXES
+     Fixes: text overflow, overlapping buttons/arrows/image/pill
+  ============================================================ */
+
+  /* --- Base hero layout --- */
+  .hero-universe {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-scene,
+  .hero-carousel-wrap,
+  .carousel-3d-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;        /* anchor content to bottom */
+  }
+
+  .hero-slide.active {
+    position: relative;
+  }
+
+  /* --- Image layer — full cover, never bleed over UI --- */
+  .hero-slide-bg,
+  .hero-slide-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .hero-slide-overlay,
+  .hero-grain {
+    z-index: 1;
+  }
+
+  /* --- Content wrapper — safe stacking zone --- */
+  .hero-content-wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 0 0 100px;           /* bottom room for nav bar */
+  }
+
+  .hero-content {
+    max-width: 680px;
+    padding: clamp(1rem, 4vw, 2.5rem) clamp(1rem, 5vw, 3rem);
+  }
+
+  /* --- Responsive font sizes (fluid scaling) --- */
+  .hero-eyebrow {
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.5rem, 4.5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+    word-break: break-word;
+  }
+
+  .hero-location {
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  /* --- Feature pills — wrap cleanly on small screens --- */
+  .hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.4rem, 1.5vw, 0.75rem);
+    margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  .hero-feat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: clamp(0.7rem, 1.6vw, 0.9rem);
+    white-space: nowrap;
+  }
+
+  /* --- CTA buttons row — stack on mobile, side-by-side on desktop --- */
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
+    align-items: center;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+    padding: clamp(0.45rem, 1.2vw, 0.65rem) clamp(0.9rem, 2.5vw, 1.5rem);
+    white-space: nowrap;
+  }
+
+  /* --- Price pill — anchored top-right, never overlaps content --- */
+  .hero-price-pill {
+    position: absolute;
+    top: clamp(1rem, 3vw, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
+    z-index: 3;
+    text-align: center;
+    min-width: clamp(100px, 14vw, 150px);
+  }
+
+  .price-amount {
+    font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+    line-height: 1.2;
+  }
+
+  .price-label,
+  .price-period,
+  .price-tag {
+    font-size: clamp(0.6rem, 1.3vw, 0.75rem);
+  }
+
+  /* --- Nav arrows — always visible, clear of content --- */
+  .hero-nav {
+    position: absolute;
+    bottom: clamp(1rem, 2.5vw, 1.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+  }
+
+  .hero-nav-btn {
+    width: clamp(36px, 5vw, 48px);
+    height: clamp(36px, 5vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+  }
+
+  .hero-counter {
+    font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+    white-space: nowrap;
+  }
+
+  /* --- Dots — sit just above the nav, centred --- */
+  .hero-dots {
+    position: absolute;
+    bottom: clamp(3.5rem, 7vw, 5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  /* --- Scroll hint — keep well clear of arrows --- */
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: clamp(1rem, 2.5vw, 1.5rem);
+    right: clamp(1rem, 2.5vw, 1.5rem);
+    z-index: 4;
+  }
+
+  /* ============================================================
+     BREAKPOINT: tablets (≤ 768 px)
+  ============================================================ */
+  @media (max-width: 768px) {
+    .hero-content-wrap {
+      padding-bottom: 120px;     /* extra room: dots + nav both visible */
+    }
+
+    .hero-content {
+      padding: 1rem 1rem 1.25rem;
+      max-width: 100%;
+    }
+
+    /* Price pill moves to bottom-left so it never covers the title */
+    .hero-price-pill {
+      position: absolute;
+      top: auto;
+      bottom: 5.5rem;            /* above nav bar */
+      right: 1rem;
+      left: auto;
+      min-width: 110px;
+    }
+
+    .hero-cta-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .hero-scroll-hint {
+      display: none;             /* reclaim space on mobile */
+    }
+  }
+
+  /* ============================================================
+     BREAKPOINT: phones (≤ 480 px)
+  ============================================================ */
+  @media (max-width: 480px) {
+    .hero-content-wrap {
+      padding-bottom: 130px;
+    }
+
+    .hero-price-pill {
+      bottom: 6rem;
+      min-width: 95px;
+      padding: 0.5rem 0.65rem;
+    }
+
+    .hero-features {
+      gap: 0.35rem;
+    }
+
+    .hero-nav {
+      gap: 0.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ======================== AMBIENT BACKGROUND ======================== -->
+<div class="ambient-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main class="main" style="position: relative; z-index: 1;">
+
+  <!-- ======================== HERO SECTION ======================== -->
+  <section class="hero-universe">
+    <div class="hero-scene">
+      <div class="hero-carousel-wrap">
+        <div class="carousel-3d-track">
+
+          {% if premium_properties %}
+          {% for property in premium_properties %}
+          <div class="hero-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+            <div class="hero-slide-bg">
+              <img
+                src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-7.webp' %}{% endif %}"
+                alt="{{ property.title }}"
+                class="hero-slide-img"
+                {% if forloop.first %}fetchpriority="high" loading="eager"{% else %}loading="lazy"{% endif %}>
+            </div><!-- /.hero-slide-bg -->
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Premium Listing</div>
+                <h1 class="hero-title">{{ property.title|truncatewords:7 }}</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>{{ property.city.name }}, {{ property.state.name }}</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>{{ property.bedrooms }}
+                      Bed{{property.bedrooms|pluralize }}</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>{{ property.bathrooms }}
+                      Bath{{property.bathrooms|pluralize }}</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>{{ property.square_feet|floatformat:0}} sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{{ property.get_absolute_url }}" class="cta-primary">
+                    View Property <i class="bi bi-arrow-right"></i>
+                  </a>
+                  <a href="{% url 'properties' %}" class="cta-secondary">
+                    <i class="bi bi-grid-3x3-gap"></i> Browse All
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Listing Price</div>
+              <div class="price-amount">₦{{ property.price|intcomma }}</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">{% if property.listing_type %}{{ property.listing_type }}{% else %}For Sale{% endif %}</div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <!-- Fallback slides -->
+          <div class="hero-slide active" data-index="0">
+            <div class="hero-slide-bg">
+              <img
+                src="{% static 'assets/img/real-estate/property-exterior-7.webp' %}"
+                alt="Luxury Modern Estate with Pool"
+                class="hero-slide-img"
+                fetchpriority="high"
+                loading="eager">
+            </div><!-- /.hero-slide-bg -->
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Premium Listing</div>
+                <h1 class="hero-title">Luxury Modern <em>Estate</em> with Pool</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Lekki Phase 1, Lagos</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>5 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>6 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>4,500 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">Browse Properties <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'about' %}" class="cta-secondary"><i class="bi bi-play-circle"></i> Our Story</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦280M</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Sale</div>
+            </div>
+          </div>
+
+          <div class="hero-slide" data-index="1">
+            <div class="hero-slide-bg">
+              <img
+                src="{% static 'assets/img/real-estate/property-exterior-8.webp' %}"
+                alt="Contemporary Villa with Garden"
+                class="hero-slide-img"
+                loading="lazy">
+            </div><!-- /.hero-slide-bg -->
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Featured Property</div>
+                <h1 class="hero-title">Contemporary <em>Villa</em> with Garden</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Banana Island, Ikoyi</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>4 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>5 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>3,800 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">View All Properties <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'contact' %}" class="cta-secondary"><i class="bi bi-telephone"></i> Contact Us</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦195M</div>
+              <div class="price-period">Negotiable</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Sale</div>
+            </div>
+          </div>
+
+          <div class="hero-slide" data-index="2">
+            <div class="hero-slide-bg">
+              <img
+                src="{% static 'assets/img/real-estate/property-interior-7.webp' %}"
+                alt="Exquisite Interior Finishes"
+                class="hero-slide-img"
+                loading="lazy">
+            </div><!-- /.hero-slide-bg -->
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-grain"></div>
+            <div class="hero-content-wrap">
+              <div class="hero-content">
+                <div class="hero-eyebrow">Exclusive Interior</div>
+                <h1 class="hero-title">Exquisite <em>Interior</em> Finishes</h1>
+                <div class="hero-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span>Victoria Island, Lagos</span>
+                </div>
+                <div class="hero-features">
+                  <div class="hero-feat"><i class="bi bi-door-open"></i><span>3 Bedrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-droplet"></i><span>4 Bathrooms</span></div>
+                  <div class="hero-feat"><i class="bi bi-aspect-ratio"></i><span>2,800 sq ft</span></div>
+                </div>
+                <div class="hero-cta-row">
+                  <a href="{% url 'properties' %}" class="cta-primary">Explore Listings <i
+                      class="bi bi-arrow-right"></i></a>
+                  <a href="{% url 'agents' %}" class="cta-secondary"><i class="bi bi-person-check"></i> Find Agent</a>
+                </div>
+              </div>
+            </div>
+            <div class="hero-price-pill">
+              <div class="price-label">Starting From</div>
+              <div class="price-amount">₦120M</div>
+              <div class="price-period">Per annum</div>
+              <div class="price-divider"></div>
+              <div class="price-tag">For Rent</div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Navigation -->
+          <div class="hero-nav">
+            <button class="hero-nav-btn" id="heroPrev" aria-label="Previous slide">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="hero-counter">
+              <span id="currentSlide">1</span> / <span id="totalSlides">3</span>
+            </div>
+            <button class="hero-nav-btn" id="heroNext" aria-label="Next slide">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Dots -->
+          <div class="hero-dots" id="heroDots"></div>
+
+          <!-- Scroll hint -->
+          <div class="hero-scroll-hint">
+            <div class="scroll-line"></div>
+            <span>Scroll</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== STATS BAR ======================== -->
+  <div class="stats-float-bar mt-4">
+    <div class="stats-bar-inner" data-reveal>
+      <div class="stat-item">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Properties Listed</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">5+</span>
+        <span class="stat-label">Years of Excellence</span>
+      </div>
+
+      <div class="stat-item">
+        <span class="stat-number">98%</span>
+        <span class="stat-label">Client Satisfaction</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEARCH PANEL ======================== -->
+  <section class="search-section" id="search">
+    <div class="search-glass-card">
+
+      <!-- Tabs -->
+      <div class="search-tabs" id="searchTabs">
+        <button type="button" class="search-tab active" data-type="buy">Buy</button>
+        <button type="button" class="search-tab" data-type="shortlet">Shortlet</button>
+        <button type="button" class="search-tab" data-type="commercial">Commercial</button>
+        <button type="button" class="search-tab" data-type="land">Land</button>
+      </div>
+
+      <!-- Functional Search Form -->
+      <form method="GET" action="{% url 'properties' %}" class="search-fields" id="searchForm">
+
+        <!-- Hidden listing_type updated by JS when tab is clicked -->
+        <input type="hidden" name="listing_type" id="listingTypeInput" value="buy">
+
+        <!-- ── State Select ── -->
+        <div class="search-field">
+          <label for="state_type">State</label>
+          <select id="state_type" name="state_type">
+            <option value="">Any State</option>
+            {% for state in states %}
+            <option value="{{ state.id }}">{{ state.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- ── City Select (populated dynamically) ── -->
+        <div class="search-field">
+          <label for="city_type">City</label>
+          <select id="city_type" name="city_type" disabled>
+            <option value="">Select State First</option>
+          </select>
+        </div>
+
+        <div class="search-field">
+          <label for="property_type">Property Type</label>
+          <select id="property_type" name="type">
+            <option value="">Any Type</option>
+            {% for pt in property_types %}
+            <option value="{{ pt.name }}">{{ pt.get_name_display }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="search-field">
+          <label for="price_range">Price Range</label>
+          <select id="price_range" name="price_range">
+            <option value="">Any Budget</option>
+            <option value="0-5000000">Under ₦5M</option>
+            <option value="5000000-20000000">₦5M – ₦20M</option>
+            <option value="20000000-50000000">₦20M – ₦50M</option>
+            <option value="50000000-100000000">₦50M – ₦100M</option>
+            <option value="100000000-500000000">₦100M – ₦500M</option>
+            <option value="500000000-999999999">Above ₦500M</option>
+          </select>
+        </div>
+
+        <div class="search-btn-wrap">
+          <button type="submit" class="search-btn">
+            <i class="bi bi-search"></i>
+            Search Properties
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ======================== FEATURED PROPERTIES ======================== -->
+  <section class="properties-section section-wrap">
+    <div data-reveal>
+      <div class="section-badge"><i class="bi bi-gem"></i> Curated Selection</div>
+      <h2 class="section-title-xl">Featured <em>Properties</em></h2>
+      <p class="section-subtitle">Hand-picked luxury properties from Nigeria's most prestigious neighbourhoods.</p>
+    </div>
+
+    <div class="prop-grid">
+      {% if featured_properties %}
+      {% for property in featured_properties %}
+      <div class="prop-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="prop-card-img">
+          <img
+            src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-3.webp' %}{% endif %}"
+            alt="{{ property.title }}" loading="lazy">
+          <div class="prop-img-overlay"></div>
+          <div
+            class="prop-status {% if property.listing_type == 'rent' %}for-rent{% elif property.is_premium %}premium{% else %}for-sale{% endif %}">
+            {% if property.listing_type == 'rent' %}For Rent{% elif property.is_premium %}Premium{% else %}For
+            Sale{%endif %}
+          </div>
+          <div class="prop-wishlist"><i class="bi bi-heart"></i></div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-price">
+            ₦{{ property.price|intcomma }}
+            {% if property.listing_type == 'rent' %}<small>/month</small>{% endif %}
+          </div>
+          <div class="prop-title">{{ property.title }}</div>
+          <div class="prop-location">
+            <i class="bi bi-geo-alt-fill"></i>
+            {{ property.city.name }}, {{ property.state.name }}
+          </div>
+          <div class="prop-features">
+            <div class="prop-feat"><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed{{property.bedrooms|pluralize }}</div>
+            <div class="prop-feat"><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath{{ property.bathrooms|pluralize }}</div>
+            <div class="prop-feat"><i class="bi bi-aspect-ratio"></i> {{ property.square_feet|floatformat:0 }} sq ft
+            </div>
+          </div>
+        </div>
+        <a href="{{ property.get_absolute_url }}" class="stretched-link" aria-label="View {{ property.title }}"></a>
+      </div>
+      {% endfor %}
+      {% else %}
+      <!-- Fallback cards -->
+      {% for i in "123" %}
+      <div class="prop-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="prop-card-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="Property" loading="lazy">
+          <div class="prop-img-overlay"></div>
+          <div class="prop-status for-sale">For Sale</div>
+          <div class="prop-wishlist"><i class="bi bi-heart"></i></div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-price">₦185,000,000</div>
+          <div class="prop-title">Stunning 5-Bedroom Duplex in Lekki</div>
+          <div class="prop-location"><i class="bi bi-geo-alt-fill"></i> Lekki Phase 1, Lagos</div>
+          <div class="prop-features">
+            <div class="prop-feat"><i class="bi bi-door-open"></i> 5 Beds</div>
+            <div class="prop-feat"><i class="bi bi-droplet"></i> 6 Baths</div>
+            <div class="prop-feat"><i class="bi bi-aspect-ratio"></i> 4,200 sq ft</div>
+          </div>
+        </div>
+        <a href="{% url 'properties' %}" class="stretched-link"></a>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 48px;" data-reveal>
+      <a href="{% url 'properties' %}" class="cta-primary">
+        View All Properties <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================== WHY NESTOVA ======================== -->
+  <section class="why-section">
+    <div class="why-bg-accent"></div>
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-5" data-reveal>
+          <div style="position: relative; padding: 30px;">
+            <div class="why-video-frame">
+              <iframe id="yt-player"
+                src="https://www.youtube-nocookie.com/embed/VXKUW1W-qTc?autoplay=1&mute=1&loop=1&playlist=VXKUW1W-qTc&controls=0&rel=0&playsinline=1"
+                title="Nestova Groups and Properties" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+              </iframe>
+              <button class="unmute-btn-glass" onclick="toggleMute()" id="unmute-btn" title="Toggle sound">🔇</button>
+            </div>
+
+            <!-- Floating stat cards -->
+
+          </div>
+        </div>
+
+        <div class="col-lg-7" data-reveal data-reveal-delay="200">
+          <div style="padding: 0 40px 0 20px;">
+            <div class="section-badge"><i class="bi bi-star-fill"></i> Why Choose Us</div>
+            <h2 class="section-title-xl" style="margin-bottom: 16px; color: white;">Your Gateway to
+              <em>Exceptional</em> Real Estate
+            </h2>
+            <p class="section-subtitle" style="margin-bottom: 36px; color: white;">Nestova combines deep local market
+              knowledge with international service standards, providing a secure and transparent marketplace for all
+              your real estate needs.</p>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-geo-alt-fill"></i></div>
+              <div class="benefit-text">
+                <h4>Prime Locations</h4>
+                <p>Exclusive access to the most sought-after neighbourhoods and emerging markets across Nigeria.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-shield-fill-check"></i></div>
+              <div class="benefit-text">
+                <h4>Guaranteed Results</h4>
+                <p>Our proven track record ensures successful transactions and fully satisfied clients every time.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-person-check-fill"></i></div>
+              <div class="benefit-text">
+                <h4>Expert Agents</h4>
+                <p>A dedicated team of certified professionals committed to finding your perfect property match.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item-3d">
+              <div class="benefit-icon-3d"><i class="bi bi-graph-up-arrow"></i></div>
+              <div class="benefit-text">
+                <h4>Investment Insights</h4>
+                <p>Real-time market data and expert analysis to help you make smarter investment decisions.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== TESTIMONIALS ======================== -->
+  <section class="testimonials-section mb-4">
+    <div style="text-align: center;" data-reveal>
+      <div class="section-badge"><i class="bi bi-chat-quote-fill"></i> Testimonials</div>
+      <h2 class="section-title-xl" style="color: white;">What Our <em>Clients</em> Say</h2>
+      <p class="section-subtitle" style="margin: 14px auto 0;">Real stories from real people who found their dream homes
+        with Nestova.</p>
+    </div>
+
+    <div class="testi-grid">
+      {% if testimonials %}
+      {% for testimonial in testimonials %}
+      <div class="testi-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">{{ testimonial.message }}</p>
+        <div class="testi-author">
+          {% if testimonial.image %}
+          <img src="{{ testimonial.image.url }}" class="testi-avatar" alt="{{ testimonial.name }}">
+          {% else %}
+          <div class="testi-avatar"
+            style="background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1)); display:flex; align-items:center; justify-content:center; font-size:1.2rem; color: var(--gold);">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          {% endif %}
+          <div>
+            <div class="testi-name">{{ testimonial.name }}</div>
+            <div class="testi-role">{{ testimonial.role|default:"Verified Client" }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <!-- Fallback testimonials -->
+      <div class="testi-card" data-reveal data-reveal-delay="100">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"Working with Nestova was an absolute pleasure. They found us our dream home in Lekki
+          within two weeks. The process was seamless and their team was incredibly professional."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(201,168,76,0.3),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Adaeze Okafor</div>
+            <div class="testi-role">Property Buyer, Lagos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card" data-reveal data-reveal-delay="200">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"Nestova's market insights helped me make a brilliant investment decision. My property
+          value has grown 40% in just 18 months. Truly exceptional guidance and support."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(30,100,200,0.3),rgba(30,100,200,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#7EB8FF;">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Emeka Nwosu</div>
+            <div class="testi-role">Real Estate Investor, Abuja</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card" data-reveal data-reveal-delay="300">
+        <div class="testi-stars">
+          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+        </div>
+        <p class="testi-text">"From shortlisting to closing, Nestova handled everything flawlessly. Their knowledge of
+          the VI market is unmatched. We couldn't be happier with our new home."</p>
+        <div class="testi-author">
+          <div class="testi-avatar"
+            style="background:linear-gradient(135deg,rgba(180,30,100,0.3),rgba(180,30,100,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#FF7EB8;">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="testi-name">Tunde & Bisi Adeleke</div>
+            <div class="testi-role">Homeowners, Victoria Island</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ======================== CTA BAND ======================== -->
+  <div class="cta-band" data-reveal>
+    <h2>Ready to Find Your <em>Dream Property?</em></h2>
+    <p>Join thousands of satisfied clients who trusted Nestova with their most important real estate decisions.</p>
+    <div class="cta-band-btns">
+      <a href="{% url 'properties' %}" class="cta-primary">
+        Browse Properties <i class="bi bi-arrow-right"></i>
+      </a>
+      <a href="{% url 'contact' %}" class="cta-secondary">
+        <i class="bi bi-telephone"></i> Speak to an Expert
+      </a>
+    </div>
+  </div>
+  <!-- ======================== LICENSE & COMPLIANCE ======================== -->
+  <section class="licensed-section" id="licensing" data-reveal>
+    <div class="licensed-glass">
+
+      <!-- Header -->
+      <div class="licensed-header">
+        <div class="licensed-header-text">
+          <div class="section-eyebrow"><span>Regulatory Standing</span></div>
+          <h2>Licensed, Regulated &amp; <em>Fully Compliant</em></h2>
+          <p>
+            Nestova operates under the highest standards of professional conduct,
+            regulatory oversight, and ethical real estate practice in Nigeria.
+            Every transaction is protected, transparent, and fully compliant with
+            all applicable statutes.
+          </p>
+        </div>
+        <div class="compliance-badge">
+          <i class="bi bi-patch-check-fill"></i> Verified &amp; Accredited
+        </div>
+      </div>
+
+      <!-- Professional body copy -->
+      <div class="license-body-grid">
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-building" style="color:var(--gold);margin-right:8px;"></i>
+            NIESV Membership &amp; Registration
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            Nestova is a registered member of the <strong style="color:rgba(255,255,255,0.75);">Nigerian Institution of
+              Estate Surveyors and Valuers (NIESV)</strong>,
+            Nigeria's foremost professional body for real estate practitioners. This membership affirms
+            that all our estate surveyors hold valid practising licences, adhere to the NIESV Code of
+            Professional Conduct, and complete mandatory continuing professional development every year.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-award" style="color:var(--gold);margin-right:8px;"></i>
+            Corporate Affairs Commission (CAC) Filing
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            Nestova is duly incorporated under the <strong style="color:rgba(255,255,255,0.75);">Companies and Allied
+              Matters Act (CAMA 2020)</strong>
+            with the Corporate Affairs Commission of Nigeria. Our corporate filings are fully
+            up-to-date, ensuring that clients engage with a legally recognised and accountable
+            entity backed by Nigerian law.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-shield-lock" style="color:var(--gold);margin-right:8px;"></i>
+            Client Fund Protection &amp; Escrow
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            All client funds are held in dedicated <strong style="color:rgba(255,255,255,0.75);">ring-fenced escrow
+              accounts</strong>
+            with a CBN-licensed financial institution, ensuring complete separation of client
+            monies from operating funds. No disbursement is made without a written instruction
+            from both parties, providing an ironclad layer of transactional security.
+          </p>
+        </div>
+
+        <div>
+          <h4
+            style="font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--text-primary);margin-bottom:10px;">
+            <i class="bi bi-file-earmark-check" style="color:var(--gold);margin-right:8px;"></i>
+            Anti-Money Laundering &amp; EFCC Compliance
+          </h4>
+          <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.8;">
+            In accordance with the <strong style="color:rgba(255,255,255,0.75);">Money Laundering (Prevention and
+              Prohibition) Act 2022</strong>,
+            Nestova maintains a robust AML/CFT framework overseen by a certified compliance
+            officer. We conduct rigorous KYC verification, transaction monitoring, and
+            Suspicious Transaction Reporting (STR) to the NFIU as required by law.
+          </p>
+        </div>
+      </div>
+
+      <!-- Accreditation Cards Row -->
+      <div class="license-cards-row">
+
+        <div class="license-card" data-reveal data-reveal-delay="100">
+          <div class="license-logo-circle">
+            <i class="bi bi-building-check"></i>
+          </div>
+          <div class="license-org-name">NIESV</div>
+          <div class="license-org-desc">Nigerian Institution of Estate Surveyors and Valuers — Full Corporate Member
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Active</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="200">
+          <div class="license-logo-circle">
+            <i class="bi bi-briefcase-fill"></i>
+          </div>
+          <div class="license-org-name">CAC</div>
+          <div class="license-org-desc">Corporate Affairs Commission — Registered Company, RC No. Filed &amp; Current
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Registered</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="300">
+          <div class="license-logo-circle">
+            <i class="bi bi-bank"></i>
+          </div>
+          <div class="license-org-name">CBN Escrow</div>
+          <div class="license-org-desc">Central Bank of Nigeria — Licensed Escrow Partner for Client Fund Protection
+          </div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Protected</div>
+        </div>
+
+        <div class="license-card" data-reveal data-reveal-delay="400">
+          <div class="license-logo-circle">
+            <i class="bi bi-shield-fill-check"></i>
+          </div>
+          <div class="license-org-name">AML / EFCC</div>
+          <div class="license-org-desc">EFCC-Aligned AML/CFT Framework — Full KYC Verification on All Transactions</div>
+          <div class="license-verified-chip"><i class="bi bi-check-circle-fill"></i> Compliant</div>
+        </div>
+
+      </div>
+
+      <!-- CTA Strip -->
+      <div
+        style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:44px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div>
+          <p style="font-size:0.92rem;color:var(--text-muted);line-height:1.7;max-width:560px;">
+            Transparency is our cornerstone. All our regulatory certificates, practising licences, and compliance
+            documentation are available for inspection upon request. We believe informed clients make confident
+            decisions.
+          </p>
+        </div>
+        <a href="{% url 'contact' %}" class="cta-primary" style="flex-shrink:0;">
+          Request Our Credentials <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================== BLOG POSTS ======================== -->
+  <section class="blog-section" id="insights">
+    <div data-reveal>
+      <div class="section-badge"><i class="bi bi-journal-richtext"></i> Insights &amp; Resources</div>
+      <h2 class="section-title-xl">From Our <em>Blog</em></h2>
+      <p class="section-subtitle">Expert perspectives on the Nigerian real estate market, investment trends, and
+        homeownership guides.</p>
+    </div>
+
+    <div class="blog-grid">
+
+      {% if latest_posts %}
+      {% for post in latest_posts %}
+      <a href="{{ post.get_absolute_url }}" class="blog-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        <div class="blog-img">
+          {% if post.image %}
+          <img src="{{ post.image.url }}" alt="{{ post.name }}" loading="lazy">
+          {% else %}
+          <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="{{ post.name }}"
+            loading="lazy">
+          {% endif %}
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">{{ post.category.name }}</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 6 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">{{ post.publish|date:"F j, Y" }}</div>
+          <div class="blog-title">{{ post.name }}</div>
+          <p class="blog-excerpt">{{ post.text|striptags|truncatewords:22 }}</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">{{ post.author.user.get_full_name|default:post.author.user.username }}</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+
+      {% else %}
+      <!-- Fallback static blog cards -->
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="100">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-9.webp' %}"
+            alt="Lagos Property Market Outlook 2025" loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Market Insights</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 6 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">February 14, 2025</div>
+          <div class="blog-title">Lagos Property Market Outlook: What Buyers Need to Know in 2025</div>
+          <p class="blog-excerpt">As supply constraints ease in Lekki and Ikoyi, smart investors are repositioning
+            portfolios. We break down the data, the opportunities, and the risks to watch.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Chukwuemeka Adeyemi</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="200">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-interior-4.webp' %}" alt="First-Time Buyer Guide Nigeria"
+            loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Buyer's Guide</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 8 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">January 28, 2025</div>
+          <div class="blog-title">The Complete First-Time Buyer's Guide to Property Ownership in Nigeria</div>
+          <p class="blog-excerpt">From documentation and due diligence to negotiation and perfection of title —
+            everything a first-time buyer needs to navigate Nigeria's real estate process with confidence.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Amara Oduola</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{% url 'properties' %}" class="blog-card" data-reveal data-reveal-delay="300">
+        <div class="blog-img">
+          <img src="{% static 'assets/img/real-estate/property-exterior-10.webp' %}"
+            alt="Real Estate Investment Nigeria" loading="lazy">
+          <div class="blog-img-overlay"></div>
+          <div class="blog-cat">Investment</div>
+          <div class="blog-read-time"><i class="bi bi-clock"></i> 7 min read</div>
+        </div>
+        <div class="blog-body">
+          <div class="blog-date">January 10, 2025</div>
+          <div class="blog-title">Why Short-Let Properties Are Outperforming Traditional Rentals in Abuja</div>
+          <p class="blog-excerpt">The short-let market in Abuja's Maitama and Wuse II districts delivered an average 34%
+            higher yield than long-term rentals in 2024. Here's how to capitalise on this trend.</p>
+          <div class="blog-footer">
+            <div class="blog-author">
+              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <span class="blog-author-name">Damilola Fashola</span>
+            </div>
+            <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+      {% endif %}
+
+    </div>
+
+    <div style="text-align:center;margin-top:52px;" data-reveal>
+      <a href="{% url 'post_list' %}" class="cta-secondary" style="display:inline-flex;align-items:center;gap:10px;">
+        <i class="bi bi-journal-text"></i> View All Articles
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================== EVENTS GALLERY ======================== -->
+  <section class="events-section" id="events">
+    <div class="events-intro">
+      <div data-reveal>
+        <div class="section-badge"><i class="bi bi-camera-fill"></i> In The Community</div>
+        <h2 class="section-title-xl">Nestova <em>in Action</em></h2>
+        <p class="section-subtitle" style="margin-top:12px;">Behind every deal is a story. A glimpse into our property
+          launches, client events, open houses, and community initiatives.</p>
+      </div>
+      <a href="{% url 'about' %}" class="cta-secondary" data-reveal
+        style="display:inline-flex;align-items:center;gap:10px;flex-shrink:0;">
+        <i class="bi bi-calendar-event"></i> See All Events
+      </a>
+    </div>
+
+    <div class="events-grid" data-reveal>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real2.jpg' %}"
+          alt="Nestova Property Launch — Lekki Phase 1" loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Grand Property Launch — Lekki Phase 1</div>
+          <div class="event-date">November 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real3.jpg' %}" alt="VIP Open House — Victoria Island"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">VIP Open House — Victoria Island Penthouse</div>
+          <div class="event-date">October 2023</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real4.jpg' %}" alt="Investor Forum — Abuja"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nestova Investor Forum — Abuja Hilton</div>
+          <div class="event-date">September 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real5.jpg' %}" alt="Client Appreciation Night 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Client Appreciation Night 2024</div>
+          <div class="event-date">August 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real6.jpg' %}" alt="Ikoyi Development Showcase"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Ikoyi Premium Development Showcase</div>
+          <div class="event-date">July 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real7.jpg' %}" alt="First-Time Buyer Workshop"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">First-Time Buyer Workshop — Lagos</div>
+          <div class="event-date">June 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real9.jpg' %}" alt="Banana Island Site Tour"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Exclusive Banana Island Site Tour</div>
+          <div class="event-date">May 2023</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real8.jpg' %}" alt="Real Estate Awards Gala 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nigerian Real Estate Awards Gala 2024</div>
+          <div class="event-date">April 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="eventsLightbox" onclick="closeLightbox(event)">
+    <div class="lb-inner">
+      <img id="lbImg" src="" alt="Event photo">
+      <button class="lb-close" onclick="closeLightbox()" aria-label="Close lightbox">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================== PARTNERS / TRUSTED BY ======================== -->
+  <section class="partners-section cta-band aria-label=" Our Partners">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:56px;" data-reveal>
+        <div class="section-eyebrow"><span>Trusted Partners</span></div>
+        <h2 class="section-title" style="color: white;">Companies That <em>Trust</em> Us</h2>
+        <p class="section-sub" style="">We collaborate with Nigeria's most respected real estate institutions,
+          developers, and
+          financial organisations to deliver excellence at every stage.</p>
+      </div>
+    </div>
+
+    <!-- Row 1 — scrolls left -->
+    <div class="partners-track-wrap">
+      <div class="partners-track" id="partnersRow1">
+        <!-- set duplicated for seamless loop -->
+        <a href="#" class="partner-card" aria-label="Knight Frank Nigeria">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/cubana.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Consultancy</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="JLL Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/Aidens.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Real Estate Services</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="UPDC Plc">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/adozil.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Development</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Lekki Gardens">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/billion.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Luxury Estates</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Brains &amp; Hammers">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/fidelity.webp' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Integrated Developer</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Grenadines Homes">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/harmony.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Premium Residences</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Prestige Realty">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/lagos.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Brokerage &amp; Advisory</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Veritasi Homes">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/zylus.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Urban Development</div>
+          </div>
+        </a>
+        <!-- duplicates for seamless loop -->
+        <a href="#" class="partner-card" aria-label="Knight Frank Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/zental.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Consultancy</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="JLL Nigeria">
+          <div class="partner-text-fallback">
+             <img src="{% static 'assets/img/real-estate/nedcomoks.jpg' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Real Estate Services</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="UPDC Plc">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/regnarock.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Property Development</div>
+          </div>
+        </a>
+        <a href="#" class="partner-card" aria-label="Lekki Gardens">
+          <div class="partner-text-fallback">
+            <img src="{% static 'assets/img/real-estate/propertyylinks.png' %}" class="img-fluid" alt="">
+            <div class="partner-type-text">Luxury Estates</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Row 2 — scrolls right (reverse) -->
+   
+  </section>
+
+  <!-- ======================== TOP EXCOS ======================== -->
+  <section class="excos-section" id="excos" aria-label="Our Top Excos">
+    <div class="container">
+
+      <!-- Heading -->
+      <div style="text-align:center; margin-bottom:60px;" data-reveal>
+        <div class="section-eyebrow"><span>Meet The Team</span></div>
+        <h2 class="section-title" style="color: white">Our Top <em>Excos</em></h2>
+        <p class="section-sub" style="max-width:620px; margin:0 auto; color: white;">
+          The seasoned executives driving Nestova's vision forward — a team
+          of proven leaders committed to redefining Nigerian real estate.
+        </p>
+      </div>
+
+      <!-- 12 Exec Cards — 4 per row on lg+, 3 on md, 2 on sm, 1 on xs -->
+      <div class="row">
+
+        <!-- 1 -->
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/HRM.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Hrm Oba Akintoye Adeoye</div>
+              <div class="exco-dept" style="color: white;">President &amp; Chairman REDAN Council</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/adekunle.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Abikoye Emmanuel Adekunle</div>
+              <div class="exco-dept" style="color: white;">President BRG</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/effcs.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">EFCC Unit</div>
+              <div class="exco-name" style="color: white;">Oseni Kazeem </div>
+              <div class="exco-dept" style="color: white;">Compliance &amp; Enforcement Unit, SCUML</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/sahed.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Saheed Mosadoluwa Audullahi</div>
+              <div class="exco-dept" style="color: white;">Harmony Gardens &amp; Estate Development Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/tony.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chairman Of REDAN Lagos Chapter</div>
+              <div class="exco-name" style="color: white;">Dr.Tony Aspire Kolewole</div>
+              <div class="exco-dept" style="color: white;">GCEO, OF VISTA HOLDINGS LIMITED</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/oluwa.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr. Oluwatosin Olatujoye </div>
+              <div class="exco-dept" style="color: white;">ZYLUS Groups</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/ernest.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Ernest Bassy</div>
+              <div class="exco-dept" style="color: white;">Ologiri Concept And Properties</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/obi.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Obi Cubana</div>
+              <div class="exco-dept" style="color: white;">Cubana Groups</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/okonkwo.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Chief Kennedy Okonkwo</div>
+              <div class="exco-dept" style="color: white;">Nedcomoaks Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+              <img src="{% static 'assets/img/real-estate/segun.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Segun Philips</div>
+              <div class="exco-dept" style="color: white;">Sabreworks Realty Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/abiodun.webp' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr. Abiodun Afolayan</div>
+              <div class="exco-dept" style="color: white;">Zenytal Properties Ltd</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12" data-reveal data-reveal-delay="0">
+          <div class="exco-card">
+            <div class="exco-img-wrap">
+             <img src="{% static 'assets/img/real-estate/endurance.jpg' %}" class="img-fluid" alt="">
+            </div>
+            <div class="exco-gold-bar"></div>
+            <div class="exco-body">
+              <div class="exco-position" style="color: white;">Chief Executive Officer</div>
+              <div class="exco-name" style="color: white;">Dr Endurance Cletus Agonor</div>
+              <div class="exco-dept" style="color: white;">ACEROYAL Estate Ltd</div>
+            </div>
+          </div>
+        </div>
+        
+
+        
+        
+
+        
+
+        
+
+      
+        
+
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  </section>
+
+</main>
+
+
+<!-- ======================== HERO CAROUSEL JS ======================== -->
+<script>
+  (function () {
+    const slides = document.querySelectorAll('.hero-slide');
+    const totalEl = document.getElementById('totalSlides');
+    const currentEl = document.getElementById('currentSlide');
+    const dotsWrap = document.getElementById('heroDots');
+    let current = 0;
+    let autoTimer;
+
+    if (!slides.length) return;
+
+    totalEl.textContent = slides.length;
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      dotsWrap.children[current].classList.remove('active');
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsWrap.children[current].classList.add('active');
+      currentEl.textContent = current + 1;
+      resetAuto();
+    }
+
+    function resetAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => goTo(current + 1), 7000);
+    }
+
+    document.getElementById('heroPrev').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('heroNext').addEventListener('click', () => goTo(current + 1));
+
+    resetAuto();
+
+    // Touch swipe
+    let startX = 0;
+    const track = document.querySelector('.carousel-3d-track');
+    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1);
+    }, { passive: true });
+  })();
+
+  // Toggle mute
+  let muted = true;
+  function toggleMute() {
+    const iframe = document.getElementById('yt-player');
+    const btn = document.getElementById('unmute-btn');
+    if (!iframe) return;
+    const src = iframe.src;
+    if (muted) {
+      iframe.src = src.replace('&mute=1', '&mute=0');
+      btn.textContent = '🔊';
+    } else {
+      iframe.src = src.replace('&mute=0', '&mute=1');
+      btn.textContent = '🔇';
+    }
+    muted = !muted;
+  }
+
+  // ── State → City cascade ────────────────────────────────────────────────
+  (function () {
+    const stateSelect = document.getElementById('state_type');
+    const citySelect  = document.getElementById('city_type');
+
+    if (!stateSelect || !citySelect) return;
+
+    stateSelect.addEventListener('change', function () {
+      const stateId = this.value;
+
+      // Reset city dropdown immediately
+      citySelect.innerHTML = '<option value="">Loading…</option>';
+      citySelect.disabled = true;
+
+      if (!stateId) {
+        citySelect.innerHTML = '<option value="">Select State First</option>';
+        return;
+      }
+
+      fetch(`/api/get-cities/?state_id=${encodeURIComponent(stateId)}`)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
+        .then(function (data) {
+          citySelect.innerHTML = '<option value="">Any City</option>';
+          if (data.cities && data.cities.length > 0) {
+            data.cities.forEach(function (city) {
+              const opt = document.createElement('option');
+              opt.value = city.id;
+              opt.textContent = city.name;
+              citySelect.appendChild(opt);
+            });
+            citySelect.disabled = false;
+          } else {
+            citySelect.innerHTML = '<option value="">No Cities Found</option>';
+          }
+        })
+        .catch(function () {
+          citySelect.innerHTML = '<option value="">Error loading cities</option>';
+        });
+    });
+  })();
+
+  // ── Search tab switching ── wires hidden listing_type input
+  document.querySelectorAll('.search-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const typeInput = document.getElementById('listingTypeInput');
+      if (typeInput) typeInput.value = tab.dataset.type || 'buy';
+    });
+  });
+
+  // ── Events lightbox ──
+  function openLightbox(cell) {
+    const img = cell.querySelector('img');
+    if (!img) return;
+    document.getElementById('lbImg').src = img.src;
+    document.getElementById('eventsLightbox').classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(e) {
+    if (e && e.target !== document.getElementById('eventsLightbox') && !e.target.closest('.lb-close')) return;
+    document.getElementById('eventsLightbox').classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('eventsLightbox').classList.remove('lb-open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Make openLightbox / closeLightbox available globally
+  window.openLightbox = openLightbox;
+  window.closeLightbox = closeLightbox;
+
+  // Reveal on scroll
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+  // Property card 3D tilt effect
+  document.querySelectorAll('.prop-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+      card.style.transform = `translateY(-14px) rotateX(${y}deg) rotateY(${x}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>
+
+{% endblock %}

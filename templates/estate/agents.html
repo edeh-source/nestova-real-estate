@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+
+
+{% block content %}
+
+
+
+
+<main class="main">
+
+  <!-- Page Title -->
+  <div class="page-title">
+    <div class="heading">
+      <div class="container">
+        <div class="row d-flex justify-content-center text-center">
+          <div class="col-lg-8">
+            <h1 class="heading-title">Agents</h1>
+            <p class="mb-0">
+              Connect with Nigeria's most trusted real estate professionals. Our verified agents are dedicated to
+              helping you find your dream property or sell at the best value. Each agent brings local market expertise
+              and a commitment to exceptional service.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs">
+      <div class="container">
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li class="current">Agents</li>
+        </ol>
+      </div>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <!-- Agents Section -->
+  <section id="agents" class="agents section">
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="row">
+        {% if featured_agent %}
+        <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
+          <div class="featured-agent">
+            <div class="agent-image">
+              {% if featured_agent.user.profile_picture %}
+              <img src="{{ featured_agent.user.profile_picture.url }}" alt="{{ featured_agent.user.get_full_name }}" class="img-fluid">
+              {% else %}
+              <img src="{% static 'assets/img/real-estate/agent-1.webp' %}" alt="Featured Agent" class="img-fluid">
+              {% endif %}
+              <div class="agent-badge">Top Agent</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="featured-content">
+            <h3>{{ featured_agent.user.get_full_name|default:featured_agent.user.username }}</h3>
+            <span class="position">Verified Real Estate Professional</span>
+
+            <div class="specialties">
+              <span class="badge">Residential</span>
+              <span class="badge">Commercial</span>
+              <span class="badge">Investment</span>
+            </div>
+
+            <blockquote>
+              "Committed to providing exceptional real estate services and helping clients achieve their property goals
+              with professionalism and integrity."
+            </blockquote>
+
+            <div class="stats">
+              <div class="stat-item">
+                <span class="number">{{ featured_agent.user.properties.count }}+</span>
+                <span class="label">Properties Listed</span>
+              </div>
+              <div class="stat-item">
+                <span class="number">{% if featured_agent.verification_status == 'verified' %}✓{% else %}-{% endif %}</span>
+                <span class="label">Verified</span>
+              </div>
+              <div class="stat-item">
+                <span class="number">{{ featured_agent.created|timesince }}</span>
+                <span class="label">Experience</span>
+              </div>
+            </div>
+
+            <div class="contact-info">
+              {% if featured_agent.user.phone %}
+              <div class="contact-item">
+                <i class="bi bi-telephone"></i>
+                <span>{{ featured_agent.user.phone }}</span>
+              </div>
+              {% endif %}
+              <div class="contact-item">
+                <i class="bi bi-envelope"></i>
+                <span>{{ featured_agent.user.email }}</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>Nigeria</span>
+              </div>
+            </div>
+
+            <div class="social-links">
+              {% if featured_agent.linkedin %}
+              <a href="{{ featured_agent.linkedin }}" class="social-link" target="_blank"><i class="bi bi-linkedin"></i></a>
+              {% endif %}
+              {% if featured_agent.facebook %}
+              <a href="{{ featured_agent.facebook }}" class="social-link" target="_blank"><i class="bi bi-facebook"></i></a>
+              {% endif %}
+              {% if featured_agent.instagram %}
+              <a href="{{ featured_agent.instagram }}" class="social-link" target="_blank"><i class="bi bi-instagram"></i></a>
+              {% endif %}
+              {% if featured_agent.twitter %}
+              <a href="{{ featured_agent.twitter }}" class="social-link" target="_blank"><i class="bi bi-twitter"></i></a>
+              {% endif %}
+            </div>
+
+            <div class="cta-buttons">
+              <a href="{% url 'agents:agent_profile' featured_agent.slug %}" class="btn btn-primary">View Profile</a>
+              <a href="mailto:{{ featured_agent.user.email }}" class="btn btn-outline">Contact Agent</a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center">
+          <p>No featured agent available at this time.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="row mt-5">
+        <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+          <h4 class="section-subtitle">Our Expert Team</h4>
+          <p class="section-description">Meet our dedicated professionals who are committed to helping you find your
+            perfect home or sell your property at the best value.</p>
+        </div>
+      </div>
+
+      <div class="row gy-4">
+
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
+          <div class="agent-card">
+            <div class="agent-photo">
+              <img src="{% static 'assets/img/real-estate/agent-2.webp' %}" alt="Agent" class="img-fluid">
+              <div class="hover-overlay">
+                <div class="contact-actions">
+                  <a href="#" class="action-btn" title="Call"><i class="bi bi-telephone"></i></a>
+                  <a href="#" class="action-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                  <a href="#" class="action-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                </div>
+              </div>
+            </div>
+            <div class="agent-info">
+              <h5>Michael Chen</h5>
+              <span class="role">Property Consultant</span>
+              <div class="location">
+                <i class="bi bi-geo-alt"></i>
+                <span>Brooklyn Heights</span>
+              </div>
+              <div class="languages">
+                <span class="lang-tag">English</span>
+                <span class="lang-tag">Mandarin</span>
+              </div>
+              <a href="#" class="view-listings">View Listings</a>
+            </div>
+          </div>
+        </div><!-- End Agent Card -->
+
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+          <div class="agent-card">
+            <div class="agent-photo">
+              <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Agent" class="img-fluid">
+              <div class="agent-status verified">Verified</div>
+              <div class="hover-overlay">
+                <div class="contact-actions">
+                  <a href="#" class="action-btn" title="Call"><i class="bi bi-telephone"></i></a>
+                  <a href="#" class="action-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                  <a href="#" class="action-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                </div>
+              </div>
+            </div>
+            <div class="agent-info">
+              <h5>Sarah Johnson</h5>
+              <span class="role">Commercial Specialist</span>
+              <div class="location">
+                <i class="bi bi-geo-alt"></i>
+                <span>Manhattan</span>
+              </div>
+              <div class="languages">
+                <span class="lang-tag">English</span>
+                <span class="lang-tag">Spanish</span>
+              </div>
+              <a href="#" class="view-listings">View Listings</a>
+            </div>
+          </div>
+        </div><!-- End Agent Card -->
+
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+          <div class="agent-card">
+            <div class="agent-photo">
+              <img src="{% static 'assets/img/real-estate/agent-4.webp' %}" alt="Agent" class="img-fluid">
+              <div class="hover-overlay">
+                <div class="contact-actions">
+                  <a href="#" class="action-btn" title="Call"><i class="bi bi-telephone"></i></a>
+                  <a href="#" class="action-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                  <a href="#" class="action-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                </div>
+              </div>
+            </div>
+            <div class="agent-info">
+              <h5>David Martinez</h5>
+              <span class="role">Luxury Home Advisor</span>
+              <div class="location">
+                <i class="bi bi-geo-alt"></i>
+                <span>Upper East Side</span>
+              </div>
+              <div class="languages">
+                <span class="lang-tag">English</span>
+                <span class="lang-tag">French</span>
+              </div>
+              <a href="#" class="view-listings">View Listings</a>
+            </div>
+          </div>
+        </div><!-- End Agent Card -->
+
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+          <div class="agent-card">
+            <div class="agent-photo">
+              <img src="{% static 'assets/img/real-estate/agent-5.webp' %}" alt="Agent" class="img-fluid">
+              <div class="agent-status new">New Agent</div>
+              <div class="hover-overlay">
+                <div class="contact-actions">
+                  <a href="#" class="action-btn" title="Call"><i class="bi bi-telephone"></i></a>
+                  <a href="#" class="action-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                  <a href="#" class="action-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                </div>
+              </div>
+            </div>
+            <div class="agent-info">
+              <h5>Lisa Thompson</h5>
+              <span class="role">Residential Specialist</span>
+              <div class="location">
+                <i class="bi bi-geo-alt"></i>
+                <span>Queens</span>
+              </div>
+              <div class="languages">
+                <span class="lang-tag">English</span>
+              </div>
+              <a href="#" class="view-listings">View Listings</a>
+            </div>
+          </div>
+        </div><!-- End Agent Card -->
+
+      </div>
+
+    </div>
+
+  </section><!-- /Agents Section -->
+
+</main>
+{% endblock content %}
+
+<footer id="footer" class="footer position-relative">
+
+  <div class="container">
+    <div class="row gy-5">
+
+      <div class="col-lg-4">
+        <div class="footer-content">
+          <a href="index.html" class="logo d-flex align-items-center mb-4">
+            <span class="sitename">Nestova</span>
+          </a>
+          <p class="mb-4">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Donec
+            velit neque auctor sit amet aliquam vel ullamcorper sit amet ligula.</p>
+
+          <div class="newsletter-form">
+            <h5>Stay Updated</h5>
+            <form action="forms/newsletter.php" method="post" class="php-email-form">
+              <div class="input-group">
+                <input type="email" name="email" class="form-control" placeholder="Enter your email" required="">
+                <button type="submit" class="btn-subscribe">
+                  <i class="bi bi-send"></i>
+                </button>
+              </div>
+              <div class="loading">Loading</div>
+              <div class="error-message"></div>
+              <div class="sent-message">Thank you for subscribing!</div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-6">
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> About</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Careers</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Press</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Blog</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-6">
+        <div class="footer-links">
+          <h4>Solutions</h4>
+          <ul>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Digital Strategy</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Cloud Computing</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Data Analytics</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> AI Solutions</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i> Cybersecurity</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="footer-contact">
+          <h4>Get in Touch</h4>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-geo-alt"></i>
+            </div>
+            <div class="contact-info">
+              <p>2847 Maple Avenue<br>Los Angeles, CA 90210<br>United States</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-telephone"></i>
+            </div>
+            <div class="contact-info">
+              <p>+1 (555) 987-6543</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-envelope"></i>
+            </div>
+            <div class="contact-info">
+              <p>contact@example.com</p>
+            </div>
+          </div>
+
+          <div class="social-links">
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-twitter-x"></i></a>
+            <a href="#"><i class="bi bi-linkedin"></i></a>
+            <a href="#"><i class="bi bi-youtube"></i></a>
+            <a href="#"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="copyright">
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">MyWebsite</strong> <span>All Rights
+                Reserved</span></p>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="footer-bottom-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Cookie Policy</a>
+          </div>
+          <div class="credits">
+            <!-- All the links in the footer should remain intact. -->
+            <!-- You can delete the links only if you've purchased the pro version. -->
+            <!-- Licensing information: https://bootstrapmade.com/license/ -->
+            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+    class="bi bi-arrow-up-short"></i></a>
+
+<!-- Preloader -->
+<div id="preloader"></div>
+
+<!-- Vendor JS Files -->
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+<script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+<script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+<script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'assets/vendor/drift-zoom/Drift.min.js' %}"></script>
+
+<!-- Main JS File -->
+<script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+
+</html>

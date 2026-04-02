@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .verification-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 90vh;
+    }
+
+    .verification-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 50px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .verification-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .verification-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 40px;
+        color: white;
+    }
+
+    .verification-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .verification-subtitle {
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-verify {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-verify:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .info-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .info-box h6 {
+        color: #0369a1;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .info-box ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #0c4a6e;
+    }
+
+    .info-box li {
+        margin-bottom: 8px;
+    }
+</style>
+
+<section class="verification-section">
+    <div class="container">
+        <div class="verification-card" data-aos="fade-up">
+            <div class="verification-header">
+                <div class="verification-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h1 class="verification-title">Verify Your Identity</h1>
+                <p class="verification-subtitle">
+                    To ensure the safety and trust of our community, we require identity verification before you can
+                    post properties.
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h6><i class="bi bi-info-circle me-2"></i>What You'll Need</h6>
+                <ul>
+                    <li>Your National Identity Number (NIN)</li>
+                    <li>Or your Virtual NIN (vNIN)</li>
+                    <li>Or your Bank Verification Number (BVN)</li>
+                </ul>
+            </div>
+
+            <form method="POST" id="verificationForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label" for="id_type">
+                        <i class="bi bi-card-list me-2"></i>ID Type
+                    </label>
+                    <select name="id_type" id="id_type" class="form-select" required>
+                        <option value="">Select ID Type</option>
+                        <option value="nin">National Identity Number (NIN)</option>
+                        <option value="vnin">Virtual NIN (vNIN)</option>
+                        <option value="bvn">Bank Verification Number (BVN)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_number">
+                        <i class="bi bi-123 me-2"></i>ID Number
+                    </label>
+                    <input type="text" name="id_number" id="id_number" class="form-control"
+                        placeholder="Enter your ID number" required maxlength="11">
+                    <small class="text-muted" id="id_help_text">Enter your 11-digit ID number</small>
+                </div>
+
+                <button type="submit" class="btn-verify">
+                    <i class="bi bi-shield-check me-2"></i>Verify My Identity
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'shop:profile' %}" class="text-muted">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Update help text based on selected ID type
+    document.getElementById('id_type').addEventListener('change', function () {
+        const helpText = document.getElementById('id_help_text');
+        const idInput = document.getElementById('id_number');
+
+        switch (this.value) {
+            case 'nin':
+                helpText.textContent = 'Enter your 11-digit National Identity Number';
+                idInput.placeholder = 'e.g., 12345678901';
+                idInput.maxLength = 11;
+                break;
+            case 'vnin':
+                helpText.textContent = 'Enter your 16-digit Virtual NIN';
+                idInput.placeholder = 'e.g., 1234567890123456';
+                idInput.maxLength = 16;
+                break;
+            case 'bvn':
+                helpText.textContent = 'Enter your 11-digit Bank Verification Number';
+                idInput.placeholder = 'e.g., 22123456789';
+                idInput.maxLength = 11;
+                break;
+            default:
+                helpText.textContent = 'Enter your ID number';
+                idInput.placeholder = 'Enter your ID number';
+        }
+    });
+
+    // Form validation
+    document.getElementById('verificationForm').addEventListener('submit', function (e) {
+        const idType = document.getElementById('id_type').value;
+        const idNumber = document.getElementById('id_number').value;
+
+        if (!idType || !idNumber) {
+            e.preventDefault();
+            alert('Please fill in all required fields');
+            return false;
+        }
+
+        // Validate ID number length
+        if (idType === 'nin' && idNumber.length !== 11) {
+            e.preventDefault();
+            alert('NIN must be exactly 11 digits');
+            return false;
+        }
+
+        if (idType === 'vnin' && idNumber.length !== 16) {
+            e.preventDefault();
+            alert('Virtual NIN must be exactly 16 digits');
+            return false;
+        }
+
+        if (idType === 'bvn' && idNumber.length !== 11) {
+            e.preventDefault();
+            alert('BVN must be exactly 11 digits');
+            return false;
+        }
+
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Verifying...';
+        submitBtn.disabled = true;
+    });
+</script>
+{% endblock %}

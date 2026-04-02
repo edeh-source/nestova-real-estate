@@ -1,0 +1,1506 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Dashboard | Nestova{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   DASHBOARD — LUXURY GLASSMORPHISM DARK DESIGN SYSTEM
+   ============================================================ */
+
+/* ---- AMBIENT BACKGROUND ---- */
+.dashboard-bg {
+  position: fixed;
+  inset: 0;
+  background: var(--obsidian);
+  z-index: -2;
+}
+
+.dashboard-bg::before {
+  content: '';
+  position: absolute;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(13,27,62,0.5), transparent 65%);
+  top: -200px; left: -200px;
+  pointer-events: none;
+}
+
+.dashboard-bg::after {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.06), transparent 65%);
+  bottom: 0; right: -100px;
+  pointer-events: none;
+}
+
+/* ---- HERO ---- */
+.dash-hero {
+  margin-top: 80px;
+  padding: 52px 0 40px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #0D1B3E 60%, #0A0A0F 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.dash-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.25), transparent);
+}
+
+.dash-hero-grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.dash-hero-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.dash-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+/* Avatar */
+.dash-avatar-wrap { position: relative; flex-shrink: 0; }
+
+.dash-avatar {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 6px rgba(201,168,76,0.08), 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.dash-avatar-placeholder {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(13,27,62,0.8));
+  border: 3px solid rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 6px rgba(201,168,76,0.08), 0 20px 40px rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--gold-light);
+}
+
+.dash-avatar-status {
+  position: absolute;
+  bottom: 4px; right: 4px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 3px solid #060B1A;
+}
+
+/* Hero text */
+.dash-hero-text {}
+
+.dash-greeting {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-greeting::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+.dash-hero-text h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+}
+
+.dash-hero-text p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* Stats grid */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.dash-stat-card {
+  background: rgba(18,18,26,0.75);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  padding: 22px 24px;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dash-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+.dash-stat-card:hover::before { opacity: 1; }
+
+.dash-stat-card.blue::before  { background: linear-gradient(to right, #3b82f6, #2563eb); }
+.dash-stat-card.gold::before  { background: linear-gradient(to right, var(--gold), var(--gold-dark)); }
+.dash-stat-card.green::before { background: linear-gradient(to right, #22c55e, #16a34a); }
+.dash-stat-card.purple::before{ background: linear-gradient(to right, #a855f7, #9333ea); }
+
+.stat-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 14px;
+}
+
+.stat-icon-wrap.blue   { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25); color: #60a5fa; }
+.stat-icon-wrap.gold   { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.25); color: var(--gold-light); }
+.stat-icon-wrap.green  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.22); color: #4ade80; }
+.stat-icon-wrap.purple { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.22); color: #c084fc; }
+
+.dash-stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.dash-stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  font-weight: 500;
+}
+
+/* ============================================================
+   VERIFICATION BANNERS
+   ============================================================ */
+.verify-banner {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.verify-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  flex-wrap: wrap;
+}
+
+.verify-banner-inner.warn {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+}
+
+.verify-banner-inner.ok {
+  background: rgba(34,197,94,0.06);
+  border: 1px solid rgba(34,197,94,0.18);
+}
+
+.verify-icon {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.verify-icon.warn { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+.verify-icon.ok   { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.22); }
+
+.verify-text { flex: 1; min-width: 0; }
+.verify-text h4 {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.verify-text h4.warn { color: #fbbf24; }
+.verify-text h4.ok   { color: #4ade80; }
+.verify-text p { font-size: 0.82rem; color: rgba(255,255,255,0.4); margin: 0; }
+
+.btn-verify {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0A0A0F;
+  box-shadow: 0 6px 20px rgba(245,158,11,0.2);
+}
+
+.btn-verify:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(245,158,11,0.35);
+  color: #0A0A0F;
+}
+
+/* ============================================================
+   TAB NAV
+   ============================================================ */
+.dash-tab-nav {
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 80px;
+  z-index: 998;
+}
+
+.dash-tab-track {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dash-tab-track::-webkit-scrollbar { display: none; }
+
+.dash-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 16px 18px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+  position: relative;
+}
+
+.dash-tab-btn i { font-size: 0.95rem; }
+
+.dash-tab-btn:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.04);
+}
+
+.dash-tab-btn.active {
+  color: var(--gold-light);
+  border-bottom-color: var(--gold);
+}
+
+/* Notification badge on tab */
+.tab-notif-badge {
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ============================================================
+   CONTENT AREA
+   ============================================================ */
+.dash-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 36px 40px 80px;
+}
+
+.dash-tab-content {
+  display: none;
+  animation: tabReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dash-tab-content.active { display: block; }
+
+@keyframes tabReveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   GLASS CONTENT CARD
+   ============================================================ */
+.dash-card {
+  background: rgba(18,18,26,0.82);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 30px 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-wrap: wrap;
+}
+
+.dash-card-title {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.btn-dash-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #0A0A0F;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.04em;
+  border-radius: 50px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-dash-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  color: #0A0A0F;
+}
+
+/* ============================================================
+   PROPERTY GRID
+   ============================================================ */
+.dash-prop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.dash-prop-card {
+  background: rgba(12,12,18,0.8);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dash-prop-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(201,168,76,0.2);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.dash-prop-img {
+  width: 100%; height: 180px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.dash-prop-card:hover .dash-prop-img { transform: scale(1.08); }
+
+.dash-prop-img-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 180px;
+}
+
+.dash-prop-img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,10,15,0.7) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.dash-prop-placeholder {
+  width: 100%; height: 180px;
+  background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  color: rgba(255,255,255,0.1);
+}
+
+.dash-prop-body { padding: 18px 20px 20px; }
+
+.dash-prop-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 6px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-prop-loc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255,255,255,0.35);
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+}
+
+.dash-prop-loc i { color: var(--gold); font-size: 0.75rem; }
+
+.dash-prop-price {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.dash-prop-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  flex-wrap: wrap;
+}
+
+.dash-prop-meta span {
+  display: flex; align-items: center; gap: 5px;
+}
+
+.dash-prop-meta i { color: var(--gold); }
+
+.dash-prop-actions { display: flex; gap: 8px; }
+
+.btn-dash-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-dash-sm.outline {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.6);
+}
+
+.btn-dash-sm.outline:hover {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.25);
+  color: var(--gold-light);
+}
+
+.btn-dash-sm.outline-danger:hover {
+  background: rgba(220,50,50,0.12);
+  border-color: rgba(220,50,50,0.25);
+  color: #ff8a8a;
+}
+
+/* ============================================================
+   DATA TABLE
+   ============================================================ */
+.dash-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.dash-table thead tr th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+}
+
+.dash-table tbody tr td {
+  padding: 14px 16px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.2s;
+}
+
+.dash-table tbody tr:last-child td { border-bottom: none; }
+
+.dash-table tbody tr:hover td {
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.82);
+}
+
+.dash-table td strong {
+  color: rgba(255,255,255,0.88);
+  font-weight: 600;
+}
+
+/* Badges */
+.dash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dash-badge.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #4ade80; }
+.dash-badge.warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+.dash-badge.danger  { background: rgba(220,50,50,0.12); border: 1px solid rgba(220,50,50,0.25); color: #f87171; }
+.dash-badge.info    { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); color: #60a5fa; }
+
+/* ============================================================
+   NOTIFICATION LIST
+   ============================================================ */
+.notif-list { list-style: none; padding: 0; margin: 0; }
+
+.notif-item {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  cursor: default;
+  margin-bottom: 4px;
+}
+
+.notif-item:last-child { border-bottom: none; margin-bottom: 0; }
+
+.notif-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.notif-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.notif-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.notif-title.unread { color: #fff; }
+
+.notif-time {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+
+.notif-msg {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.dash-empty {
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.dash-empty-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.13);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  color: var(--gold);
+  margin: 0 auto 20px;
+}
+
+.dash-empty h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 8px;
+}
+
+.dash-empty p {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.28);
+  margin: 0;
+}
+
+/* ============================================================
+   SETTINGS FORM
+   ============================================================ */
+.settings-form .form-group { margin-bottom: 20px; }
+
+.settings-form label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="tel"],
+.settings-form input[type="email"],
+.settings-form input[type="file"] {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+}
+
+.settings-form input::placeholder { color: rgba(255,255,255,0.2); }
+
+.settings-form input:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  color: #fff;
+}
+
+.settings-form input[type="file"] { cursor: pointer; }
+
+.btn-settings-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #0A0A0F;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-settings-save::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-settings-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+}
+
+.btn-settings-save:hover::before { left: 100%; }
+
+.btn-settings-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  background: rgba(220,50,50,0.1);
+  border: 1px solid rgba(220,50,50,0.2);
+  color: #f87171;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-settings-logout:hover {
+  background: rgba(220,50,50,0.18);
+  border-color: rgba(220,50,50,0.35);
+  color: #fca5a5;
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   AGENT STATS ROW
+   ============================================================ */
+.agent-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Referral input */
+.referral-input-row {
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  max-width: 560px;
+}
+
+.referral-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.referral-copy-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  color: #0A0A0F;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.referral-copy-btn:hover {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1199px) {
+  .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .agent-stats-row { grid-template-columns: repeat(2, 1fr); }
+  .dash-prop-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 991px) {
+  .dash-content { padding: 28px 24px 60px; }
+  .dash-card { padding: 22px 20px; }
+}
+
+@media (max-width: 767px) {
+  .dash-hero { padding: 40px 0 32px; }
+  .dash-hero-row { gap: 18px; }
+  .dash-avatar, .dash-avatar-placeholder { width: 72px; height: 72px; font-size: 1.8rem; }
+  .dash-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .dash-stat-value { font-size: 1.6rem; }
+  .agent-stats-row { grid-template-columns: repeat(2, 1fr); }
+  .dash-prop-grid { grid-template-columns: 1fr; }
+  .dash-content { padding: 20px 16px 52px; }
+  .dash-tab-track { padding: 0 16px; }
+  .verify-banner-inner { gap: 14px; }
+  .btn-verify { width: 100%; justify-content: center; }
+  .dash-table { font-size: 0.82rem; }
+  .dash-table thead tr th,
+  .dash-table tbody tr td { padding: 10px 10px; }
+}
+
+@media (max-width: 575px) {
+  .dash-stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dash-stat-card { padding: 16px; }
+  .stat-icon-wrap { width: 36px; height: 36px; font-size: 1rem; margin-bottom: 10px; }
+  .dash-stat-value { font-size: 1.4rem; }
+  .dash-hero-text h1 { font-size: 1.6rem; }
+  .dash-card-header { flex-direction: column; align-items: flex-start; }
+  .dash-prop-actions { flex-wrap: wrap; }
+  .settings-form .row > .col-md-6 { width: 100%; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Ambient BG -->
+<div class="dashboard-bg"></div>
+
+<main class="main">
+
+  <!-- ======================== HERO ======================== -->
+  <section class="dash-hero">
+    <div class="dash-hero-grain"></div>
+    <div class="container-xl dash-hero-inner">
+
+      <div class="dash-hero-row">
+        <div class="dash-avatar-wrap">
+          {% if profile.profile_image %}
+          <img src="{{ profile.profile_image.url }}" alt="{{ user.username }}" class="dash-avatar">
+          {% else %}
+          <div class="dash-avatar-placeholder">{{ user.username|first|upper }}</div>
+          {% endif %}
+          <div class="dash-avatar-status"></div>
+        </div>
+
+        <div class="dash-hero-text">
+          <div class="dash-greeting">Your Dashboard</div>
+          <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+          <p>Manage your properties, bookings, orders and account — all in one place.</p>
+        </div>
+      </div>
+
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card blue">
+          <div class="stat-icon-wrap blue"><i class="bi bi-building"></i></div>
+          <span class="dash-stat-value">{{ my_properties.count }}</span>
+          <span class="dash-stat-label">My Properties</span>
+        </div>
+
+        <div class="dash-stat-card gold">
+          <div class="stat-icon-wrap gold"><i class="bi bi-calendar-check"></i></div>
+          <span class="dash-stat-value">{{ my_bookings.count }}</span>
+          <span class="dash-stat-label">Appointments</span>
+        </div>
+
+        <div class="dash-stat-card green">
+          <div class="stat-icon-wrap green"><i class="bi bi-heart"></i></div>
+          <span class="dash-stat-value">{{ saved_properties.count }}</span>
+          <span class="dash-stat-label">Saved Items</span>
+        </div>
+
+        <div class="dash-stat-card purple">
+          <div class="stat-icon-wrap purple"><i class="bi bi-bag"></i></div>
+          <span class="dash-stat-value">{{ recent_orders.count }}</span>
+          <span class="dash-stat-label">Orders</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== VERIFICATION BANNERS ======================== -->
+  {% if not agent_profile and not company_profile and not user.id_verified %}
+  <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
+    <div class="container-xl">
+      <div class="verify-banner-inner warn">
+        <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
+        <div class="verify-text">
+          <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Identity Verification Required</h4>
+          <p>To post properties on our platform, you need to verify your identity. This keeps our community safe and trusted.</p>
+        </div>
+        <a href="{% url 'users:submit_user_verification' %}" class="btn-verify">
+          <i class="bi bi-shield-check"></i> Verify Now
+        </a>
+      </div>
+    </div>
+  </div>
+  {% elif not agent_profile and not company_profile and user.id_verified %}
+  <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+    <div class="container-xl">
+      <div class="verify-banner-inner ok">
+        <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+        <div class="verify-text">
+          <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Identity Verified</h4>
+          <p>Your account is verified. You can now post properties on Nestova.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ======================== TAB NAV ======================== -->
+  <nav class="dash-tab-nav">
+    <div class="dash-tab-track">
+      {% if agent_profile %}
+      <button class="dash-tab-btn active" onclick="switchDashTab('agent', this)">
+        <i class="bi bi-graph-up-arrow"></i> Agent Dashboard
+      </button>
+      {% endif %}
+
+      <button class="dash-tab-btn {% if not agent_profile %}active{% endif %}" onclick="switchDashTab('overview', this)">
+        <i class="bi bi-grid-1x2"></i> Overview
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('properties', this)">
+        <i class="bi bi-building"></i> My Properties
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('appointments', this)">
+        <i class="bi bi-calendar-event"></i> Appointments
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('orders', this)">
+        <i class="bi bi-bag"></i> Orders
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('saved', this)">
+        <i class="bi bi-heart"></i> Saved
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('notifications', this)">
+        <i class="bi bi-bell"></i> Notifications
+        {% if notifications.count > 0 %}
+        <span class="tab-notif-badge">{{ notifications.count }}</span>
+        {% endif %}
+      </button>
+      <button class="dash-tab-btn" onclick="switchDashTab('settings', this)">
+        <i class="bi bi-gear"></i> Settings
+      </button>
+    </div>
+  </nav>
+
+  <!-- ======================== CONTENT ======================== -->
+  <div class="dash-content">
+
+    <!-- ---- AGENT DASHBOARD ---- -->
+    {% if agent_profile %}
+    <div id="tab-agent" class="dash-tab-content active">
+
+      <!-- Agent Stats -->
+      <div class="agent-stats-row">
+        <div class="dash-stat-card gold">
+          <div class="stat-icon-wrap gold"><i class="bi bi-wallet2"></i></div>
+          <span class="dash-stat-value">₦{{ agent_data.total_commission_earned|intcomma }}</span>
+          <span class="dash-stat-label">Total Earned</span>
+        </div>
+        <div class="dash-stat-card" style="border-color:rgba(245,158,11,0.15);">
+          <div class="stat-icon-wrap" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.22);color:#fbbf24;"><i class="bi bi-hourglass-split"></i></div>
+          <span class="dash-stat-value">₦{{ agent_data.pending_commission_amount|intcomma }}</span>
+          <span class="dash-stat-label">Pending</span>
+        </div>
+        <div class="dash-stat-card blue">
+          <div class="stat-icon-wrap blue"><i class="bi bi-check-circle"></i></div>
+          <span class="dash-stat-value">₦{{ agent_data.approved_commission_amount|intcomma }}</span>
+          <span class="dash-stat-label">Approved</span>
+        </div>
+        <div class="dash-stat-card purple">
+          <div class="stat-icon-wrap purple"><i class="bi bi-people"></i></div>
+          <span class="dash-stat-value">{{ agent_data.downline_count }}</span>
+          <span class="dash-stat-label">Downlines</span>
+        </div>
+      </div>
+
+      <!-- Referral Card -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-link-45deg"></i> Your Referral Link</h5>
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;margin-bottom:16px;">Share this link to invite new agents and earn referral commissions.</p>
+        <div class="referral-input-row">
+          <input type="text" value="{{ request.scheme }}://{{ request.get_host }}{% url 'agents:agents_signup' %}?ref={{ agent_data.referral_code }}" id="agentRefLink" readonly>
+          <button class="referral-copy-btn" onclick="copyAgentRefLink()">
+            <i class="bi bi-clipboard"></i> Copy Link
+          </button>
+        </div>
+      </div>
+
+      <!-- Commissions Table -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-receipt"></i> Recent Commissions</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Property</th>
+                <th>Amount</th>
+                <th>Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for commission in agent_data.commissions %}
+              <tr>
+                <td>{{ commission.created_at|date:"M d, Y" }}</td>
+                <td>{{ commission.sale.property.title }}</td>
+                <td><strong>₦{{ commission.commission_amount|intcomma }}</strong></td>
+                <td>{{ commission.commission_rate }}%</td>
+                <td>
+                  <span class="dash-badge {% if commission.status == 'paid' %}success{% elif commission.status == 'approved' %}info{% elif commission.status == 'pending' %}warning{% else %}danger{% endif %}">
+                    {{ commission.get_status_display }}
+                  </span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5">
+                <div class="dash-empty" style="padding:32px 0;">
+                  <div class="dash-empty-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                  <h3>No commissions yet</h3>
+                  <p>Start sharing your referral link to earn commissions.</p>
+                </div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Downlines Table -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-people"></i> Your Downlines</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Agent</th><th>Joined</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              {% for downline in agent_data.downlines %}
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    {% if downline.user.customer_profile.profile_image %}
+                    <img src="{{ downline.user.customer_profile.profile_image.url }}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid rgba(201,168,76,0.3);">
+                    {% else %}
+                    <div style="width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--gold);font-weight:700;">{{ downline.user.username|first|upper }}</div>
+                    {% endif %}
+                    <strong>{{ downline.user.get_full_name|default:downline.user.username }}</strong>
+                  </div>
+                </td>
+                <td>{{ downline.created|date:"M d, Y" }}</td>
+                <td><span class="dash-badge {% if downline.is_active %}success{% else %}danger{% endif %}">{% if downline.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3">
+                <div class="dash-empty" style="padding:32px 0;">
+                  <div class="dash-empty-icon"><i class="bi bi-person-plus"></i></div>
+                  <h3>No downlines yet</h3>
+                  <p>Invite people using your referral link.</p>
+                </div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ---- OVERVIEW ---- -->
+    <div id="tab-overview" class="dash-tab-content {% if not agent_profile %}active{% endif %}">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-clock-history"></i> Recent Activity</h5>
+          <a href="{% url 'listings:post_property' %}" class="btn-dash-action">
+            <i class="bi bi-plus-circle"></i> Post Property
+          </a>
+        </div>
+
+        <ul class="notif-list">
+          {% for notif in notifications|slice:":5" %}
+          <li class="notif-item">
+            <div class="notif-item-header">
+              <span class="notif-title">{{ notif.title }}</span>
+              <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+            </div>
+            <p class="notif-msg">{{ notif.message }}</p>
+          </li>
+          {% empty %}
+          <li>
+            <div class="dash-empty">
+              <div class="dash-empty-icon"><i class="bi bi-inbox"></i></div>
+              <h3>No recent activity</h3>
+              <p>Your notifications will appear here</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- ---- PROPERTIES ---- -->
+    <div id="tab-properties" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-building"></i> My Properties</h5>
+          <a href="{% url 'listings:post_property' %}" class="btn-dash-action">
+            <i class="bi bi-plus-circle"></i> Add New
+          </a>
+        </div>
+
+        {% if my_properties %}
+        <div class="dash-prop-grid">
+          {% for prop in my_properties %}
+          <div class="dash-prop-card">
+            <div class="dash-prop-img-wrap">
+              {% if prop.featured_image %}
+              <img src="{{ prop.featured_image.url }}" alt="{{ prop.title }}" class="dash-prop-img">
+              {% else %}
+              <div class="dash-prop-placeholder"><i class="bi bi-building"></i></div>
+              {% endif %}
+            </div>
+            <div class="dash-prop-body">
+              <div class="dash-prop-title">{{ prop.title }}</div>
+              <div class="dash-prop-loc"><i class="bi bi-geo-alt-fill"></i> {{ prop.city.name }}, {{ prop.state.name }}</div>
+              <div class="dash-prop-price">₦{{ prop.price|intcomma }}</div>
+              <div class="dash-prop-meta">
+                <span><i class="bi bi-door-open"></i> {{ prop.bedrooms }} bed</span>
+                <span><i class="bi bi-droplet"></i> {{ prop.bathrooms }} bath</span>
+                <span><i class="bi bi-aspect-ratio"></i> {{ prop.square_feet|intcomma }} sqft</span>
+              </div>
+              <div class="dash-prop-actions">
+                <a href="{{ prop.get_absolute_url }}" class="btn-dash-sm outline"><i class="bi bi-eye"></i> View</a>
+                <a href="{% url 'listings:edit_property' prop.slug %}" class="btn-dash-sm outline"><i class="bi bi-pencil"></i> Edit</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="dash-empty">
+          <div class="dash-empty-icon"><i class="bi bi-house-door"></i></div>
+          <h3>No properties yet</h3>
+          <p>Start by posting your first property listing</p>
+          <a href="{% url 'listings:post_property' %}" class="btn-dash-action mt-4" style="display:inline-flex;margin-top:20px;">
+            <i class="bi bi-plus-circle"></i> Post Property
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ---- APPOINTMENTS ---- -->
+    <div id="tab-appointments" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-calendar-event"></i> Appointments &amp; Bookings</h5>
+        </div>
+
+        {% if my_bookings %}
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Booking ID</th><th>Property</th><th>Check-in</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              {% for booking in my_bookings %}
+              <tr>
+                <td><strong>{{ booking.booking_number }}</strong></td>
+                <td>{{ booking.apartment.title }}</td>
+                <td>{{ booking.check_in_date|date:"M d, Y" }}</td>
+                <td><span class="dash-badge warning">{{ booking.booking_status }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="dash-empty">
+          <div class="dash-empty-icon"><i class="bi bi-calendar-x"></i></div>
+          <h3>No appointments scheduled</h3>
+          <p>Your appointment history will appear here</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ---- ORDERS ---- -->
+    <div id="tab-orders" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-bag"></i> Order History</h5>
+        </div>
+
+        {% if recent_orders %}
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Order #</th><th>Date</th><th>Status</th><th>Total</th><th></th></tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+              <tr>
+                <td><strong>{{ order.order_number }}</strong></td>
+                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                <td><span class="dash-badge success">{{ order.get_status_display }}</span></td>
+                <td><strong>₦{{ order.total_amount|intcomma }}</strong></td>
+                <td><a href="{% url 'shop:order_detail' order.id %}" class="btn-dash-sm outline">View</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="dash-empty">
+          <div class="dash-empty-icon"><i class="bi bi-bag-x"></i></div>
+          <h3>No orders yet</h3>
+          <p>Your purchase history will appear here</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ---- SAVED ---- -->
+    <div id="tab-saved" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-heart"></i> Saved Properties</h5>
+        </div>
+
+        {% if saved_properties %}
+        <div class="dash-prop-grid">
+          {% for item in saved_properties %}
+          <div class="dash-prop-card">
+            <div class="dash-prop-img-wrap">
+              {% if item.property.featured_image %}
+              <img src="{{ item.property.featured_image.url }}" alt="{{ item.property.title }}" class="dash-prop-img">
+              {% else %}
+              <div class="dash-prop-placeholder"><i class="bi bi-building"></i></div>
+              {% endif %}
+            </div>
+            <div class="dash-prop-body">
+              <div class="dash-prop-title">{{ item.property.title }}</div>
+              <div class="dash-prop-loc"><i class="bi bi-geo-alt-fill"></i> {{ item.property.city.name }}</div>
+              <div class="dash-prop-price">₦{{ item.property.price|intcomma }}</div>
+              <div class="dash-prop-actions">
+                <a href="{{ item.property.get_absolute_url }}" class="btn-dash-sm outline"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-dash-sm outline outline-danger"><i class="bi bi-heart-fill" style="color:#f87171;"></i> Remove</button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="dash-empty">
+          <div class="dash-empty-icon"><i class="bi bi-heart"></i></div>
+          <h3>No saved properties</h3>
+          <p>Properties you bookmark will appear here</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ---- NOTIFICATIONS ---- -->
+    <div id="tab-notifications" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-bell"></i> All Notifications</h5>
+        </div>
+
+        <ul class="notif-list">
+          {% for notif in notifications %}
+          <li class="notif-item">
+            <div class="notif-item-header">
+              <span class="notif-title {% if not notif.is_read %}unread{% endif %}">{{ notif.title }}</span>
+              <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+            </div>
+            <p class="notif-msg">{{ notif.message }}</p>
+          </li>
+          {% empty %}
+          <li>
+            <div class="dash-empty">
+              <div class="dash-empty-icon"><i class="bi bi-bell-slash"></i></div>
+              <h3>No notifications</h3>
+              <p>You're all caught up!</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- ---- SETTINGS ---- -->
+    <div id="tab-settings" class="dash-tab-content">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h5 class="dash-card-title"><i class="bi bi-person-gear"></i> Profile Settings</h5>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="settings-form">
+          {% csrf_token %}
+          <input type="hidden" name="update_profile" value="true">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Enter your first name">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Enter your last name">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" value="{{ profile.phone }}" placeholder="Enter your phone number">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" value="{{ profile.city }}" placeholder="Enter your city">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Address</label>
+                <input type="text" name="address_line1" value="{{ profile.address_line1 }}" placeholder="Enter your full address">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" name="state" value="{{ profile.state }}" placeholder="Enter your state">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Profile Photo</label>
+                <input type="file" name="profile_image" accept="image/*">
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap;">
+            <button type="submit" class="btn-settings-save">
+              <i class="bi bi-check-circle"></i> Save Changes
+            </button>
+            <a href="{% url 'users:logout' %}" class="btn-settings-logout">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /dash-content -->
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function switchDashTab(tabId, btn) {
+  // Hide all
+  document.querySelectorAll('.dash-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('tab-' + tabId);
+  if (target) target.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Allow calling switchDashTab from notification bell in header
+function switchTab(tabId) {
+  const btn = [...document.querySelectorAll('.dash-tab-btn')].find(b =>
+    b.getAttribute('onclick')?.includes(`'${tabId}'`)
+  );
+  switchDashTab(tabId, btn);
+}
+
+function copyAgentRefLink() {
+  const input = document.getElementById('agentRefLink');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.querySelector('.referral-copy-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .verify-form-section {
+        padding: 80px 0;
+        background: #f8fafc;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        padding: 12px 15px;
+        border: 1px solid #e2e8f0;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #20c997;
+        box-shadow: 0 0 0 4px rgba(32, 201, 151, 0.1);
+    }
+
+    .upload-box {
+        border: 2px dashed #e2e8f0;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .upload-box:hover {
+        border-color: #20c997;
+        background: #f0fdf4;
+    }
+
+    .upload-icon {
+        font-size: 32px;
+        color: #94a3b8;
+        margin-bottom: 10px;
+    }
+
+    .btn-submit {
+        background: #20c997;
+        color: white;
+        padding: 15px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        border: none;
+        transition: all 0.3s;
+    }
+
+    .btn-submit:hover {
+        background: #198754;
+        transform: translateY(-2px);
+    }
+
+    .info-tip {
+        background: #eff6ff;
+        padding: 15px;
+        border-radius: 10px;
+        color: #1d4ed8;
+        font-size: 14px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: flex-start;
+    }
+</style>
+
+<section class="verify-form-section">
+    <div class="container">
+        <div class="form-card" data-aos="fade-up">
+            <div class="form-header">
+                <h2>Agent Identity Verification</h2>
+                <p>Please provide clear copies of your identification documents</p>
+            </div>
+
+            <div class="info-tip">
+                <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                <div>
+                    Make sure all text on your ID is legible and your face is clearly visible in the selfie.
+                    Invalid or blurry documents will lead to rejection.
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">ID Type</label>
+                        <select name="id_type" class="form-select" required>
+                            <option value="">Select ID Type</option>
+                            <option value="nin">National Identity Number (NIN)</option>
+                            <option value="vnin">Virtual NIN (vNIN)</option>
+                            <option value="bvn">Bank Verification Number (BVN)</option>
+                            <option value="passport">International Passport</option>
+                            <option value="voters_card">Voter's Card</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">ID Number</label>
+                        <input type="text" name="id_number" class="form-control" placeholder="Enter ID number" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">ID Card Front Side</label>
+                    <div class="upload-box" onclick="document.getElementById('id_front').click()">
+                        <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                        <p class="mb-0" id="front-text">Click to upload ID front side</p>
+                        <input type="file" id="id_front" name="id_card_front" hidden accept="image/*" required
+                            onchange="updateFileName(this, 'front-text')">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Selfie with ID</label>
+                    <div class="upload-box" onclick="document.getElementById('selfie').click()">
+                        <div class="upload-icon"><i class="bi bi-person-bounding-box"></i></div>
+                        <p class="mb-0" id="selfie-text">Upload a selfie holding your ID</p>
+                        <input type="file" id="selfie" name="selfie" hidden accept="image/*" required
+                            onchange="updateFileName(this, 'selfie-text')">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit mt-3">Submit for Review</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    function updateFileName(input, targetId) {
+        if (input.files && input.files[0]) {
+            document.getElementById(targetId).innerText = input.files[0].name;
+            document.getElementById(targetId).parentElement.style.borderColor = '#20c997';
+        }
+    }
+</script>
+{% endblock %}

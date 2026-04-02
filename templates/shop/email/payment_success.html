@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Payment Successful — Nestova</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #060810; }
+    a { color: #C9A84C; }
+
+    @media only screen and (max-width: 620px) {
+      .email-wrap  { width: 100% !important; }
+      .mobile-pad  { padding: 28px 20px !important; }
+      .mobile-hero { padding: 40px 20px 32px !important; }
+      .item-row td { display: block !important; width: 100% !important; text-align: left !important; }
+      h1           { font-size: 28px !important; }
+      .tl-icon     { display: none !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#060810;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#060810;">
+  <tr>
+    <td align="center" style="padding: 24px 16px 48px;">
+
+      <!-- Email Card -->
+      <table class="email-wrap" role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+        style="background-color:#0E0E18; border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,0.07); box-shadow:0 32px 80px rgba(0,0,0,0.6);">
+
+        <!-- ══ HEADER ══ -->
+        <tr>
+          <td>
+            <!-- Top gold accent line -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="height:2px; background:linear-gradient(to right, transparent 0%, #9A7A2E 10%, #C9A84C 40%, #E8C96E 60%, #C9A84C 80%, transparent 100%);"></td>
+              </tr>
+            </table>
+
+            <!-- Hero area -->
+            <table class="mobile-hero" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background: linear-gradient(160deg, #0A0A14 0%, #0D1428 50%, #0A0A14 100%);">
+              <tr>
+                <td align="center" style="padding: 52px 40px 48px;">
+
+                  <!-- Brand wordmark -->
+                  <p style="margin:0 0 30px; font-family:'Cormorant Garamond',Georgia,serif; font-size:13px; font-weight:600; letter-spacing:0.32em; text-transform:uppercase; color:#C9A84C;">
+                    NESTOVA
+                  </p>
+
+                  <!-- Success icon ring -->
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 26px;">
+                    <tr>
+                      <td align="center"
+                        style="width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg,rgba(34,197,94,0.18),rgba(34,197,94,0.05)); border:1.5px solid rgba(34,197,94,0.4); font-size:38px; line-height:90px; text-align:center; box-shadow:0 0 40px rgba(34,197,94,0.12);">
+                        ✓
+                      </td>
+                    </tr>
+                  </table>
+
+                  <h1 style="margin:0 0 10px; font-family:'Cormorant Garamond',Georgia,serif; font-size:38px; font-weight:500; letter-spacing:-0.5px; color:#F5F0E8; line-height:1.2;">
+                    Payment Successful
+                  </h1>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:15px; color:rgba(245,240,232,0.5); line-height:1.6;">
+                    Your order is confirmed and now being processed
+                  </p>
+
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ══ BODY ══ -->
+        <tr>
+          <td class="mobile-pad" style="padding: 40px 44px;">
+
+            <!-- Greeting -->
+            <p style="margin:0 0 18px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:15px; color:rgba(245,240,232,0.75); line-height:1.7;">
+              Hi <strong style="color:#F5F0E8;">{{ user.first_name|default:user.username }}</strong>,
+            </p>
+            <p style="margin:0 0 32px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:15px; color:rgba(245,240,232,0.6); line-height:1.75;">
+              Great news — we've successfully received your payment and your order is now being prepared for dispatch.
+            </p>
+
+            <!-- ── Payment Confirmation Panel ── -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2); border-radius:14px; margin-bottom:28px; overflow:hidden;">
+
+              <tr>
+                <td style="padding:3px 0 0; background:linear-gradient(to right,rgba(34,197,94,0.5),transparent); height:3px;"></td>
+              </tr>
+              <tr>
+                <td style="padding:16px 22px; border-bottom:1px solid rgba(34,197,94,0.1);">
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#4ade80;">
+                    💳 Payment Confirmed
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35); width:45%;">
+                        Order Number
+                      </td>
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#E8C96E; text-align:right;">
+                        #{{ order.order_number }}
+                      </td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35);">
+                        Transaction ID
+                      </td>
+                      <td style="padding:13px 22px; font-family:'Courier New',Courier,monospace; font-size:12px; color:rgba(245,240,232,0.65); text-align:right;">
+                        {{ order.transaction_id }}
+                      </td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35);">
+                        Payment Method
+                      </td>
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#F5F0E8; text-align:right;">
+                        {{ order.payment_method|title }}
+                      </td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35);">
+                        Payment Date
+                      </td>
+                      <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#F5F0E8; text-align:right;">
+                        {{ order.paid_at|date:"F d, Y — h:i A" }}
+                      </td>
+                    </tr>
+                    <!-- Amount Paid row with gold background -->
+                    <tr style="background:linear-gradient(90deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03)); border-top:1px solid rgba(201,168,76,0.2);">
+                      <td style="padding:16px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35);">
+                        Amount Paid
+                      </td>
+                      <td style="padding:16px 22px; font-family:'Cormorant Garamond',Georgia,serif; font-size:22px; font-weight:600; color:#E8C96E; text-align:right;">
+                        ₦{{ order.total_amount|floatformat:0 }}
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- ── Order Status ── -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+              <tr>
+                <td style="font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; color:rgba(245,240,232,0.6);">
+                  Order Status
+                </td>
+                <td align="right">
+                  <span style="display:inline-block; padding:5px 16px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.35); border-radius:50px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#4ade80;">
+                    {{ order.status|upper }}
+                  </span>
+                </td>
+              </tr>
+            </table>
+
+            <!-- ── Order Summary ── -->
+            <p style="margin:0 0 12px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#C9A84C;">
+              Order Summary
+            </p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:14px; margin-bottom:28px; overflow:hidden;">
+
+              {% for item in order.items.all %}
+              <tr class="item-row" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; color:#F5F0E8; font-weight:500;">
+                  {{ item.product_name }}
+                  <span style="color:rgba(245,240,232,0.35); font-size:12px; margin-left:6px;">× {{ item.quantity }}</span>
+                </td>
+                <td style="padding:13px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#E8C96E; text-align:right; white-space:nowrap;">
+                  ₦{{ item.total_price|floatformat:0 }}
+                </td>
+              </tr>
+              {% endfor %}
+
+              <tr style="border-top:1px solid rgba(255,255,255,0.04);">
+                <td style="padding:12px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; color:rgba(245,240,232,0.45);">
+                  Shipping ({{ order.shipping_state }})
+                </td>
+                <td style="padding:12px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; color:rgba(245,240,232,0.7); font-weight:600; text-align:right;">
+                  ₦{{ order.shipping_cost|floatformat:0 }}
+                </td>
+              </tr>
+              <tr style="border-top:1px solid rgba(255,255,255,0.04);">
+                <td style="padding:12px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; color:rgba(245,240,232,0.45);">
+                  Tax (7.5%)
+                </td>
+                <td style="padding:12px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; color:rgba(245,240,232,0.7); font-weight:600; text-align:right;">
+                  ₦{{ order.tax|floatformat:0 }}
+                </td>
+              </tr>
+              <tr style="background:linear-gradient(90deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03)); border-top:1px solid rgba(201,168,76,0.2);">
+                <td style="padding:17px 22px; font-family:'Cormorant Garamond',Georgia,serif; font-size:18px; font-weight:600; color:#F5F0E8;">
+                  Total Paid
+                </td>
+                <td style="padding:17px 22px; font-family:'Cormorant Garamond',Georgia,serif; font-size:22px; font-weight:600; color:#E8C96E; text-align:right;">
+                  ₦{{ order.total_amount|floatformat:0 }}
+                </td>
+              </tr>
+            </table>
+
+            <!-- ── Delivery Address ── -->
+            <p style="margin:0 0 12px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#C9A84C;">
+              Delivery Address
+            </p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; margin-bottom:32px;">
+              <tr>
+                <td style="padding:18px 22px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; color:rgba(245,240,232,0.7); line-height:2;">
+                  <strong style="color:#F5F0E8; display:block; margin-bottom:2px;">{{ order.shipping_name }}</strong>
+                  {{ order.shipping_address_line1 }}<br>
+                  {{ order.shipping_city }}, {{ order.shipping_state }}<br>
+                  {{ order.shipping_country }}<br>
+                  <span style="color:rgba(245,240,232,0.4); font-size:13px;">📞 {{ order.shipping_phone }}</span>
+                </td>
+              </tr>
+            </table>
+
+            <!-- ── What's Next Timeline ── -->
+            <p style="margin:0 0 16px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#C9A84C;">
+              What's Next?
+            </p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); border-radius:14px; margin-bottom:32px; overflow:hidden;">
+
+              <!-- Step 1 — active -->
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                <td width="48" style="padding:16px 0 16px 20px; vertical-align:top;">
+                  <table class="tl-icon" role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" width="32" height="32"
+                        style="width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); font-size:13px; line-height:32px; text-align:center; color:#4ade80; font-weight:700;">
+                        ✓
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 3px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#4ade80;">
+                    Order Confirmed
+                  </p>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; color:rgba(245,240,232,0.4); line-height:1.5;">
+                    Your order has been received and payment confirmed
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Step 2 -->
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                <td width="48" style="padding:16px 0 16px 20px; vertical-align:top;">
+                  <table class="tl-icon" role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" width="32" height="32"
+                        style="width:32px; height:32px; border-radius:50%; background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.3); font-size:13px; line-height:32px; text-align:center; color:#C9A84C;">
+                        2
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 3px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#F5F0E8;">
+                    Processing
+                  </p>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; color:rgba(245,240,232,0.4); line-height:1.5;">
+                    We're preparing your items for shipment (1–2 business days)
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Step 3 -->
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                <td width="48" style="padding:16px 0 16px 20px; vertical-align:top;">
+                  <table class="tl-icon" role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" width="32" height="32"
+                        style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); font-size:13px; line-height:32px; text-align:center; color:rgba(245,240,232,0.35);">
+                        3
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 3px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:rgba(245,240,232,0.55);">
+                    Shipped
+                  </p>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; color:rgba(245,240,232,0.35); line-height:1.5;">
+                    Your order is on its way (3–5 business days)
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Step 4 -->
+              <tr>
+                <td width="48" style="padding:16px 0 16px 20px; vertical-align:top;">
+                  <table class="tl-icon" role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" width="32" height="32"
+                        style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); font-size:13px; line-height:32px; text-align:center; color:rgba(245,240,232,0.2);">
+                        4
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 3px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:rgba(245,240,232,0.35);">
+                    Delivered
+                  </p>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; color:rgba(245,240,232,0.25); line-height:1.5;">
+                    Enjoy your purchase!
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+
+            <!-- ── CTA Button ── -->
+            <!--
+              URL FIX: The hardcoded localhost URL has been replaced.
+              Pass `order_url` from your Django view using:
+
+                from django.urls import reverse
+                order_url = request.build_absolute_uri(
+                    reverse('shop:order_detail', args=[order.id])
+                )
+
+              Then include it in your email context:
+                context = { 'order': order, 'order_url': order_url, ... }
+            -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+              <tr>
+                <td align="center">
+                  <a href="{{ order_url }}"
+                    style="display:inline-block; padding:16px 44px; background:linear-gradient(135deg,#C9A84C,#9A7A2E); border-radius:50px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.04em; color:#0A0A0F; text-decoration:none; box-shadow:0 6px 24px rgba(201,168,76,0.3);">
+                    View Order Details
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- ── Stay Updated Notice ── -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+              style="background:rgba(13,27,62,0.5); border:1px solid rgba(56,100,200,0.2); border-radius:12px; margin-bottom:28px; overflow:hidden;">
+              <tr>
+                <td style="padding:3px 0 0; background:linear-gradient(to right,rgba(56,100,200,0.4),transparent); height:3px;"></td>
+              </tr>
+              <tr>
+                <td style="padding:16px 22px;">
+                  <p style="margin:0 0 5px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:#93c5fd;">
+                    📧 Stay Updated
+                  </p>
+                  <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:13px; color:rgba(245,240,232,0.45); line-height:1.65;">
+                    We'll send you tracking information once your order ships. You can also check your order status anytime from your account dashboard.
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Closing -->
+            <p style="margin:0 0 8px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; color:rgba(245,240,232,0.6); line-height:1.75;">
+              Thank you for choosing Nestova. If you have any questions about your order, our customer support team is always happy to help.
+            </p>
+            <p style="margin:24px 0 0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:14px; color:rgba(245,240,232,0.55);">
+              Warm regards,<br>
+              <strong style="color:#C9A84C; font-family:'Cormorant Garamond',Georgia,serif; font-size:18px; font-weight:500;">The Nestova Team</strong>
+            </p>
+
+          </td>
+        </tr>
+
+        <!-- ══ BOTTOM GOLD LINE ══ -->
+        <tr>
+          <td style="height:1px; background:linear-gradient(to right,transparent,rgba(201,168,76,0.35),transparent);"></td>
+        </tr>
+
+        <!-- ══ FOOTER ══ -->
+        <tr>
+          <td style="padding:24px 44px; background-color:#080810; text-align:center;">
+            <p style="margin:0 0 6px; font-family:'Cormorant Garamond',Georgia,serif; font-size:19px; font-weight:500; color:rgba(201,168,76,0.65);">
+              Nestova
+            </p>
+            <p style="margin:0 0 4px; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:12px; color:rgba(245,240,232,0.22);">
+              © {% now "Y" %} Nestova. All rights reserved.
+            </p>
+            <p style="margin:0; font-family:'DM Sans',Helvetica,Arial,sans-serif; font-size:11px; color:rgba(245,240,232,0.16);">
+              This is an automated message — please do not reply directly to this email.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Email Card -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

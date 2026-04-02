@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Nestova</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --emerald-green: #046A38;
+            --metallic-gold: #D4AF37;
+            --charcoal-gray: #333333;
+            --emerald-light: #058a48;
+            --gold-light: #e6c45a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f7f4 0%, #e8f5ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23046A38' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-animation {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .error-code {
+            font-size: 180px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            text-shadow: 0 10px 30px rgba(4, 106, 56, 0.2);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .error-icon {
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.15;
+            animation: rotate 20s linear infinite;
+        }
+
+        .error-icon:nth-child(1) {
+            top: -40px;
+            left: 10%;
+            color: var(--emerald-green);
+        }
+
+        .error-icon:nth-child(2) {
+            top: -20px;
+            right: 15%;
+            color: var(--metallic-gold);
+            animation-delay: -5s;
+        }
+
+        .error-icon:nth-child(3) {
+            bottom: 20px;
+            left: 15%;
+            color: var(--metallic-gold);
+            animation-delay: -10s;
+        }
+
+        .error-icon:nth-child(4) {
+            bottom: 40px;
+            right: 10%;
+            color: var(--emerald-green);
+            animation-delay: -15s;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-content {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(4, 106, 56, 0.15);
+            border: 2px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--charcoal-gray);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .error-divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--metallic-gold), var(--gold-light));
+            margin: 30px auto;
+            border-radius: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary-custom {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(4, 106, 56, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-custom::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--metallic-gold);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary-custom:hover::before {
+            width: 300%;
+            height: 300%;
+        }
+
+        .btn-primary-custom span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(4, 106, 56, 0.4);
+            color: white;
+        }
+
+        .btn-secondary-custom {
+            padding: 16px 40px;
+            background: white;
+            color: var(--emerald-green);
+            border: 2px solid var(--emerald-green);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-custom:hover {
+            background: var(--emerald-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(4, 106, 56, 0.3);
+        }
+
+        .quick-links {
+            margin-top: 40px;
+        }
+
+        .quick-links h3 {
+            font-size: 1.2rem;
+            color: var(--charcoal-gray);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quick-link {
+            padding: 15px 20px;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            color: var(--charcoal-gray);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .quick-link:hover {
+            border-color: var(--emerald-green);
+            background: white;
+            color: var(--emerald-green);
+            transform: translateX(5px);
+        }
+
+        .quick-link i {
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 120px;
+            }
+
+            .error-title {
+                font-size: 2rem;
+            }
+
+            .error-content {
+                padding: 40px 30px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary-custom,
+            .btn-secondary-custom {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 100px;
+            }
+
+            .error-title {
+                font-size: 1.6rem;
+            }
+
+            .error-message {
+                font-size: 1rem;
+            }
+
+            .error-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-container">
+        <div class="error-animation">
+            <i class="bi bi-house-door error-icon"></i>
+            <i class="bi bi-search error-icon"></i>
+            <i class="bi bi-exclamation-triangle error-icon"></i>
+            <i class="bi bi-compass error-icon"></i>
+            <div class="error-code">404</div>
+        </div>
+
+        <div class="error-content">
+            <h1 class="error-title">Oops! Page Not Found</h1>
+            <div class="error-divider"></div>
+            <p class="error-message">
+                The page you're looking for seems to have moved or doesn't exist.
+                Don't worry, even the best explorers get lost sometimes!
+                Let's help you find your way back home.
+            </p>
+
+            <div class="action-buttons">
+                <a href="/" class="btn-primary-custom">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Back to Home</span>
+                </a>
+                <a href="javascript:history.back()" class="btn-secondary-custom">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Go Back</span>
+                </a>
+            </div>
+
+            <div class="quick-links">
+                <h3>Quick Links</h3>
+                <div class="links-grid">
+                    <a href="/properties/" class="quick-link">
+                        <i class="bi bi-building"></i>
+                        <span>Browse Properties</span>
+                    </a>
+                    <a href="/blog/" class="quick-link">
+                        <i class="bi bi-newspaper"></i>
+                        <span>Read Blog</span>
+                    </a>
+                    <a href="/contact/" class="quick-link">
+                        <i class="bi bi-envelope"></i>
+                        <span>Contact Us</span>
+                    </a>
+                    <a href="/about/" class="quick-link">
+                        <i class="bi bi-info-circle"></i>
+                        <span>About Us</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

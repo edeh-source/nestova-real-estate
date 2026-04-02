@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ============================================================
+     ORDER CONFIRMATION — NESTOVA LUXURY GLASSMORPHISM
+     ============================================================ */
+
+  .confirm-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .confirm-ambient .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(130px);
+    animation: orbFloat 22s ease-in-out infinite;
+  }
+
+  .confirm-ambient .orb-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(13,27,62,0.5), transparent);
+    top: -150px; left: -150px;
+    opacity: 0.22;
+  }
+
+  .confirm-ambient .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: 30%; right: -100px;
+    opacity: 0.07;
+    animation-delay: -8s;
+  }
+
+  .confirm-ambient .orb-3 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(13,27,62,0.6), transparent);
+    bottom: -100px; left: 30%;
+    opacity: 0.18;
+    animation-delay: -15s;
+  }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(30px,-25px) scale(1.04); }
+    66%      { transform: translate(-18px,30px) scale(0.96); }
+  }
+
+  .confirm-page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding-top: calc(var(--nav-height) + 60px);
+    padding-bottom: 80px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ---- Success Icon ---- */
+  .success-ring {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 32px;
+  }
+
+  .success-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(var(--gold), var(--gold-light), var(--gold-dark), var(--gold));
+    animation: spinRing 3s linear infinite;
+    opacity: 0.5;
+  }
+
+  .success-ring::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: var(--obsidian);
+    margin: 5px;
+  }
+
+  @keyframes spinRing {
+    to { transform: rotate(360deg); }
+  }
+
+  .success-ring-inner {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.06));
+    border: 1.5px solid rgba(201,168,76,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes popIn {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .success-ring-inner i {
+    font-size: 2.2rem;
+    color: var(--gold-light);
+    animation: checkFade 0.4s ease 0.4s both;
+  }
+
+  @keyframes checkFade {
+    0%   { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ---- Main Card ---- */
+  .confirm-card {
+    background: rgba(18,18,26,0.8);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 52px 48px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .confirm-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.5), transparent);
+  }
+
+  .confirm-card h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .confirm-card h1 span {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .confirm-card > p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 36px;
+  }
+
+  /* ---- Order Details Panel ---- */
+  .order-details-panel {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 24px 28px;
+    text-align: left;
+    margin-bottom: 24px;
+  }
+
+  .order-details-panel .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .order-details-panel .detail-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .order-details-panel .detail-row:first-child {
+    padding-top: 0;
+  }
+
+  .detail-label {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .detail-value {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .detail-value.gold {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.05rem;
+  }
+
+  .status-pill {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 50px;
+  }
+
+  .status-pill.success {
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+  }
+
+  /* ---- Email Notice ---- */
+  .email-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .email-notice i {
+    color: var(--gold);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .email-notice span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .email-notice strong {
+    color: var(--gold-light);
+  }
+
+  /* ---- CTA Buttons ---- */
+  .confirm-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 12px;
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 6px 24px rgba(201,168,76,0.25);
+  }
+
+  .btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(201,168,76,0.4);
+    color: #0A0A0F;
+  }
+
+  .btn-gold:hover::before { left: 100%; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 575px) {
+    .confirm-card { padding: 36px 22px; }
+    .confirm-actions { flex-direction: column; }
+    .btn-gold, .btn-ghost { justify-content: center; }
+  }
+</style>
+
+<div class="confirm-ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="confirm-page">
+  <div class="container">
+    <div class="confirm-card">
+
+      <!-- Success Icon -->
+      <div class="success-ring">
+        <div class="success-ring-inner">
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h1>Order <span>Confirmed!</span></h1>
+      <p>Thank you for your purchase. Your order has been successfully placed and is being processed.</p>
+
+      <!-- Order Details -->
+      <div class="order-details-panel">
+        <div class="detail-row">
+          <span class="detail-label">Order Number</span>
+          <span class="detail-value gold">#{{ order.order_number }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Total Amount</span>
+          <span class="detail-value gold">₦{{ order.total_amount|floatformat:0 }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Payment Method</span>
+          <span class="detail-value">{{ order.get_payment_method_display }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="status-pill success">{{ order.get_status_display }}</span>
+        </div>
+      </div>
+
+      <!-- Email Notice -->
+      <div class="email-notice">
+        <i class="fas fa-envelope"></i>
+        <span>A confirmation email has been sent to <strong>{{ order.email }}</strong></span>
+      </div>
+
+      <!-- Actions -->
+      <div class="confirm-actions">
+        <a href="{% url 'shop:product_list' %}" class="btn-gold">
+          <i class="fas fa-shopping-bag"></i> Continue Shopping
+        </a>
+        <a href="{% url 'shop:order_list' %}" class="btn-ghost">
+          <i class="fas fa-list"></i> View My Orders
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

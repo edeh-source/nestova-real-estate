@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if query %}Search: {{ query }} — Realtors{% else %}Find a Realtor{% endif %} · Nestova
+{% endblock %}
+
+{% block seo_meta %}
+<meta name="description" content="Find verified real estate agents on Nestova{% if query %} — search results for '{{ query }}'{% endif %}.">
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ============================================================
+     AGENT SEARCH RESULTS PAGE
+     ============================================================ */
+
+  .search-hero {
+    padding: 140px 0 60px;
+    background: linear-gradient(180deg, rgba(13, 27, 62, 0.55) 0%, transparent 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201, 168, 76, 0.06), transparent 70%);
+    pointer-events: none;
+  }
+
+  .search-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .search-hero-title span {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .search-hero-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
+  }
+
+  /* ---- Inline search bar ---- */
+  .search-bar-wrap {
+    max-width: 680px;
+    margin: 32px auto 0;
+  }
+
+  .search-bar-form {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(18, 18, 28, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 6px 6px 6px 22px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.3s ease;
+  }
+
+  .search-bar-form:focus-within {
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(201, 168, 76, 0.12);
+  }
+
+  .search-bar-form i {
+    color: var(--gold);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .search-bar-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    caret-color: var(--gold);
+  }
+
+  .search-bar-input::placeholder { color: var(--text-muted); }
+
+  .search-bar-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .search-bar-btn:hover {
+    box-shadow: 0 4px 20px rgba(201, 168, 76, 0.4);
+    transform: translateY(-1px);
+  }
+
+  /* ---- Filters ---- */
+  .search-filters {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 48px;
+  }
+
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: var(--glass-white);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+
+  .filter-pill:hover,
+  .filter-pill.active {
+    background: rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.35);
+    color: var(--gold-light);
+  }
+
+  .filter-pill.active {
+    font-weight: 600;
+  }
+
+  /* ---- Results meta ---- */
+  .results-meta {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .results-meta strong {
+    color: var(--text-primary);
+  }
+
+  /* ---- Agent Cards Grid ---- */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .agent-card {
+    position: relative;
+    background: var(--surface-1);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: var(--transition);
+    overflow: hidden;
+  }
+
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.04), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .agent-card:hover {
+    border-color: rgba(201, 168, 76, 0.25);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(201, 168, 76, 0.1);
+    transform: translateY(-4px);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .agent-card:hover::before { opacity: 1; }
+
+  /* Card top row */
+  .agent-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .agent-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(201, 168, 76, 0.22);
+    flex-shrink: 0;
+  }
+
+  .agent-avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(201, 168, 76, 0.05));
+    border: 2px solid rgba(201, 168, 76, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--gold-light);
+  }
+
+  .agent-card-header {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .agent-name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .agent-specialization {
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .agent-location {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Verified badge */
+  .badge-verified {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    padding: 4px 10px;
+    border-radius: 50px;
+  }
+
+  /* Divider */
+  .agent-card-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 0;
+  }
+
+  /* Stats row */
+  .agent-stats {
+    display: flex;
+    gap: 0;
+  }
+
+  .agent-stat {
+    flex: 1;
+    text-align: center;
+    padding: 0 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .agent-stat:last-child { border-right: none; }
+  .agent-stat:first-child { padding-left: 0; text-align: left; }
+  .agent-stat:last-child { text-align: right; }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 2px;
+  }
+
+  /* CTA row */
+  .agent-card-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .agent-card-cta-text {
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: gap 0.2s ease;
+  }
+
+  .agent-card:hover .agent-card-cta-text { gap: 8px; }
+
+  /* ---- Empty state ---- */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    grid-column: 1 / -1;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: rgba(245, 240, 232, 0.1);
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .empty-state p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 380px;
+    margin: 0 auto 28px;
+  }
+
+  .btn-empty-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--glass-white);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .btn-empty-cta:hover {
+    background: rgba(201, 168, 76, 0.1);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: var(--gold-light);
+  }
+
+  /* ---- Pagination ---- */
+  .search-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 56px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--glass-white);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .page-btn:hover,
+  .page-btn.active {
+    background: rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.35);
+    color: var(--gold-light);
+    text-decoration: none;
+  }
+
+  .page-btn.active { font-weight: 700; cursor: default; pointer-events: none; }
+  .page-btn.disabled { opacity: 0.35; pointer-events: none; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 768px) {
+    .search-hero { padding: 120px 0 40px; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .search-bar-form { padding: 5px 5px 5px 16px; }
+    .search-bar-btn { padding: 9px 16px; font-size: 0.8rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+     SEARCH HERO
+     ============================================================ -->
+<section class="search-hero">
+  <div class="container text-center">
+    <h1 class="search-hero-title">
+      {% if query %}
+        Results for <span>"{{ query }}"</span>
+      {% else %}
+        Find Your <span>Perfect Realtor</span>
+      {% endif %}
+    </h1>
+    <p class="search-hero-subtitle">
+      {% if query %}
+        {{ total }} realtor{{ total|pluralize }} found on Nestova
+      {% else %}
+        Search from our network of verified real estate professionals across Nigeria
+      {% endif %}
+    </p>
+
+    <!-- Inline search bar -->
+    <div class="search-bar-wrap">
+      <form class="search-bar-form" method="get" action="{% url 'agents:agent_search' %}">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          name="q"
+          class="search-bar-input"
+          placeholder="Name, location, or specialization…"
+          value="{{ query }}"
+          autocomplete="off"
+        >
+        {% if location_filter %}
+          <input type="hidden" name="location" value="{{ location_filter }}">
+        {% endif %}
+        {% if verified_only %}
+          <input type="hidden" name="verified" value="1">
+        {% endif %}
+        <button type="submit" class="search-bar-btn">
+          <i class="bi bi-search"></i>
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FILTERS + RESULTS
+     ============================================================ -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+
+    <!-- Filter Pills -->
+    <div class="search-filters">
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <span style="font-size:0.8rem; color:var(--text-muted); margin-right:4px;">Filter:</span>
+
+        {% url 'agents:agent_search' as base_url %}
+
+        <a href="{{ base_url }}{% if query %}?q={{ query }}{% endif %}"
+           class="filter-pill {% if not verified_only %}active{% endif %}">
+          <i class="bi bi-people"></i> All Realtors
+        </a>
+
+        <a href="{{ base_url }}?{% if query %}q={{ query }}&{% endif %}verified=1"
+           class="filter-pill {% if verified_only %}active{% endif %}">
+          <i class="bi bi-patch-check-fill" style="color:#4ade80"></i> Verified Only
+        </a>
+
+        {% if query %}
+        <a href="{{ base_url }}" class="filter-pill" style="margin-left:auto;">
+          <i class="bi bi-x"></i> Clear Search
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Results meta -->
+    {% if query or verified_only %}
+    <p class="results-meta">
+      Showing <strong>{{ agents|length }}</strong>
+      of <strong>{{ total }}</strong> realtor{{ total|pluralize }}
+      {% if query %}for <strong>"{{ query }}"</strong>{% endif %}
+      {% if verified_only %} · <span style="color:#4ade80"><i class="bi bi-patch-check-fill"></i> Verified only</span>{% endif %}
+    </p>
+    {% endif %}
+
+    <!-- Agent Cards Grid -->
+    <div class="agents-grid">
+
+      {% for agent in agents %}
+      {% with full_name=agent.user.get_full_name|default:agent.user.username %}
+      <a href="{% url 'agents:agent_profile' slug=agent.slug %}" class="agent-card">
+
+        {% if agent.verification_status == 'verified' %}
+        <div class="badge-verified">
+          <i class="bi bi-patch-check-fill"></i> Verified
+        </div>
+        {% endif %}
+
+        <!-- Top row: avatar + name -->
+        <div class="agent-card-top">
+          {% if agent.avatar %}
+            <img src="{{ agent.avatar.url }}" alt="{{ full_name }}" class="agent-avatar">
+          {% elif agent.profile_picture %}
+            <img src="{{ agent.profile_picture.url }}" alt="{{ full_name }}" class="agent-avatar">
+          {% else %}
+            <div class="agent-avatar-placeholder">
+              {{ full_name|slice:":2"|upper }}
+            </div>
+          {% endif %}
+
+          <div class="agent-card-header">
+            <h3 class="agent-name">{{ full_name }}</h3>
+            {% if agent.specialization %}
+              <p class="agent-specialization">{{ agent.specialization }}</p>
+            {% endif %}
+            {% with loc=agent.location|default:agent.city|default:agent.state %}
+            {% if loc %}
+              <div class="agent-location">
+                <i class="bi bi-geo-alt"></i>
+                {{ loc }}
+              </div>
+            {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+
+        <div class="agent-card-divider"></div>
+
+        <!-- Stats row -->
+        <div class="agent-stats">
+          <div class="agent-stat">
+            <div class="stat-value">{{ agent.prop_count|default:"0" }}</div>
+            <div class="stat-label">Listings</div>
+          </div>
+          <div class="agent-stat">
+            <div class="stat-value">
+              {% if agent.verification_status == 'verified' %}
+                <i class="bi bi-patch-check-fill" style="color:#4ade80; font-size:1rem;"></i>
+              {% else %}
+                <span style="font-size:0.85rem; color:var(--text-muted)">—</span>
+              {% endif %}
+            </div>
+            <div class="stat-label">Status</div>
+          </div>
+          <div class="agent-stat">
+            <div class="stat-value" style="font-size:0.78rem; color:var(--text-muted); padding-top:4px;">
+              {{ agent.user.date_joined|date:"Y" }}
+            </div>
+            <div class="stat-label">Member Since</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="agent-card-cta">
+          <span class="agent-card-cta-text">
+            View Profile <i class="bi bi-arrow-right"></i>
+          </span>
+          <div style="font-size:0.75rem; color:var(--text-muted);">
+            {{ agent.prop_count }} propert{{ agent.prop_count|pluralize:"y,ies" }}
+          </div>
+        </div>
+
+      </a>
+      {% endwith %}
+      {% empty %}
+
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-state-icon"><i class="bi bi-person-slash"></i></div>
+        <h3>No Realtors Found</h3>
+        <p>
+          {% if query %}
+            We couldn't find any realtors matching <strong>"{{ query }}"</strong>.
+            Try a different name or location.
+          {% else %}
+            No realtors are registered yet. Check back soon.
+          {% endif %}
+        </p>
+        <a href="{% url 'agents:agent_search' %}" class="btn-empty-cta">
+          <i class="bi bi-people"></i>
+          Browse All Realtors
+        </a>
+      </div>
+
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if agents.has_other_pages %}
+    <nav class="search-pagination" aria-label="Search pagination">
+      {% if agents.has_previous %}
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if verified_only %}verified=1&{% endif %}page={{ agents.previous_page_number }}"
+           class="page-btn" aria-label="Previous page">
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      {% else %}
+        <span class="page-btn disabled"><i class="bi bi-chevron-left"></i></span>
+      {% endif %}
+
+      {% for num in agents.paginator.page_range %}
+        {% if agents.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+        {% elif num > agents.number|add:"-3" and num < agents.number|add:"3" %}
+          <a href="?{% if query %}q={{ query }}&{% endif %}{% if verified_only %}verified=1&{% endif %}page={{ num }}"
+             class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if agents.has_next %}
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if verified_only %}verified=1&{% endif %}page={{ agents.next_page_number }}"
+           class="page-btn" aria-label="Next page">
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      {% else %}
+        <span class="page-btn disabled"><i class="bi bi-chevron-right"></i></span>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

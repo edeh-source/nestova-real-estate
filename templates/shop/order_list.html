@@ -1,0 +1,610 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+<style>
+  /* ============================================================
+     ORDER LIST — NESTOVA LUXURY GLASSMORPHISM
+     ============================================================ */
+
+  .ol-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .ol-ambient .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(130px);
+    animation: orbFloat 22s ease-in-out infinite;
+  }
+
+  .ol-ambient .orb-1 {
+    width: 650px; height: 650px;
+    background: radial-gradient(circle, rgba(13,27,62,0.5), transparent);
+    top: -180px; left: -180px;
+    opacity: 0.2;
+  }
+
+  .ol-ambient .orb-2 {
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: 40%; right: -120px;
+    opacity: 0.06;
+    animation-delay: -8s;
+  }
+
+  .ol-ambient .orb-3 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #0D1B3E, transparent);
+    bottom: -80px; left: 35%;
+    opacity: 0.18;
+    animation-delay: -15s;
+  }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(35px,-25px) scale(1.04); }
+    66%      { transform: translate(-18px,35px) scale(0.96); }
+  }
+
+  .ol-page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding-top: calc(var(--nav-height) + 40px);
+    padding-bottom: 80px;
+  }
+
+  /* ---- Hero ---- */
+  .ol-hero {
+    padding: 50px 0 40px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .ol-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+  }
+
+  .ol-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .ol-eyebrow::before {
+    content: '';
+    width: 28px; height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .ol-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .ol-hero p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* ---- Order Card ---- */
+  .ol-card {
+    background: rgba(18,18,26,0.78);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 28px 32px;
+    box-shadow: 0 16px 50px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.05);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .ol-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+  }
+
+  /* Gold left accent bar */
+  .ol-card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; bottom: 20%;
+    width: 3px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .ol-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(201,168,76,0.18);
+    box-shadow: 0 28px 70px rgba(0,0,0,0.5);
+  }
+
+  .ol-card:hover::after { opacity: 1; }
+
+  /* ---- Card Header ---- */
+  .ol-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-wrap: wrap;
+  }
+
+  .ol-order-number {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 500;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  .ol-order-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ol-order-date i { color: var(--gold); opacity: 0.6; font-size: 0.72rem; }
+
+  .ol-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ---- Status Pills ---- */
+  .status-pill {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 50px;
+    white-space: nowrap;
+  }
+
+  .sp-pending   { background: rgba(251,191,36,0.12);  border: 1px solid rgba(251,191,36,0.3);  color: #fbbf24; }
+  .sp-processing{ background: rgba(56,189,248,0.1);   border: 1px solid rgba(56,189,248,0.3);  color: #38bdf8; }
+  .sp-shipped   { background: rgba(99,102,241,0.1);   border: 1px solid rgba(99,102,241,0.3);  color: #818cf8; }
+  .sp-delivered { background: rgba(34,197,94,0.1);    border: 1px solid rgba(34,197,94,0.3);   color: #4ade80; }
+  .sp-cancelled { background: rgba(239,68,68,0.1);    border: 1px solid rgba(239,68,68,0.3);   color: #f87171; }
+  .sp-refunded  { background: rgba(148,163,184,0.1);  border: 1px solid rgba(148,163,184,0.25);color: #94a3b8; }
+  .sp-paid      { background: rgba(34,197,94,0.1);    border: 1px solid rgba(34,197,94,0.3);   color: #4ade80; }
+  .sp-failed    { background: rgba(239,68,68,0.1);    border: 1px solid rgba(239,68,68,0.3);   color: #f87171; }
+
+  /* ---- Meta Grid ---- */
+  .ol-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .ol-meta-item {}
+
+  .ol-meta-label {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 5px;
+    opacity: 0.8;
+  }
+
+  .ol-meta-value {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .ol-meta-value.amount {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---- Item Previews ---- */
+  .ol-items-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
+
+  .ol-item-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 4px 12px;
+    border-radius: 50px;
+    transition: border-color 0.2s ease;
+  }
+
+  .ol-item-tag:hover { border-color: rgba(201,168,76,0.25); color: var(--gold-light); }
+
+  .ol-item-more {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 4px 12px;
+    border-radius: 50px;
+  }
+
+  /* ---- Card Actions ---- */
+  .ol-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 10px;
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    box-shadow: 0 4px 16px rgba(201,168,76,0.2);
+  }
+
+  .btn-view::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(201,168,76,0.35);
+    color: #0A0A0F;
+  }
+
+  .btn-view:hover::before { left: 100%; }
+
+  .btn-pay {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    background: rgba(251,191,36,0.1);
+    border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 10px;
+    color: #fbbf24;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-pay:hover {
+    background: rgba(251,191,36,0.18);
+    color: #fbbf24;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251,191,36,0.15);
+  }
+
+  /* ---- Empty State ---- */
+  .ol-empty {
+    background: rgba(18,18,26,0.78);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 80px 40px;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ol-empty::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+  }
+
+  .ol-empty-icon {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 2rem;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .ol-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .ol-empty p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .btn-gold-lg {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 12px;
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.35s ease;
+    box-shadow: 0 6px 24px rgba(201,168,76,0.25);
+  }
+
+  .btn-gold-lg:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(201,168,76,0.4);
+    color: #0A0A0F;
+  }
+
+  /* ---- Pagination ---- */
+  .ol-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .ol-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .ol-page-link:hover {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .ol-page-link.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: var(--gold);
+    color: #0A0A0F;
+    box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+  }
+
+  .ol-page-link.wide {
+    width: auto;
+    padding: 0 18px;
+  }
+
+  @media (max-width: 575px) {
+    .ol-card { padding: 22px 18px; }
+    .ol-hero h1 { font-size: 2rem; }
+    .ol-meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="ol-ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="ol-page">
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="ol-hero">
+      <div class="ol-eyebrow">Account</div>
+      <h1>My Orders</h1>
+      <p>Track and manage all your orders in one place</p>
+    </div>
+
+    {% if orders %}
+
+      {% for order in orders %}
+      <div class="ol-card">
+
+        <!-- Header -->
+        <div class="ol-card-header">
+          <div>
+            <div class="ol-order-number">#{{ order.order_number }}</div>
+            <div class="ol-order-date">
+              <i class="far fa-calendar"></i>
+              {{ order.created_at|date:"F d, Y — h:i A" }}
+            </div>
+          </div>
+          <div class="ol-badges">
+            <span class="status-pill sp-{{ order.status }}">{{ order.get_status_display }}</span>
+            <span class="status-pill sp-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span>
+          </div>
+        </div>
+
+        <!-- Meta Grid -->
+        <div class="ol-meta-grid">
+          <div class="ol-meta-item">
+            <div class="ol-meta-label">Total Amount</div>
+            <div class="ol-meta-value amount">₦{{ order.total_amount|floatformat:0|intcomma }}</div>
+          </div>
+          <div class="ol-meta-item">
+            <div class="ol-meta-label">Items</div>
+            <div class="ol-meta-value">{{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+          </div>
+          <div class="ol-meta-item">
+            <div class="ol-meta-label">Payment</div>
+            <div class="ol-meta-value">{{ order.payment_method|title }}</div>
+          </div>
+          <div class="ol-meta-item">
+            <div class="ol-meta-label">Ship To</div>
+            <div class="ol-meta-value">{{ order.shipping_city }}, {{ order.shipping_state }}</div>
+          </div>
+        </div>
+
+        <!-- Item Previews -->
+        <div class="ol-items-preview">
+          {% for item in order.items.all|slice:":3" %}
+          <span class="ol-item-tag">{{ item.product_name }} × {{ item.quantity }}</span>
+          {% endfor %}
+          {% if order.items.count > 3 %}
+          <span class="ol-item-more">+{{ order.items.count|add:"-3" }} more</span>
+          {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div class="ol-actions">
+          <a href="{% url 'shop:order_detail' order.id %}" class="btn-view">
+            <i class="fas fa-eye"></i> View Details
+          </a>
+          {% if order.payment_status == 'pending' and order.payment_method == 'paystack' %}
+          <a href="{% url 'shop:initialize_payment' order.id %}" class="btn-pay">
+            <i class="fas fa-credit-card"></i> Complete Payment
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+
+      <!-- Pagination -->
+      {% if orders.has_other_pages %}
+      <nav class="ol-pagination" aria-label="Order pagination">
+        {% if orders.has_previous %}
+        <a class="ol-page-link wide" href="?page={{ orders.previous_page_number }}">
+          <i class="fas fa-chevron-left"></i> Prev
+        </a>
+        {% endif %}
+
+        {% for num in orders.paginator.page_range %}
+          {% if orders.number == num %}
+          <span class="ol-page-link active">{{ num }}</span>
+          {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+          <a class="ol-page-link" href="?page={{ num }}">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if orders.has_next %}
+        <a class="ol-page-link wide" href="?page={{ orders.next_page_number }}">
+          Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+      </nav>
+      {% endif %}
+
+    {% else %}
+
+      <!-- Empty State -->
+      <div class="ol-empty">
+        <div class="ol-empty-icon">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h3>No Orders Yet</h3>
+        <p>You haven't placed any orders yet. Explore our shop and find something you love.</p>
+        <a href="{% url 'shop:product_list' %}" class="btn-gold-lg">
+          <i class="fas fa-shopping-cart"></i> Start Shopping
+        </a>
+      </div>
+
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

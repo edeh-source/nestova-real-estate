@@ -1,0 +1,231 @@
+# ===========================
+# Python
+# ===========================
+*.py[cod]
+*$py.class
+*.so
+.Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ===========================
+# Virtual Environment
+# ===========================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ===========================
+# Django
+# ===========================
+*.log
+*.pot
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+
+# Django migrations (OPTIONAL - comment out if you want to track migrations)
+# **/migrations/*.py
+# **/migrations/*.pyc
+# !**/migrations/__init__.py
+
+# ===========================
+# Static and Media Files
+# ===========================
+
+
+
+*.coverage
+
+# But keep these directories (they'll be empty in git)
+!.gitkeep
+
+# ===========================
+# Environment Variables & Secrets
+# ===========================
+.env
+.env.local
+.env.*.local
+*.env
+.envrc
+secrets.json
+config.json
+
+# Google OAuth credentials
+client_secret*.json
+credentials.json
+
+# ===========================
+# Database
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+db.json
+
+# PostgreSQL
+*.pgsql
+*.sql
+
+# ===========================
+# IDE & Editors
+# ===========================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ===========================
+# Operating System
+# ===========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ===========================
+# Testing & Coverage
+# ===========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+nosetests.xml
+pytest.ini
+.cache
+
+# ===========================
+# Documentation
+# ===========================
+docs/_build/
+site/
+
+# ===========================
+# Node.js (if using frontend tools)
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ===========================
+# Celery
+# ===========================
+celerybeat-schedule
+celerybeat.pid
+
+# ===========================
+# Backup Files
+# ===========================
+*.bak
+*.backup
+*.old
+*.orig
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+log/
+
+# ===========================
+# Temporary Files
+# ===========================
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ===========================
+# Deployment
+# ===========================
+.elasticbeanstalk/
+.serverless/
+.vercel/
+.netlify/
+
+# ===========================
+# SSL Certificates
+# ===========================
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# ===========================
+# Compiled Source
+# ===========================
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# ===========================
+# Packages
+# ===========================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ===========================
+# Custom - Add Your Own Below
+# ===========================
+# Example: uploads/
+# Example: backups/

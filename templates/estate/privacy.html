@@ -1,0 +1,711 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy — Nestova{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ============================================================
+     NESTOVA — LEGAL PAGES SHARED DESIGN SYSTEM
+     ============================================================ */
+
+  .legal-hero {
+    position: relative;
+    padding: 160px 0 80px;
+    background: linear-gradient(160deg, #060B1A 0%, #0A0A0F 55%, #0D1B3E 100%);
+    overflow: hidden;
+  }
+
+  .legal-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .legal-hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .legal-hero-orb-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: -200px; right: -100px;
+  }
+
+  .legal-hero-orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #1a3a6e, transparent);
+    bottom: -100px; left: -100px;
+    opacity: 0.18;
+  }
+
+  .legal-hero-content { position: relative; z-index: 2; text-align: center; }
+
+  .legal-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 50px;
+    font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+  }
+
+  .legal-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 500; color: var(--text-primary);
+    line-height: 1.15; margin-bottom: 16px;
+  }
+
+  .legal-hero-title span {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .legal-hero-meta {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; flex-wrap: wrap; margin-top: 24px;
+  }
+
+  .legal-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.83rem; color: var(--text-muted);
+  }
+
+  .legal-meta-item i { color: var(--gold); font-size: 0.9rem; }
+
+  /* Layout */
+  .legal-wrapper { padding: 80px 0 100px; position: relative; }
+
+  .legal-layout {
+    display: grid; grid-template-columns: 280px 1fr;
+    gap: 48px; align-items: start;
+  }
+
+  /* Sidebar */
+  .legal-sidebar { position: sticky; top: 100px; }
+
+  .toc-card {
+    background: rgba(18,18,26,0.7);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-md);
+    padding: 28px 24px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  }
+
+  .toc-label {
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .toc-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.3), transparent);
+  }
+
+  .toc-nav {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .toc-nav li a {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px; border-radius: var(--radius-sm);
+    font-size: 0.82rem; color: var(--text-muted);
+    text-decoration: none; transition: var(--transition); line-height: 1.4;
+  }
+
+  .toc-nav li a:hover, .toc-nav li a.active {
+    background: rgba(201,168,76,0.08); color: var(--gold-light);
+  }
+
+  .toc-num {
+    flex-shrink: 0; width: 20px; height: 20px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--gold); margin-top: 1px;
+  }
+
+  .toc-nav li a:hover .toc-num,
+  .toc-nav li a.active .toc-num { background: rgba(201,168,76,0.25); }
+
+  .policy-links {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .policy-links-label {
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 10px;
+  }
+
+  .policy-link-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-sm);
+    text-decoration: none; color: var(--text-muted);
+    font-size: 0.82rem; transition: var(--transition);
+  }
+
+  .policy-link-item:hover {
+    background: rgba(255,255,255,0.04); color: var(--text-primary);
+  }
+
+  .policy-link-item i { color: var(--gold); width: 16px; text-align: center; font-size: 0.85rem; }
+
+  .policy-link-item.current {
+    background: rgba(201,168,76,0.08); color: var(--gold-light);
+    border: 1px solid rgba(201,168,76,0.15);
+  }
+
+  /* Content */
+  .legal-content { min-width: 0; }
+
+  .legal-section { margin-bottom: 56px; scroll-margin-top: 110px; }
+
+  .legal-section-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .section-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--gold); font-size: 1.1rem;
+  }
+
+  .legal-section-header h2 {
+    font-family: var(--font-display); font-size: 1.5rem;
+    font-weight: 500; color: var(--text-primary); margin: 0;
+  }
+
+  .legal-section p {
+    font-size: 0.95rem; line-height: 1.85;
+    color: rgba(245,240,232,0.75); margin-bottom: 16px;
+  }
+
+  .legal-section p:last-child { margin-bottom: 0; }
+
+  .legal-section h3 {
+    font-family: var(--font-display); font-size: 1.15rem;
+    font-weight: 500; color: var(--text-primary); margin: 28px 0 12px;
+  }
+
+  .legal-list {
+    list-style: none; padding: 0; margin: 0 0 20px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .legal-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 0.93rem; line-height: 1.7;
+    color: rgba(245,240,232,0.75);
+  }
+
+  .legal-list li::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold); margin-top: 9px; flex-shrink: 0;
+  }
+
+  .legal-callout {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 20px 24px; margin: 24px 0;
+  }
+
+  .legal-callout p {
+    margin: 0 !important; color: rgba(245,240,232,0.85) !important; font-size: 0.9rem !important;
+  }
+
+  .legal-callout strong { color: var(--gold-light); }
+
+  .legal-info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin: 20px 0;
+  }
+
+  .legal-info-card {
+    background: rgba(18,18,26,0.5);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+  }
+
+  .legal-info-card .info-title {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 8px;
+  }
+
+  .legal-info-card p {
+    font-size: 0.88rem !important; margin: 0 !important;
+    color: rgba(245,240,232,0.7) !important; line-height: 1.6 !important;
+  }
+
+  .legal-contact-cta {
+    background: linear-gradient(135deg,rgba(201,168,76,0.1),rgba(13,27,62,0.4));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: var(--radius-md);
+    padding: 40px 36px; text-align: center; margin-top: 60px;
+  }
+
+  .legal-contact-cta h3 {
+    font-family: var(--font-display); font-size: 1.6rem;
+    color: var(--text-primary); margin-bottom: 12px;
+  }
+
+  .legal-contact-cta p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 24px; }
+
+  .btn-legal-contact {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F !important;
+    font-family: var(--font-body); font-size: 0.88rem; font-weight: 700;
+    border-radius: 50px; text-decoration: none;
+    transition: var(--transition);
+    box-shadow: 0 6px 24px rgba(201,168,76,0.3);
+  }
+
+  .btn-legal-contact:hover {
+    transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,168,76,0.45); color: #0A0A0F !important;
+  }
+
+  /* Mobile TOC */
+  .mobile-toc-toggle {
+    display: none; width: 100%; padding: 14px 20px;
+    background: rgba(18,18,26,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary); font-family: var(--font-body);
+    font-size: 0.88rem; font-weight: 500; cursor: pointer;
+    justify-content: space-between; align-items: center; gap: 12px;
+    margin-bottom: 32px; transition: var(--transition);
+  }
+
+  .mobile-toc-toggle:hover { border-color: rgba(201,168,76,0.3); }
+  .mobile-toc-toggle i { color: var(--gold); transition: transform 0.3s ease; }
+  .mobile-toc-toggle.open i.bi-chevron-down { transform: rotate(180deg); }
+
+  .mobile-toc-panel {
+    display: none;
+    background: rgba(18,18,26,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 32px;
+  }
+
+  .mobile-toc-panel.open { display: block; }
+
+  .legal-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.25), transparent);
+    margin: 56px 0;
+  }
+
+  @media (max-width: 1024px) {
+    .legal-layout { grid-template-columns: 240px 1fr; gap: 36px; }
+  }
+
+  @media (max-width: 860px) {
+    .legal-layout { grid-template-columns: 1fr; }
+    .legal-sidebar { display: none; }
+    .mobile-toc-toggle { display: flex; }
+    .legal-info-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 576px) {
+    .legal-hero { padding: 130px 0 60px; }
+    .legal-section-header h2 { font-size: 1.25rem; }
+    .legal-contact-cta { padding: 28px 20px; }
+  }
+
+  @media print {
+    .legal-sidebar, .mobile-toc-toggle, .mobile-toc-panel,
+    #header, #footer, #scroll-top, #preloader { display: none !important; }
+    .legal-layout { display: block; }
+    body { background: #fff !important; color: #111 !important; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="legal-hero">
+  <div class="legal-hero-orb legal-hero-orb-1"></div>
+  <div class="legal-hero-orb legal-hero-orb-2"></div>
+  <div class="container">
+    <div class="legal-hero-content">
+      <div class="legal-badge"><i class="bi bi-shield-lock-fill"></i> Legal Documentation</div>
+      <h1 class="legal-hero-title">Privacy <span>Policy</span></h1>
+      <p style="color:var(--text-muted);font-size:1rem;max-width:520px;margin:0 auto;line-height:1.75;">
+        Your privacy is central to everything we do at Nestova. This policy explains how we collect,
+        use, and protect your personal information.
+      </p>
+      <div class="legal-hero-meta">
+        <span class="legal-meta-item"><i class="bi bi-calendar3"></i> Effective: 1 January 2025</span>
+        <span class="legal-meta-item"><i class="bi bi-arrow-clockwise"></i> Updated: 1 June 2025</span>
+        <span class="legal-meta-item"><i class="bi bi-geo-alt-fill"></i> Jurisdiction: Federal Republic of Nigeria</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="legal-wrapper">
+  <div class="container">
+
+    <button class="mobile-toc-toggle" onclick="toggleMobileTOC(this)" aria-expanded="false" aria-controls="mobileTOC">
+      <span><i class="bi bi-list-ul me-2" style="color:var(--gold);"></i>Table of Contents</span>
+      <i class="bi bi-chevron-down"></i>
+    </button>
+    <div class="mobile-toc-panel" id="mobileTOC">
+      <ul class="toc-nav">
+        <li><a href="#overview"><span class="toc-num">1</span>Overview &amp; Scope</a></li>
+        <li><a href="#data-collected"><span class="toc-num">2</span>Information We Collect</a></li>
+        <li><a href="#how-we-use"><span class="toc-num">3</span>How We Use Your Data</a></li>
+        <li><a href="#legal-basis"><span class="toc-num">4</span>Legal Basis for Processing</a></li>
+        <li><a href="#sharing"><span class="toc-num">5</span>Disclosure of Information</a></li>
+        <li><a href="#data-security"><span class="toc-num">6</span>Data Security</a></li>
+        <li><a href="#retention"><span class="toc-num">7</span>Retention of Data</a></li>
+        <li><a href="#your-rights"><span class="toc-num">8</span>Your Rights</a></li>
+        <li><a href="#third-party"><span class="toc-num">9</span>Third-Party Services</a></li>
+        <li><a href="#children"><span class="toc-num">10</span>Children's Privacy</a></li>
+        <li><a href="#changes"><span class="toc-num">11</span>Changes to this Policy</a></li>
+        <li><a href="#contact-privacy"><span class="toc-num">12</span>Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div class="legal-layout">
+      <aside class="legal-sidebar">
+        <div class="toc-card">
+          <div class="toc-label"><i class="bi bi-list-ul"></i>Contents</div>
+          <ul class="toc-nav" id="tocNav">
+            <li><a href="#overview"><span class="toc-num">1</span>Overview &amp; Scope</a></li>
+            <li><a href="#data-collected"><span class="toc-num">2</span>Information We Collect</a></li>
+            <li><a href="#how-we-use"><span class="toc-num">3</span>How We Use Your Data</a></li>
+            <li><a href="#legal-basis"><span class="toc-num">4</span>Legal Basis for Processing</a></li>
+            <li><a href="#sharing"><span class="toc-num">5</span>Disclosure of Information</a></li>
+            <li><a href="#data-security"><span class="toc-num">6</span>Data Security</a></li>
+            <li><a href="#retention"><span class="toc-num">7</span>Retention of Data</a></li>
+            <li><a href="#your-rights"><span class="toc-num">8</span>Your Rights</a></li>
+            <li><a href="#third-party"><span class="toc-num">9</span>Third-Party Services</a></li>
+            <li><a href="#children"><span class="toc-num">10</span>Children's Privacy</a></li>
+            <li><a href="#changes"><span class="toc-num">11</span>Changes to this Policy</a></li>
+            <li><a href="#contact-privacy"><span class="toc-num">12</span>Contact Us</a></li>
+          </ul>
+          <div class="policy-links">
+            <div class="policy-links-label">Related Policies</div>
+            <a href="{% url 'privacy_policy' %}" class="policy-link-item current"><i class="bi bi-shield-lock-fill"></i>Privacy Policy</a>
+            <a href="" class="policy-link-item"><i class="bi bi-cookie"></i>Cookies Policy</a>
+            <a href="" class="policy-link-item"><i class="bi bi-file-earmark-text"></i>Terms of Service</a>
+          </div>
+        </div>
+      </aside>
+
+      <main class="legal-content">
+
+        <section class="legal-section" id="overview">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-info-circle"></i></div>
+            <h2>1. Overview &amp; Scope</h2>
+          </div>
+          <p style="color: black;">Nestova Real Estate Platform ("<strong style="color:var(--text-primary);">Nestova</strong>", "we", "us", or "our") is committed to protecting the privacy and personal data of every individual who interacts with our platform. This Privacy Policy governs the collection, processing, storage, and disclosure of personal information obtained through our website at <strong style="color:var(--text-primary);">nestova.ng</strong>, our mobile applications, and all associated digital services (collectively, the "Platform").</p>
+          <p>This Policy applies to all users of the Platform, including registered members, property seekers, property owners, real estate agents, developers, and visitors who browse without creating an account. By accessing or using the Platform, you acknowledge that you have read, understood, and consent to the terms described herein.</p>
+          <div class="legal-callout">
+            <p><strong>Governing Law:</strong> This Privacy Policy is prepared in compliance with the <strong>Nigeria Data Protection Act 2023 (NDPA)</strong>, the <strong>Nigeria Data Protection Regulation 2019 (NDPR)</strong>, and other applicable Nigerian federal legislation. Where you access our Platform from outside Nigeria, the laws of the Federal Republic of Nigeria shall continue to govern this Policy.</p>
+          </div>
+          <p>Nestova acts as both a <strong style="color:var(--text-primary);">data controller</strong> (determining the purposes of processing) and, in certain circumstances, a <strong style="color:var(--text-primary);">data processor</strong> (processing data on behalf of third-party principals such as real estate firms and independent agents listed on our platform).</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="data-collected">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-collection"></i></div>
+            <h2>2. Information We Collect</h2>
+          </div>
+          <p>We collect personal information only to the extent necessary to deliver our services effectively and securely. The categories of data we collect include:</p>
+          <h3>2.1 Information You Provide Directly</h3>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Account Registration:</strong> Full name, email address, phone number, password (encrypted), and profile photograph.</li>
+            <li><strong style="color:var(--text-primary);">Property Listings:</strong> Property address, photographs, descriptions, pricing details, and ownership documentation.</li>
+            <li><strong style="color:var(--text-primary);">Enquiries &amp; Communications:</strong> Messages sent to agents or property owners, enquiry forms, and support requests.</li>
+            <li><strong style="color:var(--text-primary);">Identity Verification:</strong> Government-issued identification documents (NIN, International Passport, Driver's Licence) required for high-value transactions and agent verification.</li>
+            <li><strong style="color:var(--text-primary);">Payment Information:</strong> Bank account details, card information, and billing address, processed via our PCI-DSS-compliant payment partners.</li>
+            <li><strong style="color:var(--text-primary);">Newsletter &amp; Marketing:</strong> Email address and preferences submitted via subscription forms.</li>
+          </ul>
+          <h3>2.2 Information Collected Automatically</h3>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Device &amp; Technical Data:</strong> IP address, browser type, operating system, device identifiers, and screen resolution.</li>
+            <li><strong style="color:var(--text-primary);">Usage Data:</strong> Pages visited, links clicked, search queries, session duration, and navigation paths within the Platform.</li>
+            <li><strong style="color:var(--text-primary);">Location Data:</strong> Approximate geographic location derived from IP address; precise location only if you grant explicit permission through your device settings.</li>
+            <li><strong style="color:var(--text-primary);">Cookies &amp; Tracking Technologies:</strong> Data collected through cookies, web beacons, and similar technologies as described in our Cookies Policy.</li>
+          </ul>
+          <h3>2.3 Information from Third Parties</h3>
+          <ul class="legal-list">
+            <li>Social login data from Google or Facebook when you choose to register via those platforms.</li>
+            <li>Credit bureau and identity verification data from licensed third-party verification providers.</li>
+            <li>Real estate market data, valuation indices, and property registry information from public authorities and licensed data partners.</li>
+          </ul>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="how-we-use">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-gear"></i></div>
+            <h2>3. How We Use Your Data</h2>
+          </div>
+          <p>We process your personal information for defined and legitimate purposes consistent with the nature of our real estate services. We shall not process your data in a manner incompatible with the purposes for which it was originally collected.</p>
+          <div class="legal-info-grid">
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-building me-1"></i>Service Delivery</div>
+              <p>Facilitating property search, listings, viewings, enquiries, and transactions between buyers, sellers, landlords, and tenants.</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-person-check me-1"></i>Account Management</div>
+              <p>Creating and maintaining your account, verifying your identity, and managing your profile, preferences, and saved searches.</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-credit-card me-1"></i>Payments &amp; Finance</div>
+              <p>Processing subscription fees, transaction charges, and payouts in a secure and compliant manner through authorised payment processors.</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-bell me-1"></i>Communications</div>
+              <p>Sending property alerts, platform updates, security notifications, responses to enquiries, and (with your consent) marketing communications.</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-graph-up me-1"></i>Analytics &amp; Improvement</div>
+              <p>Analysing usage patterns and performance metrics to improve the Platform, develop new features, and enhance user experience.</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-shield-check me-1"></i>Security &amp; Compliance</div>
+              <p>Detecting and preventing fraud, enforcing our Terms of Service, and meeting our legal and regulatory obligations under Nigerian law.</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="legal-basis">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-balance-scale"></i></div>
+            <h2>4. Legal Basis for Processing</h2>
+          </div>
+          <p>In accordance with the Nigeria Data Protection Act 2023, every instance of personal data processing carried out by Nestova is grounded in at least one of the following lawful bases:</p>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Contractual Necessity:</strong> Processing is required to perform the contract between you and Nestova, including the provision of account services, property listings, and transaction facilitation.</li>
+            <li><strong style="color:var(--text-primary);">Consent:</strong> Where you have freely, specifically, and unambiguously given consent — for example, for marketing communications or precise location access. You may withdraw consent at any time without detriment.</li>
+            <li><strong style="color:var(--text-primary);">Legal Obligation:</strong> Processing necessary to comply with our obligations under Nigerian law, including anti-money laundering (AML), Know Your Customer (KYC) requirements, and tax regulations.</li>
+            <li><strong style="color:var(--text-primary);">Legitimate Interests:</strong> Processing for purposes that are in our legitimate business interests and do not override your fundamental rights — such as fraud detection, security improvements, and platform analytics.</li>
+            <li><strong style="color:var(--text-primary);">Vital Interests:</strong> In exceptional circumstances, processing necessary to protect life and safety.</li>
+          </ul>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="sharing">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-share"></i></div>
+            <h2>5. Disclosure of Information</h2>
+          </div>
+          <p>Nestova does not sell, rent, or trade your personal information to third parties for their own marketing purposes. We disclose your data only in the following limited and controlled circumstances:</p>
+          <h3>5.1 Parties We May Share Data With</h3>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Real Estate Agents &amp; Developers:</strong> Contact information shared with listed agents or developers when you initiate an enquiry, in order to facilitate your property transaction.</li>
+            <li><strong style="color:var(--text-primary);">Service Providers:</strong> Trusted third-party vendors engaged to provide essential services on our behalf — including cloud hosting, payment processing, email delivery, analytics, and customer support tools — bound by strict data processing agreements.</li>
+            <li><strong style="color:var(--text-primary);">Legal &amp; Regulatory Authorities:</strong> Where compelled by a court order, regulatory directive, or lawful request from the Nigeria Data Protection Commission (NDPC), Nigeria Financial Intelligence Unit (NFIU), or other competent authorities.</li>
+            <li><strong style="color:var(--text-primary);">Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, personal data may be transferred to the successor entity, subject to equivalent privacy protections.</li>
+            <li><strong style="color:var(--text-primary);">With Your Explicit Consent:</strong> In any other circumstance where you have expressly authorised us to share your data.</li>
+          </ul>
+          <div class="legal-callout">
+            <p><strong>International Transfers:</strong> Where personal data is transferred outside Nigeria to our service providers, we ensure adequate safeguards are in place — including standard contractual clauses and recipient country adequacy assessments — in compliance with Section 43 of the Nigeria Data Protection Act 2023.</p>
+          </div>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="data-security">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-shield-lock"></i></div>
+            <h2>6. Data Security</h2>
+          </div>
+          <p>We implement and maintain robust technical and organisational security measures designed to protect your personal data against unauthorised access, alteration, disclosure, loss, or destruction. Our security framework includes:</p>
+          <ul class="legal-list">
+            <li>End-to-end <strong style="color:var(--text-primary);">TLS/SSL encryption</strong> for all data transmitted between your device and our servers.</li>
+            <li>AES-256 <strong style="color:var(--text-primary);">encryption at rest</strong> for databases containing sensitive personal information.</li>
+            <li><strong style="color:var(--text-primary);">Multi-factor authentication (MFA)</strong> for administrative access and available optionally for user accounts.</li>
+            <li>Regular <strong style="color:var(--text-primary);">penetration testing</strong> and independent security audits conducted by certified cybersecurity professionals.</li>
+            <li>Strict <strong style="color:var(--text-primary);">access controls</strong> ensuring only authorised personnel with a legitimate business need may access personal data.</li>
+            <li><strong style="color:var(--text-primary);">Incident response procedures</strong> enabling us to detect, contain, and notify affected individuals and the NDPC of any qualifying data breach within the timeframes stipulated by the NDPA.</li>
+          </ul>
+          <p>Notwithstanding the above, no method of transmission over the internet or electronic storage is completely impenetrable. You are encouraged to use a strong, unique password for your Nestova account and to notify us immediately at <a href="mailto:privacy@nestova.ng" style="color:var(--gold);">privacy@nestova.ng</a> if you suspect any unauthorised activity.</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="retention">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-clock-history"></i></div>
+            <h2>7. Retention of Data</h2>
+          </div>
+          <p>We retain your personal data for as long as is necessary to fulfil the purposes for which it was collected, including compliance with legal, regulatory, accounting, and reporting obligations.</p>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Active Account Data:</strong> Retained for the duration of your account and for up to <strong>5 years</strong> following account closure, in accordance with Nigerian tax and financial record-keeping requirements.</li>
+            <li><strong style="color:var(--text-primary);">Transaction Records:</strong> Financial transaction data retained for a minimum of <strong>7 years</strong> as required by the Companies and Allied Matters Act (CAMA) and applicable tax legislation.</li>
+            <li><strong style="color:var(--text-primary);">KYC &amp; Identity Documents:</strong> Retained for <strong>5 years</strong> after the conclusion of the business relationship, in line with NFIU and EFCC AML requirements.</li>
+            <li><strong style="color:var(--text-primary);">Marketing Data:</strong> Retained until you withdraw consent or unsubscribe, whichever is earlier.</li>
+            <li><strong style="color:var(--text-primary);">Server Logs &amp; Analytics:</strong> Anonymised after <strong>12 months</strong> and retained in aggregate form for statistical purposes only.</li>
+          </ul>
+          <p>Upon expiry of the applicable retention period, personal data is securely deleted or irreversibly anonymised unless a longer retention period is required or permitted by law.</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="your-rights">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-person-badge"></i></div>
+            <h2>8. Your Rights</h2>
+          </div>
+          <p>As a data subject under the Nigeria Data Protection Act 2023, you are entitled to the following rights with respect to your personal data held by Nestova. We are committed to facilitating these rights promptly and without charge, except where requests are manifestly unfounded or excessive.</p>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Right of Access:</strong> You have the right to request a copy of the personal data we hold about you, along with information about how it is processed.</li>
+            <li><strong style="color:var(--text-primary);">Right to Rectification:</strong> You may request correction of any inaccurate or incomplete personal data without undue delay.</li>
+            <li><strong style="color:var(--text-primary);">Right to Erasure:</strong> You may request deletion of your personal data where it is no longer necessary, where you withdraw consent, or where processing is unlawful — subject to our legal retention obligations.</li>
+            <li><strong style="color:var(--text-primary);">Right to Restrict Processing:</strong> You may request that we restrict processing of your data in specific circumstances while a dispute is being resolved.</li>
+            <li><strong style="color:var(--text-primary);">Right to Data Portability:</strong> You may request your data in a structured, commonly used, and machine-readable format for transfer to another controller.</li>
+            <li><strong style="color:var(--text-primary);">Right to Object:</strong> You may object to processing based on legitimate interests, including profiling and direct marketing, at any time.</li>
+            <li><strong style="color:var(--text-primary);">Right to Withdraw Consent:</strong> Where processing is based on consent, you may withdraw it at any time without affecting the lawfulness of prior processing.</li>
+            <li><strong style="color:var(--text-primary);">Right to Lodge a Complaint:</strong> You have the right to lodge a complaint with the Nigeria Data Protection Commission (NDPC) at <strong>ndpc.gov.ng</strong> if you believe your rights have been infringed.</li>
+          </ul>
+          <p>To exercise any of the above rights, please contact our Data Protection Officer at <a href="mailto:dpo@nestova.ng" style="color:var(--gold);">dpo@nestova.ng</a>. We will respond within <strong style="color:var(--text-primary);">30 days</strong> of receipt of your request.</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="third-party">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-plug"></i></div>
+            <h2>9. Third-Party Services</h2>
+          </div>
+          <p>Our Platform may contain links to external websites, social media platforms, and third-party services that operate independently and are not governed by this Privacy Policy. We do not control and are not responsible for the privacy practices or content of such third parties. We encourage you to review the respective privacy policies of any external site you visit.</p>
+          <p>We currently engage the following categories of third-party service providers who may process data on our behalf under appropriate data processing agreements:</p>
+          <ul class="legal-list">
+            <li><strong style="color:var(--text-primary);">Cloud Infrastructure:</strong> Hosting, storage, and content delivery network (CDN) providers.</li>
+            <li><strong style="color:var(--text-primary);">Payment Processors:</strong> Licensed Nigerian payment gateway operators and banks regulated by the Central Bank of Nigeria (CBN).</li>
+            <li><strong style="color:var(--text-primary);">Analytics Platforms:</strong> Tools used to measure Platform performance, user engagement, and conversion metrics in aggregated and anonymised form where possible.</li>
+            <li><strong style="color:var(--text-primary);">Email &amp; SMS Service Providers:</strong> Platforms used to deliver transactional and marketing communications.</li>
+            <li><strong style="color:var(--text-primary);">Identity Verification Services:</strong> Providers licensed to carry out KYC and AML checks in compliance with Nigerian regulatory requirements.</li>
+          </ul>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="children">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-shield-exclamation"></i></div>
+            <h2>10. Children's Privacy</h2>
+          </div>
+          <p>The Nestova Platform is intended exclusively for use by individuals who are at least <strong style="color:var(--text-primary);">18 years of age</strong> or the age of majority in their jurisdiction, whichever is higher. We do not knowingly collect, solicit, or process personal data from minors under the age of 18.</p>
+          <p>If we become aware that personal data has been submitted by or relating to a minor without verifiable parental consent, we will promptly delete such data from our systems. If you believe we may have inadvertently collected information relating to a child, please contact us immediately at <a href="mailto:privacy@nestova.ng" style="color:var(--gold);">privacy@nestova.ng</a>.</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="changes">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-arrow-repeat"></i></div>
+            <h2>11. Changes to this Policy</h2>
+          </div>
+          <p>We reserve the right to update this Privacy Policy periodically to reflect changes in our practices, legal obligations, or the features of our Platform. Any material changes will be communicated to you through one or more of the following methods:</p>
+          <ul class="legal-list">
+            <li>A prominent notice on the Nestova homepage or within your account dashboard.</li>
+            <li>An email notification to the primary email address associated with your account.</li>
+            <li>An in-platform notification upon your next login.</li>
+          </ul>
+          <p>The "<strong style="color:var(--text-primary);">Last Updated</strong>" date at the top of this Policy indicates when the most recent revision took effect. Your continued use of the Platform following notification of changes constitutes your acceptance of the revised Policy.</p>
+        </section>
+
+        <div class="legal-divider"></div>
+
+        <section class="legal-section" id="contact-privacy">
+          <div class="legal-section-header">
+            <div class="section-icon"><i class="bi bi-envelope"></i></div>
+            <h2>12. Contact Us</h2>
+          </div>
+          <p>If you have any questions, concerns, or requests regarding this Privacy Policy or the manner in which Nestova processes your personal data, please contact our Data Protection Officer:</p>
+          <div class="legal-info-grid">
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-person-badge me-1"></i>Data Protection Officer</div>
+              <p>Nestova Real Estate Platform<br><a href="mailto:dpo@nestova.ng" style="color:var(--gold);">dpo@nestova.ng</a></p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-geo-alt me-1"></i>Registered Address</div>
+              <p>{% if contact_info %}{{ contact_info.address_line1 }}, {{ contact_info.city }}, {{ contact_info.state }}, Nigeria{% else %}2 Nestova Close, Lekki Phase 1, Lagos, Nigeria{% endif %}</p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-envelope me-1"></i>General Privacy</div>
+              <p><a href="mailto:privacy@nestova.ng" style="color:var(--gold);">privacy@nestova.ng</a></p>
+            </div>
+            <div class="legal-info-card">
+              <div class="info-title"><i class="bi bi-telephone me-1"></i>Phone</div>
+              <p>{% if contact_info %}{{ contact_info.phone }}{% else %}+234 (0) 800 000 0000{% endif %}</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="legal-contact-cta">
+          <h3>Have a Privacy Question?</h3>
+          <p>Our Data Protection team is here to assist you. Reach out and we will respond within 30 business days.</p>
+          <a href="{% url 'contact' %}" class="btn-legal-contact"><i class="bi bi-envelope-fill"></i>Get in Touch</a>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function toggleMobileTOC(btn) {
+    const panel = document.getElementById('mobileTOC');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  }
+  (function () {
+    const sections = document.querySelectorAll('.legal-section[id]');
+    const links = document.querySelectorAll('#tocNav a, #mobileTOC a');
+    function onScroll() {
+      let current = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) current = sec.id; });
+      links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + current));
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+{% endblock %}

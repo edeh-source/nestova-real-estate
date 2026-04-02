@@ -1,0 +1,1210 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ agent.user.get_full_name|default:agent.user.username }} — Agent Profile | Nestova{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ============================================================
+     AGENT PROFILE PAGE — NESTOVA LUXURY DESIGN SYSTEM
+     ============================================================ */
+
+  /* ── Ambient orbs ── */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    animation: orbFloat 20s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, #1a3a6e, transparent);
+    top: -200px; left: -200px;
+    opacity: .13;
+  }
+  .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: 40%; right: -150px;
+    opacity: .06; animation-delay: -7s;
+  }
+  .orb-3 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #0D1B3E, transparent);
+    bottom: -100px; left: 30%;
+    opacity: .18; animation-delay: -14s;
+  }
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(40px,-30px) scale(1.05); }
+    66%      { transform: translate(-20px,40px) scale(0.95); }
+  }
+
+  /* ── Hero banner ── */
+  .agp-hero {
+    position: relative;
+    padding: 130px 5vw 0;
+    z-index: 1;
+  }
+  .agp-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(13,27,62,.6) 0%, rgba(10,10,15,.95) 100%);
+    z-index: 0;
+  }
+  .agp-hero-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding-bottom: 80px;
+  }
+  .agp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 22px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.18), rgba(201,168,76,.06));
+    border: 1px solid rgba(201,168,76,.38);
+    color: var(--gold-light);
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .agp-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.6); opacity: .5; }
+  }
+  .agp-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -.5px;
+    margin-bottom: 14px;
+  }
+  .agp-hero h1 em { font-style: italic; color: var(--gold-light); }
+  .agp-hero-sub {
+    color: rgba(245,240,232,.5);
+    font-size: .97rem;
+    max-width: 440px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+  }
+  .agp-breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: .8rem;
+    color: rgba(255,255,255,.3);
+  }
+  .agp-breadcrumb a { color: rgba(255,255,255,.42); text-decoration: none; transition: color .25s; }
+  .agp-breadcrumb a:hover { color: var(--gold-light); }
+  .agp-breadcrumb i { font-size: .6rem; }
+  .agp-breadcrumb .current { color: var(--gold); }
+
+  /* ── Identity card (floats over hero) ── */
+  .agp-identity-wrap {
+    position: relative;
+    z-index: 3;
+    padding: 0 5vw;
+    margin-top: -64px;
+    margin-bottom: 60px;
+  }
+  .agp-identity-card {
+    background: rgba(12,12,18,.9);
+    backdrop-filter: blur(44px) saturate(200%);
+    -webkit-backdrop-filter: blur(44px) saturate(200%);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 28px;
+    padding: 44px 52px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    box-shadow: 0 50px 100px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Subtle conic shimmer */
+  .agp-identity-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: conic-gradient(from 180deg at 10% 90%, transparent 0deg, rgba(201,168,76,.04) 60deg, transparent 120deg);
+    pointer-events: none;
+  }
+
+  /* Avatar */
+  .agp-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .agp-avatar {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(201,168,76,.4);
+    box-shadow: 0 0 0 8px rgba(201,168,76,.07), 0 20px 50px rgba(0,0,0,.55);
+    display: block;
+  }
+  .agp-avatar-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,.2);
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%,100% { transform: scale(1); opacity: .5; }
+    50%      { transform: scale(1.07); opacity: 1; }
+  }
+  .agp-status {
+    position: absolute;
+    bottom: 4px; right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 50px;
+    background: rgba(10,10,15,.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.1);
+    font-size: .7rem;
+    font-weight: 600;
+    color: rgba(245,240,232,.7);
+    white-space: nowrap;
+  }
+  .agp-status.online i { color: #4ade80; font-size: .5rem; }
+  .agp-status.offline i { color: #6b7280; font-size: .5rem; }
+
+  /* Agent bio block */
+  .agp-bio { flex: 1; min-width: 220px; }
+  .agp-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.1;
+  }
+  .agp-role {
+    font-size: .78rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .agp-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    background: rgba(34,197,94,.14);
+    border: 1px solid rgba(34,197,94,.28);
+    color: #4ade80;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    margin-bottom: 20px;
+  }
+
+  /* Quick stat chips in identity card */
+  .agp-quick-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .agp-qs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 22px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    min-width: 90px;
+    text-align: center;
+  }
+  .agp-qs-val {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .agp-qs-label {
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,.4);
+    font-weight: 500;
+  }
+
+  /* Gold divider */
+  .agp-card-divider {
+    width: 1px;
+    height: 110px;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,.3), transparent);
+    flex-shrink: 0;
+  }
+
+  /* CTA column */
+  .agp-cta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 190px;
+  }
+  .agp-btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-size: .88rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: .03em;
+    transition: all .35s cubic-bezier(.175,.885,.32,1.275);
+    box-shadow: 0 0 26px rgba(201,168,76,.26), 0 8px 22px rgba(0,0,0,.3);
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+  }
+  .agp-btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+    transition: left .5s ease;
+  }
+  .agp-btn-gold:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 44px rgba(201,168,76,.46), 0 12px 30px rgba(0,0,0,.4);
+    color: #0A0A0F;
+  }
+  .agp-btn-gold:hover::before { left: 100%; }
+
+  .agp-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,.17);
+    background: rgba(255,255,255,.05);
+    color: rgba(245,240,232,.82);
+    font-size: .88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all .3s ease;
+    backdrop-filter: blur(12px);
+    justify-content: center;
+  }
+  .agp-btn-outline:hover {
+    border-color: rgba(201,168,76,.45);
+    background: rgba(201,168,76,.08);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+  .agp-btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(37,211,102,.22), rgba(37,211,102,.08));
+    border: 1px solid rgba(37,211,102,.38);
+    color: #4ade80;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .3s ease;
+    justify-content: center;
+  }
+  .agp-btn-whatsapp:hover {
+    background: rgba(37,211,102,.3);
+    border-color: rgba(37,211,102,.55);
+    color: #86efac;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37,211,102,.18);
+  }
+
+  /* Social icons row */
+  .agp-social-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    justify-content: center;
+  }
+  .agp-social-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(245,240,232,.55);
+    font-size: .9rem;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .agp-social-icon:hover {
+    background: rgba(201,168,76,.18);
+    border-color: rgba(201,168,76,.4);
+    color: var(--gold-light);
+    transform: translateY(-3px);
+  }
+
+  /* ── Main content grid ── */
+  .agp-layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    padding: 0 5vw 100px;
+    align-items: start;
+  }
+
+  /* ── Section header ── */
+  .agp-section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.05));
+    border: 1px solid rgba(201,168,76,.24);
+    color: var(--gold);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .agp-section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    letter-spacing: -.3px;
+    margin-bottom: 28px;
+  }
+  .agp-section-title em { font-style: italic; color: var(--gold-light); }
+
+  .agp-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .agp-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    background: rgba(201,168,76,.1);
+    border: 1px solid rgba(201,168,76,.28);
+    color: var(--gold-light);
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .3s ease;
+    white-space: nowrap;
+    margin-top: 6px;
+  }
+  .agp-view-all:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    border-color: transparent;
+    box-shadow: 0 6px 20px rgba(201,168,76,.32);
+    transform: translateY(-2px);
+  }
+  .agp-view-all i { font-size: .7rem; transition: transform .25s; }
+  .agp-view-all:hover i { transform: translateX(3px); }
+
+  /* ── Property cards (2-col inside main) ── */
+  .agp-prop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+  .agp-prop-card {
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(18,18,26,.82);
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: 0 18px 50px rgba(0,0,0,.38);
+    transition: all .5s cubic-bezier(.175,.885,.32,1.275);
+    will-change: transform;
+  }
+  .agp-prop-card:hover {
+    transform: translateY(-10px) rotateX(1.5deg);
+    box-shadow: 0 44px 90px rgba(0,0,0,.55), 0 0 34px rgba(201,168,76,.09);
+    border-color: rgba(201,168,76,.2);
+  }
+  .agp-prop-img {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+  }
+  .agp-prop-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .8s cubic-bezier(.25,.46,.45,.94);
+  }
+  .agp-prop-card:hover .agp-prop-img img { transform: scale(1.1); }
+  .agp-prop-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,15,.9) 0%, rgba(10,10,15,.15) 55%, transparent 100%);
+  }
+  .agp-prop-badge {
+    position: absolute;
+    top: 13px; left: 13px;
+    padding: 5px 13px;
+    border-radius: 50px;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    backdrop-filter: blur(16px);
+    z-index: 2;
+  }
+  .agp-prop-badge.exclusive { background: rgba(180,30,100,.22); border: 1px solid rgba(220,60,130,.4); color: #FF7EB8; }
+  .agp-prop-badge.hot       { background: rgba(220,80,20,.22);  border: 1px solid rgba(255,110,30,.4); color: #FFA56B; }
+  .agp-prop-badge.new       { background: rgba(30,130,200,.22); border: 1px solid rgba(60,160,255,.4); color: #7EC8FF; }
+  .agp-prop-badge.premium   { background: rgba(201,168,76,.18); border: 1px solid rgba(201,168,76,.44); color: var(--gold-light); }
+
+  /* WhatsApp quick action on image hover */
+  .agp-prop-quick {
+    position: absolute;
+    top: 13px; right: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    z-index: 2;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all .3s ease;
+  }
+  .agp-prop-card:hover .agp-prop-quick { opacity: 1; transform: translateX(0); }
+  .agp-quick-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(10,10,15,.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,.6);
+    font-size: .85rem;
+    text-decoration: none;
+    transition: all .25s;
+  }
+  .agp-quick-btn:hover { background: rgba(201,168,76,.28); border-color: rgba(201,168,76,.5); color: var(--gold-light); transform: scale(1.1); }
+  .agp-quick-btn.wa:hover { background: rgba(37,211,102,.25); border-color: rgba(37,211,102,.5); color: #4ade80; }
+
+  .agp-prop-body { padding: 18px 20px 20px; }
+  .agp-prop-price {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 5px;
+    line-height: 1;
+  }
+  .agp-prop-title {
+    font-family: var(--font-display);
+    font-size: .98rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 7px;
+    line-height: 1.35;
+  }
+  .agp-prop-title a { color: inherit; text-decoration: none; transition: color .25s; }
+  .agp-prop-title a:hover { color: var(--gold-light); }
+  .agp-prop-loc {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: rgba(245,240,232,.42);
+    font-size: .77rem;
+    margin-bottom: 13px;
+  }
+  .agp-prop-loc i { color: var(--gold); font-size: .75rem; }
+  .agp-prop-specs {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .agp-spec {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    font-size: .73rem;
+    color: rgba(245,240,232,.55);
+  }
+  .agp-spec i { color: var(--gold); font-size: .68rem; }
+  .agp-prop-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .agp-prop-status { font-size: .69rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.35); }
+  .agp-prop-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.17), rgba(201,168,76,.05));
+    border: 1px solid rgba(201,168,76,.28);
+    color: var(--gold-light);
+    font-size: .76rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .agp-prop-view:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    border-color: transparent;
+    box-shadow: 0 5px 18px rgba(201,168,76,.32);
+    transform: translateY(-1px);
+  }
+  .agp-prop-view i { font-size: .65rem; transition: transform .25s; }
+  .agp-prop-view:hover i { transform: translateX(3px); }
+
+  /* No-properties empty state */
+  .agp-empty {
+    text-align: center;
+    padding: 60px 20px;
+    border-radius: 20px;
+    background: rgba(18,18,26,.6);
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .agp-empty-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    color: rgba(255,255,255,.2);
+  }
+  .agp-empty h4 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 300; margin-bottom: 8px; }
+  .agp-empty p  { color: rgba(245,240,232,.4); font-size: .9rem; }
+
+  /* ── Right Sidebar ── */
+  .agp-sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+  /* Glass widget base */
+  .agp-widget {
+    background: rgba(12,12,18,.88);
+    backdrop-filter: blur(36px) saturate(180%);
+    -webkit-backdrop-filter: blur(36px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    padding: 30px 28px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.45);
+  }
+  .agp-widget-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .agp-widget-title i { color: var(--gold); font-size: 1rem; }
+
+  /* Contact methods */
+  .agp-contact-method {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    text-decoration: none;
+    transition: all .3s ease;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .agp-contact-method::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .agp-contact-method:hover { background: rgba(201,168,76,.08); border-color: rgba(201,168,76,.22); transform: translateX(4px); }
+  .agp-contact-method:hover::before { opacity: 1; }
+  .agp-contact-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(201,168,76,.18), rgba(201,168,76,.06));
+    border: 1px solid rgba(201,168,76,.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+  .agp-contact-icon.green {
+    background: linear-gradient(135deg, rgba(37,211,102,.18), rgba(37,211,102,.06));
+    border-color: rgba(37,211,102,.24);
+    color: #4ade80;
+  }
+  .agp-contact-icon.blue {
+    background: linear-gradient(135deg, rgba(59,130,246,.18), rgba(59,130,246,.06));
+    border-color: rgba(59,130,246,.24);
+    color: #7EB8FF;
+  }
+  .agp-contact-label {
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .agp-contact-val {
+    font-size: .84rem;
+    color: rgba(245,240,232,.7);
+    display: block;
+    transition: color .25s;
+    word-break: break-all;
+  }
+  .agp-contact-method:hover .agp-contact-val { color: var(--text-primary); }
+
+  /* Stats widget */
+  .agp-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .agp-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .agp-stat-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.04));
+    border: 1px solid rgba(201,168,76,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .95rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+  .agp-stat-text h6 {
+    font-size: .9rem;
+    font-weight: 600;
+    color: rgba(245,240,232,.85);
+    margin: 0 0 2px;
+  }
+  .agp-stat-text span { font-size: .78rem; color: rgba(245,240,232,.4); }
+
+  /* Follow / social widget */
+  .agp-follow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .agp-follow-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    color: rgba(245,240,232,.6);
+    font-size: .82rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .agp-follow-btn:hover {
+    background: rgba(201,168,76,.1);
+    border-color: rgba(201,168,76,.3);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+  .agp-follow-btn i { font-size: 1rem; }
+
+  /* Listing CTA in sidebar */
+  .agp-sidebar-cta {
+    background: linear-gradient(135deg, rgba(13,27,62,.9), rgba(10,10,15,.8));
+    border: 1px solid rgba(201,168,76,.22);
+    border-radius: 22px;
+    padding: 30px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .agp-sidebar-cta::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(201,168,76,.03) 60deg, transparent 120deg);
+    animation: rotateConic 20s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes rotateConic {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .agp-sidebar-cta-icon {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.06));
+    border: 1px solid rgba(201,168,76,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin: 0 auto 16px;
+  }
+  .agp-sidebar-cta h5 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .agp-sidebar-cta p {
+    color: rgba(245,240,232,.45);
+    font-size: .83rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .agp-layout { grid-template-columns: 1fr; }
+    .agp-sidebar { grid-row: 1; }
+    .agp-prop-grid { grid-template-columns: repeat(2,1fr); }
+  }
+  @media (max-width: 768px) {
+    .agp-hero { padding: 120px 5vw 0; }
+    .agp-identity-card { padding: 28px 22px; gap: 22px; }
+    .agp-avatar { width: 88px; height: 88px; }
+    .agp-name  { font-size: 1.7rem; }
+    .agp-card-divider { display: none; }
+    .agp-cta-col { flex-direction: row; flex-wrap: wrap; min-width: unset; }
+    .agp-prop-grid { grid-template-columns: 1fr; }
+    .agp-layout { padding: 0 5vw 80px; }
+  }
+  @media (max-width: 480px) {
+    .agp-hero h1  { font-size: 1.9rem; }
+    .agp-quick-stats { gap: 10px; }
+    .agp-qs { padding: 11px 16px; }
+    .agp-qs-val { font-size: 1.35rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Ambient orbs -->
+<div class="ambient-bg" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main class="main" style="position:relative; z-index:1;">
+
+  <!-- ── Hero Banner ── -->
+  <section class="agp-hero">
+    <div class="agp-hero-inner">
+      <div class="agp-eyebrow">Agent Profile</div>
+      <h1>Meet <em>{{ agent.user.get_full_name|default:agent.user.username }}</em></h1>
+      <p class="agp-hero-sub">
+        Verified real estate professional — browse listings, get in touch,
+        and let us find your perfect property.
+      </p>
+      <nav class="agp-breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <i class="bi bi-chevron-right"></i>
+        <a href="{% url 'home' %}#featured-agents">Agents</a>
+        <i class="bi bi-chevron-right"></i>
+        <span class="current">{{ agent.user.get_full_name|default:agent.user.username }}</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ── Identity Card ── -->
+  <div class="agp-identity-wrap" data-aos="fade-up" data-aos-delay="100">
+    <div class="agp-identity-card">
+
+      <!-- Avatar -->
+      <div class="agp-avatar-wrap">
+        <div class="agp-avatar-ring"></div>
+        <img
+          src="{% if agent.user.get_users_image %}{{ agent.user.get_users_image }}{% else %}{% static 'assets/img/real-estate/agent-3.webp' %}{% endif %}"
+          alt="{{ agent.user.get_full_name }}"
+          class="agp-avatar">
+        <div class="agp-status {% if agent.is_active %}online{% else %}offline{% endif %}">
+          <i class="bi bi-circle-fill"></i>
+          {% if agent.is_active %}Available{% else %}Offline{% endif %}
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="agp-bio">
+        <h1 class="agp-name">{{ agent.user.get_full_name|default:agent.user.username }}</h1>
+        <p class="agp-role">Licensed Real Estate Professional</p>
+        {% if agent.verification_status == 'verified' %}
+        <div class="agp-verified">
+          <i class="bi bi-patch-check-fill"></i> Verified Agent
+        </div>
+        {% endif %}
+
+        <div class="agp-quick-stats">
+          <div class="agp-qs">
+            <span class="agp-qs-val">{{ total_properties }}</span>
+            <span class="agp-qs-label">Listings</span>
+          </div>
+          <div class="agp-qs">
+            <span class="agp-qs-val">{{ agent.commission_rate }}%</span>
+            <span class="agp-qs-label">Commission</span>
+          </div>
+          <div class="agp-qs">
+            <span class="agp-qs-val">{{ agent.created|date:"Y" }}</span>
+            <span class="agp-qs-label">Since</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vertical divider (desktop) -->
+      <div class="agp-card-divider d-none d-lg-block"></div>
+
+      <!-- CTA column -->
+      <div class="agp-cta-col">
+        {% if agent.user.phone_number %}
+        <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}"
+           target="_blank" rel="noopener noreferrer"
+           class="agp-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        {% endif %}
+
+        {% if agent.user.email %}
+        <a href="mailto:{{ agent.user.email }}" class="agp-btn-gold">
+          <i class="bi bi-envelope-fill"></i> Send Message
+        </a>
+        {% endif %}
+
+        <a href="{% url 'agents:agent_properties' agent.slug %}" class="agp-btn-outline">
+          <i class="bi bi-houses"></i> All Listings
+        </a>
+
+        <!-- Social -->
+        <div class="agp-social-row">
+          {% if agent.linkedin_page %}
+          <a href="{{ agent.linkedin_page }}" target="_blank" rel="noopener" class="agp-social-icon" title="LinkedIn">
+            <i class="bi bi-linkedin"></i>
+          </a>
+          {% endif %}
+          {% if agent.instagram_page %}
+          <a href="{{ agent.instagram_page }}" target="_blank" rel="noopener" class="agp-social-icon" title="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          {% endif %}
+          {% if agent.facebook_page %}
+          <a href="{{ agent.facebook_page }}" target="_blank" rel="noopener" class="agp-social-icon" title="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          {% endif %}
+          {% if agent.x_page %}
+          <a href="{{ agent.x_page }}" target="_blank" rel="noopener" class="agp-social-icon" title="X / Twitter">
+            <i class="bi bi-twitter-x"></i>
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Layout ── -->
+  <div class="agp-layout">
+
+    <!-- Left — Recent Properties -->
+    <div class="agp-main" data-aos="fade-up" data-aos-delay="150">
+
+      <div class="agp-section-head">
+        <div>
+          <div class="agp-section-badge"><i class="bi bi-grid-3x3-gap"></i> Portfolio</div>
+          <h2 class="agp-section-title">Recent <em>Properties</em></h2>
+        </div>
+        {% if total_properties > 6 %}
+        <a href="{% url 'agents:agent_properties' agent.slug %}" class="agp-view-all">
+          View All {{ total_properties }} <i class="bi bi-arrow-right"></i>
+        </a>
+        {% endif %}
+      </div>
+
+      {% if recent_properties %}
+      <div class="agp-prop-grid">
+        {% for property in recent_properties %}
+        <article class="agp-prop-card" data-aos="fade-up" data-aos-delay="{% cycle '200' '250' '300' '350' %}">
+
+          <div class="agp-prop-img">
+            <a href="{{ property.get_absolute_url }}">
+              <img
+                src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-8.webp' %}{% endif %}"
+                alt="{{ property.title }}"
+                loading="lazy">
+            </a>
+            <div class="agp-prop-overlay"></div>
+
+            {% if property.is_exclusive %}
+            <span class="agp-prop-badge exclusive">Exclusive</span>
+            {% elif property.is_hot %}
+            <span class="agp-prop-badge hot">🔥 Hot</span>
+            {% elif property.is_new %}
+            <span class="agp-prop-badge new">New</span>
+            {% elif property.is_premium %}
+            <span class="agp-prop-badge premium">Premium</span>
+            {% endif %}
+
+            <!-- Quick actions on hover -->
+            <div class="agp-prop-quick">
+              <a href="{{ property.get_absolute_url }}" class="agp-quick-btn" title="View property">
+                <i class="bi bi-eye"></i>
+              </a>
+              {% if agent.user.phone_number %}
+              <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}?text=Hi, I'm interested in {{ property.title|urlencode }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="agp-quick-btn wa"
+                 title="WhatsApp agent about this property">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="agp-prop-body">
+            <div class="agp-prop-price">{{ property.formatted_price }}</div>
+            <h3 class="agp-prop-title">
+              <a href="{{ property.get_absolute_url }}">{{ property.title|truncatewords:6 }}</a>
+            </h3>
+            <div class="agp-prop-loc">
+              <i class="bi bi-geo-alt-fill"></i>
+              {{ property.city.name }}, {{ property.state.code }}
+            </div>
+            <div class="agp-prop-specs">
+              <span class="agp-spec"><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed</span>
+              <span class="agp-spec"><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath</span>
+              <span class="agp-spec"><i class="bi bi-aspect-ratio"></i> {{ property.square_feet|floatformat:0|intcomma }} sqft</span>
+            </div>
+            <div class="agp-prop-foot">
+              <span class="agp-prop-status">For Sale</span>
+              <a href="{{ property.get_absolute_url }}" class="agp-prop-view">
+                View <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+        </article>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <div class="agp-empty">
+        <div class="agp-empty-icon"><i class="bi bi-house-slash"></i></div>
+        <h4>No Listings Yet</h4>
+        <p>This agent hasn't published any properties. Check back soon.</p>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="agp-sidebar" data-aos="fade-left" data-aos-delay="200">
+
+      <!-- Contact Widget -->
+      <div class="agp-widget">
+        <h4 class="agp-widget-title"><i class="bi bi-chat-dots-fill"></i> Let's Connect</h4>
+
+        {% if agent.user.phone_number %}
+        <a href="tel:{{ agent.user.phone_number }}" class="agp-contact-method">
+          <div class="agp-contact-icon"><i class="bi bi-telephone-fill"></i></div>
+          <div>
+            <span class="agp-contact-label">Call Now</span>
+            <span class="agp-contact-val">{{ agent.user.phone_number }}</span>
+          </div>
+        </a>
+
+        <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}"
+           target="_blank" rel="noopener noreferrer"
+           class="agp-contact-method">
+          <div class="agp-contact-icon green"><i class="fab fa-whatsapp"></i></div>
+          <div>
+            <span class="agp-contact-label">WhatsApp</span>
+            <span class="agp-contact-val">Chat on WhatsApp</span>
+          </div>
+        </a>
+        {% endif %}
+
+        {% if agent.user.email %}
+        <a href="mailto:{{ agent.user.email }}" class="agp-contact-method">
+          <div class="agp-contact-icon blue"><i class="bi bi-envelope-fill"></i></div>
+          <div>
+            <span class="agp-contact-label">Email</span>
+            <span class="agp-contact-val">{{ agent.user.email }}</span>
+          </div>
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Stats Widget -->
+      <div class="agp-widget">
+        <h4 class="agp-widget-title"><i class="bi bi-bar-chart-fill"></i> Agent Statistics</h4>
+
+        <div class="agp-stat-row">
+          <div class="agp-stat-icon"><i class="bi bi-house-door-fill"></i></div>
+          <div class="agp-stat-text">
+            <h6>{{ total_properties }} Properties</h6>
+            <span>Currently Listed</span>
+          </div>
+        </div>
+
+        <div class="agp-stat-row">
+          <div class="agp-stat-icon"><i class="bi bi-percent"></i></div>
+          <div class="agp-stat-text">
+            <h6>{{ agent.commission_rate }}% Commission</h6>
+            <span>Standard Rate</span>
+          </div>
+        </div>
+
+        <div class="agp-stat-row">
+          <div class="agp-stat-icon"><i class="bi bi-calendar-check"></i></div>
+          <div class="agp-stat-text">
+            <h6>Member Since {{ agent.created|date:"F Y" }}</h6>
+            <span>Trusted Professional</span>
+          </div>
+        </div>
+
+        {% if agent.verification_status == 'verified' %}
+        <div class="agp-stat-row">
+          <div class="agp-stat-icon"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="agp-stat-text">
+            <h6>Verified Agent</h6>
+            <span>Identity Confirmed</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Social Widget -->
+      {% if agent.linkedin_page or agent.instagram_page or agent.facebook_page or agent.x_page %}
+      <div class="agp-widget">
+        <h4 class="agp-widget-title"><i class="bi bi-share-fill"></i> Follow Me</h4>
+        <div class="agp-follow-grid">
+          {% if agent.linkedin_page %}
+          <a href="{{ agent.linkedin_page }}" target="_blank" rel="noopener" class="agp-follow-btn">
+            <i class="bi bi-linkedin"></i> LinkedIn
+          </a>
+          {% endif %}
+          {% if agent.instagram_page %}
+          <a href="{{ agent.instagram_page }}" target="_blank" rel="noopener" class="agp-follow-btn">
+            <i class="bi bi-instagram"></i> Instagram
+          </a>
+          {% endif %}
+          {% if agent.facebook_page %}
+          <a href="{{ agent.facebook_page }}" target="_blank" rel="noopener" class="agp-follow-btn">
+            <i class="bi bi-facebook"></i> Facebook
+          </a>
+          {% endif %}
+          {% if agent.x_page %}
+          <a href="{{ agent.x_page }}" target="_blank" rel="noopener" class="agp-follow-btn">
+            <i class="bi bi-twitter-x"></i> X / Twitter
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Sidebar CTA -->
+      <div class="agp-sidebar-cta">
+        <div class="agp-sidebar-cta-icon"><i class="bi bi-search-heart"></i></div>
+        <h5>Find Your Dream Property</h5>
+        <p>Browse all available listings across Nigeria's most prestigious neighbourhoods.</p>
+        <a href="{% url 'properties' %}" class="agp-btn-gold" style="display:inline-flex; text-decoration:none; width:100%; justify-content:center; position:relative; z-index:1;">
+          <i class="bi bi-houses-fill"></i> Browse All Properties
+        </a>
+      </div>
+
+    </aside>
+
+  </div><!-- /agp-layout -->
+
+</main>
+
+{% endblock content %}

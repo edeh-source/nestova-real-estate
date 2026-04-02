@@ -1,0 +1,937 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Sign In | Nestova{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   LOGIN PAGE — LUXURY GLASSMORPHISM DARK DESIGN SYSTEM
+   ============================================================ */
+
+.login-section {
+  min-height: 100vh;
+  margin-top: 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  background: var(--obsidian);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Ambient orbs ---- */
+.login-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(130px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbDrift 16s ease-in-out infinite;
+}
+
+.login-orb.a {
+  width: 700px; height: 700px;
+  background: rgba(13,27,62,0.65);
+  top: -200px; left: -200px;
+  animation-delay: 0s;
+}
+
+.login-orb.b {
+  width: 500px; height: 500px;
+  background: rgba(201,168,76,0.06);
+  bottom: -150px; right: -150px;
+  animation-delay: -8s;
+}
+
+.login-orb.c {
+  width: 300px; height: 300px;
+  background: rgba(13,27,62,0.4);
+  top: 50%; right: 25%;
+  animation-delay: -4s;
+}
+
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33%       { transform: translate(25px,-35px) scale(1.06); }
+  66%       { transform: translate(-18px,20px) scale(0.96); }
+}
+
+/* Grain texture */
+.login-grain {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Geometric grid pattern */
+.login-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   SPLIT LAYOUT
+   ============================================================ */
+.login-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---- BRANDING SIDE ---- */
+.branding-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #0D1B3E 60%, #060B1A 100%);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.branding-side::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.07), transparent 65%);
+  top: -150px; right: -200px;
+  pointer-events: none;
+}
+
+.branding-side::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.25), transparent);
+}
+
+/* Logo */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 52px;
+}
+
+.brand-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.brand-name span { color: var(--gold-light); }
+
+/* Headline */
+.branding-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 20px;
+}
+
+.branding-headline em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.branding-sub {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.97rem;
+  line-height: 1.75;
+  margin-bottom: 48px;
+  max-width: 420px;
+}
+
+/* Feature list */
+.feature-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.feature-item:hover {
+  background: rgba(201,168,76,0.07);
+  border-color: rgba(201,168,76,0.18);
+  color: rgba(255,255,255,0.88);
+  transform: translateX(5px);
+}
+
+.feature-item-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover .feature-item-icon {
+  background: rgba(201,168,76,0.18);
+  border-color: rgba(201,168,76,0.35);
+}
+
+/* Bottom stat strip */
+.branding-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 52px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.branding-stat { }
+
+.branding-stat-val {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.branding-stat-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ============================================================
+   FORM SIDE
+   ============================================================ */
+.form-side {
+  width: 520px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 52px;
+  background: rgba(12,12,18,0.95);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  position: relative;
+  overflow-y: auto;
+}
+
+/* Form header */
+.form-header { margin-bottom: 36px; }
+
+.form-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.22);
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.form-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.5; }
+}
+
+.form-header h2 {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.form-header p {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Accent line */
+.form-accent-line {
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(to right, var(--gold), transparent);
+  border-radius: 2px;
+  margin-top: 14px;
+}
+
+/* Alert messages */
+.form-alert {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.form-alert.success {
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  color: #4ade80;
+}
+
+.form-alert.error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #f87171;
+}
+
+.form-alert.show { display: flex; }
+
+/* Form groups */
+.form-group { margin-bottom: 20px; }
+
+.form-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  font-weight: 700;
+  margin-bottom: 9px;
+}
+
+.input-wrapper { position: relative; }
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.22);
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
+  transition: color 0.3s;
+}
+
+.form-control-custom {
+  width: 100%;
+  padding: 13px 46px 13px 44px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+}
+
+.form-control-custom::placeholder { color: rgba(255,255,255,0.18); }
+
+.form-control-custom:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  color: #fff;
+}
+
+.form-control-custom:focus ~ .input-icon { color: var(--gold); }
+
+.form-control-custom.is-error {
+  border-color: rgba(239,68,68,0.5);
+  background: rgba(239,68,68,0.05);
+}
+
+/* Password toggle */
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  z-index: 2;
+  transition: color 0.3s;
+}
+
+.password-toggle:hover { color: var(--gold-light); }
+
+/* Field error */
+.field-error {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  color: #f87171;
+  font-size: 0.78rem;
+  margin-top: 7px;
+}
+
+.field-error.show { display: flex; }
+
+/* Remember + forgot row */
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.remember-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.remember-wrap input[type="checkbox"] {
+  width: 16px; height: 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all 0.25s;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.remember-wrap input[type="checkbox"]:checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.remember-wrap input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  color: #0A0A0F;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.remember-wrap label {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-link:hover { color: var(--gold-light); }
+
+/* Submit button */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  border-radius: 12px;
+  color: #0A0A0F;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(201,168,76,0.25);
+}
+
+.btn-login::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  transform: translate(-50%,-50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-login:hover::before { width: 350px; height: 350px; }
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201,168,76,0.4);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-login span { position: relative; z-index: 1; }
+
+/* Divider */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+.form-divider span {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Social buttons */
+.social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.social-btn i { font-size: 1.05rem; }
+
+.social-btn.google:hover {
+  background: rgba(234,67,53,0.1);
+  border-color: rgba(234,67,53,0.3);
+  color: #ff7b70;
+  transform: translateY(-2px);
+}
+
+.social-btn.facebook:hover {
+  background: rgba(24,119,242,0.1);
+  border-color: rgba(24,119,242,0.3);
+  color: #4a9fff;
+  transform: translateY(-2px);
+}
+
+/* Register link */
+.register-link {
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.88rem;
+}
+
+.register-link a {
+  color: var(--gold);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.register-link a:hover { color: var(--gold-light); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1199px) {
+  .branding-side { padding: 60px 44px; }
+  .form-side { width: 460px; padding: 50px 40px; }
+}
+
+@media (max-width: 991px) {
+  .branding-side { display: none; }
+  .login-inner { justify-content: center; }
+  .form-side {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 80px 40px 60px;
+    min-height: 100vh;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 575px) {
+  .form-side { padding: 80px 24px 48px; }
+  .form-header h2 { font-size: 1.8rem; }
+  .social-row { grid-template-columns: 1fr; }
+  .form-options { flex-direction: column; align-items: flex-start; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Ambient layers -->
+<div class="login-orb a"></div>
+<div class="login-orb b"></div>
+<div class="login-orb c"></div>
+<div class="login-grain"></div>
+<div class="login-grid"></div>
+
+<section class="login-section">
+  <div class="login-inner">
+
+    <!-- ======================== BRANDING SIDE ======================== -->
+    <div class="branding-side">
+      <!-- Logo -->
+      <div class="brand-logo">
+        <div class="brand-icon">🏡</div>
+        <span class="brand-name">Nesto<span>va</span></span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="branding-headline">
+        Your Journey to the<br>
+        <em>Perfect Property</em><br>
+        Starts Here
+      </h1>
+      <p class="branding-sub">
+        Sign in to access exclusive listings, manage your properties, connect with verified agents, and track your entire real estate journey in one elegant dashboard.
+      </p>
+
+      <!-- Features -->
+      <ul class="feature-list">
+        <li class="feature-item">
+          <div class="feature-item-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <span>Secure, encrypted account access</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-item-icon"><i class="bi bi-chat-dots-fill"></i></div>
+          <span>Instant messaging with agents</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-item-icon"><i class="bi bi-heart-fill"></i></div>
+          <span>Save and track favourite properties</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-item-icon"><i class="bi bi-phone-fill"></i></div>
+          <span>Seamless access on any device</span>
+        </li>
+      </ul>
+
+      <!-- Stats strip -->
+      <div class="branding-stats">
+        <div class="branding-stat">
+          <span class="branding-stat-val">2,400+</span>
+          <span class="branding-stat-label">Properties</span>
+        </div>
+        <div class="branding-stat">
+          <span class="branding-stat-val">3.2K</span>
+          <span class="branding-stat-label">Happy Clients</span>
+        </div>
+        <div class="branding-stat">
+          <span class="branding-stat-val">98%</span>
+          <span class="branding-stat-label">Satisfaction</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== FORM SIDE ======================== -->
+    <div class="form-side">
+
+      <div class="form-header">
+        <div class="form-eyebrow">Welcome Back</div>
+        <h2>Sign In</h2>
+        <p>Enter your credentials to access your account</p>
+        <div class="form-accent-line"></div>
+      </div>
+
+      <!-- Alert messages -->
+      <div class="form-alert success" id="loginSuccessMessage">
+        <i class="bi bi-check-circle-fill"></i>
+        <span id="success-message"></span>
+      </div>
+      <div class="form-alert error" id="loginErrorMessage">
+        <i class="bi bi-x-circle-fill"></i>
+        <span id="error-message-text"></span>
+      </div>
+
+      <form id="loginForm" method="post" data-turbo="false" data-turbo-permanent>
+        {% csrf_token %}
+        {% if request.GET.next %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
+        <input type="hidden" id="loginActionUrl" value="{% url 'users:login' %}">
+
+        <!-- Email or Phone -->
+        <div class="form-group">
+          <label class="form-label" for="emailOrPhone">Email or Phone Number</label>
+          <div class="input-wrapper">
+            <i class="bi bi-person-fill input-icon"></i>
+            <input type="text" class="form-control-custom" id="emailOrPhone" name="email_or_phone"
+              placeholder="you@example.com or +2348012345678" required>
+          </div>
+          <div class="field-error" id="emailOrPhoneError">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span></span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <i class="bi bi-lock-fill input-icon"></i>
+            <input type="password" class="form-control-custom" id="password" name="password"
+              placeholder="Enter your password" required>
+            <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+          </div>
+          <div class="field-error" id="passwordError">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span></span>
+          </div>
+        </div>
+
+        <!-- Remember + Forgot -->
+        <div class="form-options">
+          <div class="remember-wrap">
+            <input type="checkbox" id="rememberMe" name="remember_me">
+            <label for="rememberMe">Remember me</label>
+          </div>
+          <a href="{% url 'users:password_reset_request' %}" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <!-- Submit -->
+        <button id="submit-btn" type="submit" class="btn-login">
+          <span id="submit-text">Sign In</span>
+        </button>
+
+        <!-- Divider -->
+        <div class="form-divider"><span>Or continue with</span></div>
+
+        <!-- Social -->
+        <div class="social-row">
+          <a href="{% provider_login_url 'google' %}" class="social-btn google">
+            <i class="bi bi-google"></i> Google
+          </a>
+         
+        </div>
+
+        <!-- Register -->
+        <div class="register-link">
+          Don't have an account? <a href="{% url 'users:register' %}">Create one →</a>
+        </div>
+      </form>
+
+    </div><!-- /form-side -->
+  </div><!-- /login-inner -->
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ---- Password toggle
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput  = document.getElementById('password');
+
+togglePassword.addEventListener('click', () => {
+  const isPass = passwordInput.type === 'password';
+  passwordInput.type = isPass ? 'text' : 'password';
+  togglePassword.querySelector('i').className = isPass ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
+});
+
+// ---- Form submission
+const form              = document.getElementById('loginForm');
+const submitBtn         = document.getElementById('submit-btn');
+const submitText        = document.getElementById('submit-text');
+const successAlert      = document.getElementById('loginSuccessMessage');
+const errorAlert        = document.getElementById('loginErrorMessage');
+const successMsgEl      = document.getElementById('success-message');
+const errorMsgEl        = document.getElementById('error-message-text');
+const loginUrl          = document.getElementById('loginActionUrl').value;
+
+function getCsrfToken() {
+  const match = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+  return match ? match.trim().split('=')[1] : null;
+}
+
+function showAlert(type, message) {
+  if (type === 'success') {
+    successMsgEl.textContent = message;
+    successAlert.classList.add('show');
+  } else {
+    errorMsgEl.textContent = message;
+    errorAlert.classList.add('show');
+  }
+}
+
+function hideAlerts() {
+  successAlert.classList.remove('show');
+  errorAlert.classList.remove('show');
+}
+
+function resetBtn() {
+  submitBtn.disabled = false;
+  submitText.textContent = 'Sign In';
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+
+  hideAlerts();
+  let isValid = true;
+
+  // Email / phone validation
+  const emailOrPhone = document.getElementById('emailOrPhone');
+  const emailOrPhoneError = document.getElementById('emailOrPhoneError');
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phonePattern = /^(\+234|0)[789]\d{9}$/;
+
+  if (!emailPattern.test(emailOrPhone.value) && !phonePattern.test(emailOrPhone.value.replace(/\s/g,''))) {
+    emailOrPhoneError.querySelector('span').textContent = 'Please enter a valid email or Nigerian phone number';
+    emailOrPhoneError.classList.add('show');
+    emailOrPhone.classList.add('is-error');
+    isValid = false;
+  } else {
+    emailOrPhoneError.classList.remove('show');
+    emailOrPhone.classList.remove('is-error');
+  }
+
+  // Password validation
+  const passwordError = document.getElementById('passwordError');
+  if (passwordInput.value.length < 6) {
+    passwordError.querySelector('span').textContent = 'Password must be at least 6 characters';
+    passwordError.classList.add('show');
+    passwordInput.classList.add('is-error');
+    isValid = false;
+  } else {
+    passwordError.classList.remove('show');
+    passwordInput.classList.remove('is-error');
+  }
+
+  if (!isValid) return;
+
+  submitText.textContent = 'Signing In…';
+  submitBtn.disabled = true;
+
+  fetch(loginUrl, {
+    method: 'POST',
+    body: new FormData(form),
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.status === 'success') {
+      showAlert('success', data.message);
+      setTimeout(() => { window.location.href = data.redirect_url; }, 1400);
+    } else {
+      showAlert('error', data.message);
+      setTimeout(() => { hideAlerts(); resetBtn(); }, 3500);
+    }
+  })
+  .catch(() => {
+    showAlert('error', 'Something went wrong. Please try again.');
+    setTimeout(() => { hideAlerts(); resetBtn(); }, 3500);
+  });
+
+  return false;
+}, false);
+
+// Clear field errors on input
+document.querySelectorAll('.form-control-custom').forEach(input => {
+  input.addEventListener('input', () => input.classList.remove('is-error'));
+});
+</script>
+{% endblock %}

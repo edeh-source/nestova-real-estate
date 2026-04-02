@@ -1,0 +1,906 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  :root {
+    --emerald-green: #046A38;
+    --metallic-gold: #D4AF37;
+    --charcoal-gray: #333333;
+    --emerald-light: #058a48;
+    --gold-light: #e6c45a;
+  }
+
+  .register-section {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, #f0f7f4 0%, #e8f5ed 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .register-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23046A38' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .register-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+  }
+
+  .register-card {
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(4, 106, 56, 0.2);
+    border: 2px solid rgba(212, 175, 55, 0.1);
+    max-width: 100%;
+  }
+
+  .branding-side {
+    background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+    padding: 60px 50px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .branding-side::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+      transform: translate(-20px, 20px) rotate(180deg);
+    }
+  }
+
+  .brand-logo-section {
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-icon-box {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--metallic-gold) 0%, var(--gold-light) 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+  }
+
+  .branding-side h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+    position: relative;
+    z-index: 1;
+  }
+
+  .branding-side p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    opacity: 0.95;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .feature-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(5px);
+  }
+
+  .feature-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+  }
+
+  .form-side {
+    padding: 60px 50px;
+    background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .form-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--charcoal-gray);
+    margin-bottom: 10px;
+  }
+
+  .form-header p {
+    color: #6b7280;
+    font-size: 1rem;
+  }
+
+  .upline-badge {
+    background: rgba(4, 106, 56, 0.1);
+    border: 2px solid var(--emerald-green);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .upline-badge strong {
+    color: var(--emerald-green);
+    font-size: 1.1rem;
+  }
+
+  .upline-badge p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .form-section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--charcoal-gray);
+    margin: 30px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .form-section-subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--charcoal-gray);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+
+  .required-star {
+    color: #ef4444;
+    margin-left: 3px;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--emerald-green);
+    font-size: 1.2rem;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.7;
+  }
+
+  .form-control-custom {
+    width: 100%;
+    padding: 14px 18px 14px 50px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--charcoal-gray);
+  }
+
+  .form-control-custom:focus {
+    outline: none;
+    border-color: var(--emerald-green);
+    box-shadow: 0 0 0 3px rgba(4, 106, 56, 0.1);
+  }
+
+  .form-control-custom:focus~.input-icon {
+    color: var(--emerald-green);
+    opacity: 1;
+  }
+
+  .form-control-custom.error {
+    border-color: #ef4444;
+  }
+
+  select.form-control-custom {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23046A38' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    cursor: pointer;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-helper-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .phone-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .country-select-wrapper {
+    position: relative;
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .country-select {
+    width: 100%;
+    padding: 14px 12px 14px 45px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    cursor: pointer;
+    appearance: none;
+    color: var(--charcoal-gray);
+  }
+
+  .country-select:focus {
+    outline: none;
+    border-color: var(--emerald-green);
+    box-shadow: 0 0 0 3px rgba(4, 106, 56, 0.1);
+  }
+
+  .country-select:focus~.input-icon {
+    color: var(--emerald-green);
+    opacity: 1;
+  }
+
+  .phone-input {
+    flex: 1;
+    padding: 14px 18px;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--emerald-green);
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+    z-index: 1;
+    opacity: 0.7;
+  }
+
+  .password-toggle:hover {
+    opacity: 1;
+    color: var(--metallic-gold);
+  }
+
+  .error-message {
+    display: none;
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .error-message.show {
+    display: flex;
+  }
+
+  .success-message {
+    display: none;
+    color: var(--emerald-green);
+    font-size: 0.85rem;
+    margin-top: 6px;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .success-message.show {
+    display: flex;
+  }
+
+  .btn-register {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(4, 106, 56, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-register::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: var(--metallic-gold);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-register:hover::before {
+    width: 300%;
+    height: 300%;
+  }
+
+  .btn-register span {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(4, 106, 56, 0.4);
+  }
+
+  .btn-register:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  .login-link a {
+    color: var(--emerald-green);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .login-link a:hover {
+    color: var(--metallic-gold);
+  }
+
+  .terms-text {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    margin-top: 25px;
+    line-height: 1.6;
+  }
+
+  .terms-text a {
+    color: var(--emerald-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .terms-text a:hover {
+    color: var(--metallic-gold);
+    text-decoration: underline;
+  }
+
+  .form-header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, var(--metallic-gold), var(--gold-light));
+    margin: 15px auto 0;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 991px) {
+    .branding-side {
+      display: none;
+    }
+
+    .form-side {
+      padding: 50px 30px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .register-section {
+      padding: 100px 0 60px;
+      overflow-x: hidden;
+    }
+
+    .form-side {
+      padding: 40px 20px;
+    }
+
+    .form-header h2 {
+      font-size: 1.6rem;
+    }
+
+    .form-section-title {
+      font-size: 1.1rem;
+    }
+
+    .country-select-wrapper {
+      width: 110px;
+    }
+
+    .country-select {
+      padding: 14px 8px 14px 40px;
+      font-size: 0.9rem;
+    }
+
+    .phone-input {
+      padding: 14px 12px;
+      font-size: 0.9rem;
+    }
+
+    .btn-register {
+      padding: 14px;
+      font-size: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
+<section class="register-section">
+  <div class="container">
+    <div class="register-wrapper">
+      <div class="register-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-0">
+          <!-- Left Side - Branding -->
+          <div class="col-lg-6">
+            <div class="branding-side">
+              <div>
+                <div class="brand-logo-section">
+                  <div class="brand-icon-box">🏡</div>
+                  <h3 style="color: white; font-size: 2rem; font-weight: 700; margin: 0;">Nestova</h3>
+                </div>
+                <h2>Become An Agent & Earn Commission</h2>
+                <p>Join our network of successful property agents. List properties, refer buyers, and earn commission on
+                  every sale you make!</p>
+              </div>
+
+              <ul class="feature-list">
+                <li class="feature-item">
+                  <span class="feature-icon">💰</span>
+                  <span>Earn 2% commission on every sale</span>
+                </li>
+
+                <li class="feature-item">
+                  <span class="feature-icon">🔗</span>
+                  <span>Unique referral tracking links</span>
+                </li>
+
+                <li class="feature-item">
+                  <span class="feature-icon">📊</span>
+                  <span>Real-time sales dashboard</span>
+                </li>
+
+                <li class="feature-item">
+                  <span class="feature-icon">👥</span>
+                  <span>Build your agent network</span>
+                </li>
+
+                <li class="feature-item">
+                  <span class="feature-icon">🏦</span>
+                  <span>Direct bank payments</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Right Side - Registration Form -->
+          <div class="col-lg-6">
+            <div class="form-side">
+              <div class="form-header">
+                <h2>Register as an Agent</h2>
+                <p>Start earning from property sales today</p>
+              </div>
+
+              <!-- Success Message -->
+              <div class="p-3 bg-success mb-3 rounded-4 shadow-lg" style="display: none;" id="registerSuccessMessage">
+                <p class="fw-bold text-white text-center my-auto" id="success-register-message"></p>
+              </div>
+
+              <!-- Error Message -->
+              <div class="p-3 bg-danger mb-3 rounded-4 shadow-lg" style="display: none;" id="registerErrorMessage">
+                <p class="fw-bold text-center my-auto text-white" id="error-register-message-text"></p>
+              </div>
+
+              <!-- Upline Info (if referred) -->
+              {% if upline_agent %}
+              <div class="upline-badge">
+                <p style="margin: 0; color: #6b7280;">Referred by</p>
+                <strong>{{ upline_agent|title }}</strong>
+                <p>Referral Code: {{ upline_code }}</p>
+              </div>
+              {% endif %}
+
+              <form id="registerForm" method="post" action="{% url "agents:agents_signup" %}">
+                {% csrf_token %}
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+
+                <!-- Bank Information Section -->
+                <h3 class="form-section-title">🏦 Bank Information</h3>
+                <p class="form-section-subtitle">Add your bank details to receive commission payments</p>
+
+                <!-- Bank Selection -->
+                <div class="form-group">
+                  <label class="form-label" for="bank">Select Your Bank<span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-bank input-icon"></i>
+                    <select class="form-control-custom" id="bank" name="bank" required>
+                      <option value="">-- Choose Bank --</option>
+                      {% for bank in banks %}
+                      <option value="{{ bank.id }}">{{ bank.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="error-message" id="bankError">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span></span>
+                  </div>
+                </div>
+
+                <!-- Account Name -->
+                <div class="form-group">
+                  <label class="form-label" for="accountName">Account Name<span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-person-badge input-icon"></i>
+                    <input type="text" class="form-control-custom" id="accountName" name="account_name"
+                      placeholder="Full name as on bank account" required>
+                  </div>
+                  <small class="form-helper-text">Enter your full name as registered with your bank</small>
+                  <div class="error-message" id="accountNameError">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span></span>
+                  </div>
+                </div>
+
+                <!-- Account Number -->
+                <div class="form-group">
+                  <label class="form-label" for="accountNumber">Account Number<span
+                      class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-credit-card input-icon"></i>
+                    <input type="text" class="form-control-custom" id="accountNumber" name="account_number"
+                      placeholder="0123456789" maxlength="10" pattern="\d{10}" required>
+                  </div>
+                  <small class="form-helper-text">Enter your 10-digit account number</small>
+                  <div class="error-message" id="accountNumberError">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span></span>
+                  </div>
+                </div>
+
+                <!-- Password Section -->
+
+
+                <!-- Confirm Password -->
+
+
+                <!-- Upline Code (Optional) -->
+                <div class="form-group">
+                  <label class="form-label" for="uplineCode">Upline Referral Code (Optional)</label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-link-45deg input-icon"></i>
+                    <input type="text" class="form-control-custom" id="uplineCode" name="upline_code"
+                      value="{{ upline_code|default:'' }}" placeholder="Enter referral code if you have one">
+                  </div>
+                  <small class="form-helper-text">If another agent referred you, enter their code here</small>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="register-btn" type="submit" class="btn-register">
+                  <span id="register-text">Register as Agent</span>
+                </button>
+
+                <!-- Login Link -->
+                <div class="login-link">
+                  Already have an account? <a href="{% url 'users:login' %}">Sign in</a>
+                </div>
+
+                <!-- Regular User Link -->
+                <div class="login-link">
+                  Want to register as a regular user? <a href="">Register here</a>
+                </div>
+
+                <!-- Terms -->
+                <div class="terms-text">
+                  By creating an account, you agree to our
+                  <a href="#">Terms of Service</a> and
+                  <a href="#">Privacy Policy</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Password Toggle
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const registerMessage = document.getElementById("registerSuccessMessage");
+  const registerErrorMessage = document.getElementById("registerErrorMessage");
+  const form = document.getElementById('registerForm');
+  const registerErrorText = document.getElementById("error-register-message-text");
+  const registerSuccessTextMessage = document.getElementById("success-register-message");
+  const registerBtn = document.getElementById("register-btn");
+  const registerText = document.getElementById("register-text");
+
+  // CSRF Token Helper Function
+  const getCsrfToken = () => {
+    const cookieName = 'csrftoken';
+    const cookies = document.cookie.split(';').map(c => c.trim());
+
+    for (const cookie of cookies) {
+      if (cookie.startsWith(`${cookieName}=`)) {
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    console.error(`CSRF token cookie "${cookieName}" not found.`);
+    return null;
+  };
+
+  const csrfToken = getCsrfToken();
+
+  // Password Toggle for Main Password
+
+
+  // Password Toggle for Confirm Password
+
+
+  // Password Match Check
+
+
+  // Form Validation and Submission
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    let isValid = true;
+
+    // Username validation
+    const username = document.getElementById('username');
+    const usernameError = document.getElementById('usernameError');
+
+
+    // Email validation
+    const email = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // First Name validation
+    const firstName = document.getElementById('firstName');
+    const firstNameError = document.getElementById('firstNameError');
+
+
+    // Last Name validation
+    const lastName = document.getElementById('lastName');
+    const lastNameError = document.getElementById('lastNameError');
+
+
+    // Phone validation
+
+
+    // Bank validation
+    const bank = document.getElementById('bank');
+    const bankError = document.getElementById('bankError');
+    if (!bank.value) {
+      bankError.querySelector('span').textContent = 'Please select your bank';
+      bankError.classList.add('show');
+      bank.classList.add('error');
+      isValid = false;
+    } else {
+      bankError.classList.remove('show');
+      bank.classList.remove('error');
+    }
+
+    // Account Name validation
+    const accountName = document.getElementById('accountName');
+    const accountNameError = document.getElementById('accountNameError');
+    if (accountName.value.trim().length < 3) {
+      accountNameError.querySelector('span').textContent = 'Account name is required';
+      accountNameError.classList.add('show');
+      accountName.classList.add('error');
+      isValid = false;
+    } else {
+      accountNameError.classList.remove('show');
+      accountName.classList.remove('error');
+    }
+
+    // Account Number validation
+    const accountNumber = document.getElementById('accountNumber');
+    const accountNumberError = document.getElementById('accountNumberError');
+    const accountPattern = /^\d{10}$/;
+    if (!accountPattern.test(accountNumber.value)) {
+      accountNumberError.querySelector('span').textContent = 'Account number must be exactly 10 digits';
+      accountNumberError.classList.add('show');
+      accountNumber.classList.add('error');
+      isValid = false;
+    } else {
+      accountNumberError.classList.remove('show');
+      accountNumber.classList.remove('error');
+    }
+
+    // Password validation
+
+
+    // Confirm password validation
+
+
+    // If validation fails, stop execution
+    if (!isValid) {
+      document.documentElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    // Disable button and show loading state
+    registerBtn.disabled = true;
+    registerText.textContent = "Registering...";
+
+    const formData = new FormData(form);
+
+    // Submit form
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": csrfToken
+      }
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.status === "success") {
+          registerMessage.style.display = "block";
+          registerSuccessTextMessage.textContent = data.message;
+          document.documentElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          setTimeout(() => {
+            registerMessage.style.display = "none";
+            window.location.href = data.redirect_url;
+          }, 2000);
+        } else if (data.status === "error") {
+          registerErrorMessage.style.display = "block";
+          registerErrorText.textContent = data.message;
+          document.documentElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          setTimeout(() => {
+            registerErrorMessage.style.display = "none";
+            registerBtn.disabled = false;
+            registerText.textContent = "Register as Agent";
+          }, 3000);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        registerErrorMessage.style.display = "block";
+        registerErrorText.textContent = "An error occurred. Please try again.";
+        setTimeout(() => {
+          registerErrorMessage.style.display = "none";
+          registerBtn.disabled = false;
+          registerText.textContent = "Register as Agent";
+        }, 3000);
+      });
+  });
+
+  // Clear error on input
+  document.querySelectorAll('.form-control-custom').forEach(input => {
+    input.addEventListener('input', function () {
+      this.classList.remove('error');
+      const errorId = this.id + 'Error';
+      const errorElement = document.getElementById(errorId);
+      if (errorElement) {
+        errorElement.classList.remove('show');
+      }
+    });
+  });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .verification-section {
+        padding: 80px 0;
+        background: #f8fafc;
+        min-height: 80vh;
+    }
+
+    .status-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .status-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 20px;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #f97316;
+    }
+
+    .status-in_review {
+        background: #eff6ff;
+        color: #3b82f6;
+    }
+
+    .status-verified {
+        background: #f0fdf4;
+        color: #22c55e;
+    }
+
+    .status-rejected {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .status-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .status-description {
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .verification-steps {
+        text-align: left;
+        background: #f1f5f9;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .step-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .step-number {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #20c997;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .btn-verify {
+        background: #20c997;
+        color: white;
+        padding: 15px 35px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-verify:hover {
+        background: #198754;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .rejection-box {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        color: #991b1b;
+        font-size: 14px;
+    }
+</style>
+
+<section class="verification-section">
+    <div class="container">
+        <div class="status-card" data-aos="fade-up">
+            {% with profile=agent|default:company %}
+
+            <div class="status-icon status-{{ profile.verification_status }}">
+                {% if profile.verification_status == 'pending' %}
+                <i class="bi bi-shield-lock"></i>
+                {% elif profile.verification_status == 'in_review' %}
+                <i class="bi bi-clock-history"></i>
+                {% elif profile.verification_status == 'verified' %}
+                <i class="bi bi-patch-check-fill"></i>
+                {% elif profile.verification_status == 'rejected' %}
+                <i class="bi bi-exclamation-triangle"></i>
+                {% endif %}
+            </div>
+
+            <h1 class="status-title">
+                {% if profile.verification_status == 'pending' %}
+                Verification Required
+                {% elif profile.verification_status == 'in_review' %}
+                Under Review
+                {% elif profile.verification_status == 'verified' %}
+                Verified Account
+                {% elif profile.verification_status == 'rejected' %}
+                Verification Rejected
+                {% endif %}
+            </h1>
+
+            <p class="status-description">
+                {% if profile.verification_status == 'pending' %}
+                To ensure the safety of our community, all {{ user_type }}s must be verified before listing properties.
+                {% elif profile.verification_status == 'in_review' %}
+                We have received your documents and our team is currently reviewing them. This usually takes 24-48
+                hours.
+                {% elif profile.verification_status == 'verified' %}
+                Congratulations! Your account is verified. You can now post properties and enjoy full access to our
+                platform.
+                {% elif profile.verification_status == 'rejected' %}
+                Unfortunately, your verification was not successful. Please review the reason below and resubmit your
+                documents.
+                {% endif %}
+            </p>
+
+            {% if profile.rejection_reason %}
+            <div class="rejection-box">
+                <strong>Reason:</strong> {{ profile.rejection_reason }}
+            </div>
+            {% endif %}
+
+            {% if profile.verification_status == 'pending' or profile.verification_status == 'rejected' %}
+            <div class="verification-steps">
+                <h5 class="mb-3" style="font-weight: 700;">Required Documents:</h5>
+                {% if user_type == 'agent' %}
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <span>Valid Identification (NIN, Passport, or Voter's Card)</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <span>A clear selfie holding your ID for identity match</span>
+                </div>
+                {% else %}
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <span>CAC Certificate of Incorporation</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <span>Recent Utility Bill (NEPA/Water) for address proof</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <a href="{% if user_type == 'agent' %}{% url 'agents:submit_agent_verification' %}{% else %}{% url 'agents:submit_company_verification' %}{% endif %}"
+                class="btn-verify">
+                {{ profile.rejection_reason|yesno:"Re-upload Documents,Start Verification" }}
+            </a>
+            {% endif %}
+
+            {% if profile.verification_status == 'verified' %}
+            <a href="{% url 'listings:post_property' %}" class="btn-verify">Post a Property</a>
+            {% endif %}
+
+            {% endwith %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,799 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load humanize %}
+
+
+{% block content %}
+
+<style>
+  :root {
+    --emerald-green: #046A38;
+    --metallic-gold: #D4AF37;
+    --charcoal-gray: #333333;
+    --emerald-light: #058a48;
+    --gold-light: #e6c45a;
+  }
+
+  body {
+    overflow-x: hidden;
+    background: #f5f7fa;
+  }
+
+  .search-section {
+    padding: 120px 0 60px;
+    min-height: 100vh;
+  }
+
+  /* Search Header */
+  .search-header {
+    background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, 20px) rotate(180deg); }
+  }
+
+  .search-header-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .search-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .search-header p {
+    opacity: 0.95;
+    margin: 0;
+  }
+
+  .results-count {
+    display: inline-block;
+    background: var(--metallic-gold);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-top: 15px;
+  }
+
+  /* Filter Sidebar */
+  .filter-sidebar {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .filter-sidebar h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--charcoal-gray);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filter-sidebar h3 i {
+    color: var(--emerald-green);
+  }
+
+  .filter-group {
+    margin-bottom: 25px;
+  }
+
+  .filter-label {
+    display: block;
+    font-weight: 600;
+    color: var(--charcoal-gray);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+  }
+
+  .filter-select,
+  .filter-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--charcoal-gray);
+  }
+
+  .filter-select:focus,
+  .filter-input:focus {
+    outline: none;
+    border-color: var(--emerald-green);
+    box-shadow: 0 0 0 3px rgba(4, 106, 56, 0.1);
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-filter {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-apply {
+    background: linear-gradient(135deg, var(--emerald-green), var(--emerald-light));
+    color: white;
+  }
+
+  .btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(4, 106, 56, 0.3);
+  }
+
+  .btn-clear {
+    background: #f3f4f6;
+    color: var(--charcoal-gray);
+  }
+
+  .btn-clear:hover {
+    background: #e5e7eb;
+  }
+
+  /* Active Filters */
+  .active-filters {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .active-filters h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--charcoal-gray);
+    margin-bottom: 15px;
+  }
+
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--emerald-green);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .filter-tag i {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .filter-tag i:hover {
+    opacity: 1;
+  }
+
+  /* Sort Options */
+  .sort-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .sort-info {
+    font-size: 0.95rem;
+    color: #6b7280;
+  }
+
+  .sort-info strong {
+    color: var(--charcoal-gray);
+  }
+
+  .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sort-options label {
+    font-weight: 600;
+    color: var(--charcoal-gray);
+    font-size: 0.95rem;
+  }
+
+  .sort-select {
+    padding: 10px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background: white;
+    color: var(--charcoal-gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .sort-select:focus {
+    outline: none;
+    border-color: var(--emerald-green);
+  }
+
+  /* Property Grid */
+  .properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .property-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .property-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .property-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .property-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .property-card:hover .property-image img {
+    transform: scale(1.1);
+  }
+
+  .property-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--emerald-green);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .property-badge.featured {
+    background: var(--metallic-gold);
+  }
+
+  .property-favorite {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .property-favorite:hover {
+    background: var(--emerald-green);
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .property-favorite i {
+    font-size: 1.2rem;
+  }
+
+  .property-details {
+    padding: 20px;
+  }
+
+  .property-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--emerald-green);
+    margin-bottom: 10px;
+  }
+
+  .property-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--charcoal-gray);
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .property-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+
+  .property-location i {
+    color: var(--metallic-gold);
+  }
+
+  .property-features {
+    display: flex;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+
+  .feature-item i {
+    color: var(--emerald-green);
+  }
+
+  /* No Results */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .no-results i {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 20px;
+  }
+
+  .no-results h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--charcoal-gray);
+    margin-bottom: 10px;
+  }
+
+  .no-results p {
+    color: #6b7280;
+    margin-bottom: 25px;
+  }
+
+  .btn-browse {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, var(--emerald-green), var(--emerald-light));
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-browse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(4, 106, 56, 0.3);
+  }
+
+  /* Pagination */
+  .pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pagination li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    color: var(--charcoal-gray);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .pagination li a:hover,
+  .pagination li a.active {
+    background: var(--emerald-green);
+    color: white;
+    border-color: var(--emerald-green);
+  }
+
+  /* Responsive */
+  @media (max-width: 991px) {
+    .filter-sidebar {
+      position: relative;
+      top: 0;
+      margin-bottom: 30px;
+      max-height: none;
+    }
+
+    .properties-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+  }
+
+  @media (max-width: 576px) {
+    .search-section {
+      padding: 100px 0 40px;
+    }
+
+    .search-header {
+      padding: 25px 20px;
+    }
+
+    .search-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .filter-sidebar {
+      padding: 20px;
+    }
+
+    .properties-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .sort-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .sort-options {
+      width: 100%;
+    }
+
+    .sort-select {
+      flex: 1;
+    }
+  }
+</style>
+
+<section class="search-section">
+  <div class="container">
+    <!-- Search Header -->
+    <div class="search-header" data-aos="fade-up">
+      <div class="search-header-content">
+        <h1>Search Results</h1>
+        <p>Find your perfect property from our curated listings</p>
+        <span class="results-count">
+          <i class="bi bi-house-fill"></i> {{ properties.count }} Properties Found
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Filter Sidebar -->
+      <div class="col-lg-3">
+        <div class="filter-sidebar" data-aos="fade-right">
+          <h3><i class="bi bi-funnel-fill"></i> Filters</h3>
+
+          <form method="get" action="{% url 'search_properties' %}" id="filterForm">
+            <!-- State Filter -->
+            <div class="filter-group">
+              <label class="filter-label">State</label>
+              <select name="state_type" class="filter-select" id="stateSelect">
+                <option value="">All States</option>
+                <option value="1" {% if request.GET.state_type == '1' %}selected{% endif %}>Lagos</option>
+                <option value="2" {% if request.GET.state_type == '2' %}selected{% endif %}>Abuja</option>
+                <option value="3" {% if request.GET.state_type == '3' %}selected{% endif %}>Rivers</option>
+              </select>
+            </div>
+
+            <!-- City Filter -->
+            <div class="filter-group">
+              <label class="filter-label">City</label>
+              <select name="city_type" class="filter-select" id="citySelect">
+                <option value="">All Cities</option>
+                <option value="1" {% if request.GET.city_type == '1' %}selected{% endif %}>Lekki</option>
+                <option value="2" {% if request.GET.city_type == '2' %}selected{% endif %}>Victoria Island</option>
+                <option value="3" {% if request.GET.city_type == '3' %}selected{% endif %}>Ikoyi</option>
+              </select>
+            </div>
+
+            <!-- Property Type Filter -->
+            <div class="filter-group">
+              <label class="filter-label">Property Type</label>
+              <select name="property_type" class="filter-select">
+                <option value="">All Types</option>
+                <option value="Apartment" {% if request.GET.property_type == 'Apartment' %}selected{% endif %}>Apartment</option>
+                <option value="House" {% if request.GET.property_type == 'House' %}selected{% endif %}>House</option>
+                <option value="Duplex" {% if request.GET.property_type == 'Duplex' %}selected{% endif %}>Duplex</option>
+                <option value="Villa" {% if request.GET.property_type == 'Villa' %}selected{% endif %}>Villa</option>
+                <option value="Land" {% if request.GET.property_type == 'Land' %}selected{% endif %}>Land</option>
+              </select>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+              <label class="filter-label">Price Range</label>
+              <select name="price_range" class="filter-select">
+                <option value="">Any Price</option>
+                <option value="0-500000" {% if request.GET.price_range == '0-500000' %}selected{% endif %}>₦0 - ₦500k</option>
+                <option value="500000-1000000" {% if request.GET.price_range == '500000-1000000' %}selected{% endif %}>₦500k - ₦1M</option>
+                <option value="1000000-5000000" {% if request.GET.price_range == '1000000-5000000' %}selected{% endif %}>₦1M - ₦5M</option>
+                <option value="5000000-10000000" {% if request.GET.price_range == '5000000-10000000' %}selected{% endif %}>₦5M - ₦10M</option>
+                <option value="10000000-50000000" {% if request.GET.price_range == '10000000-50000000' %}selected{% endif %}>₦10M - ₦50M</option>
+                <option value="50000000-100000000" {% if request.GET.price_range == '50000000-100000000' %}selected{% endif %}>₦50M - ₦100M</option>
+                <option value="100000000-500000000" {% if request.GET.price_range == '100000000-500000000' %}selected{% endif %}>₦100M - ₦500M</option>
+                <option value="500000000-1000000000" {% if request.GET.price_range == '500000000-1000000000' %}selected{% endif %}>₦500M - ₦1B</option>
+                <option value="1000000000-1200000000" {% if request.GET.price_range == '1000000000-1200000000' %}selected{% endif %}>₦1B - ₦1.2B</option>
+                <option value="1200000+" {% if request.GET.price_range == '1200000+' %}selected{% endif %}>₦1.2B+</option>
+              </select>
+            </div>
+
+            <!-- Bedrooms Filter -->
+            <div class="filter-group">
+              <label class="filter-label">Bedrooms</label>
+              <select name="bedrooms" class="filter-select">
+                <option value="">Any</option>
+                <option value="1" {% if request.GET.bedrooms == '1' %}selected{% endif %}>1</option>
+                <option value="2" {% if request.GET.bedrooms == '2' %}selected{% endif %}>2</option>
+                <option value="3" {% if request.GET.bedrooms == '3' %}selected{% endif %}>3</option>
+                <option value="4" {% if request.GET.bedrooms == '4' %}selected{% endif %}>4</option>
+                <option value="5+" {% if request.GET.bedrooms == '5+' %}selected{% endif %}>5+</option>
+              </select>
+            </div>
+
+            <!-- Bathrooms Filter -->
+            <div class="filter-group">
+              <label class="filter-label">Bathrooms</label>
+              <select name="bathrooms" class="filter-select">
+                <option value="">Any</option>
+                <option value="1" {% if request.GET.bathrooms == '1' %}selected{% endif %}>1</option>
+                <option value="2" {% if request.GET.bathrooms == '2' %}selected{% endif %}>2</option>
+                <option value="3" {% if request.GET.bathrooms == '3' %}selected{% endif %}>3</option>
+                <option value="4+" {% if request.GET.bathrooms == '4+' %}selected{% endif %}>4+</option>
+              </select>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-buttons">
+              <button type="submit" class="btn-filter btn-apply">
+                <i class="bi bi-search"></i> Apply
+              </button>
+              <a href="{% url 'search_properties' %}" class="btn-filter btn-clear">
+                <i class="bi bi-x-circle"></i> Clear
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <!-- Active Filters -->
+        {% if request.GET %}
+        <div class="active-filters" data-aos="fade-up">
+          <h4>Active Filters:</h4>
+          <div class="filter-tags">
+            {% if request.GET.state_type %}
+            <span class="filter-tag">
+              State: {{ request.GET.state_type }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+            {% if request.GET.city_type %}
+            <span class="filter-tag">
+              City: {{ request.GET.city_type }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+            {% if request.GET.property_type %}
+            <span class="filter-tag">
+              Type: {{ request.GET.property_type }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+            {% if request.GET.price_range %}
+            <span class="filter-tag">
+              Price: {{ request.GET.price_range }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+            {% if request.GET.bedrooms %}
+            <span class="filter-tag">
+              Beds: {{ request.GET.bedrooms }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+            {% if request.GET.bathrooms %}
+            <span class="filter-tag">
+              Baths: {{ request.GET.bathrooms }}
+              <i class="bi bi-x-circle"></i>
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Sort Bar -->
+        <div class="sort-bar" data-aos="fade-up">
+          <div class="sort-info">
+            Showing <strong>{{ properties.count }}</strong> properties
+          </div>
+          <div class="sort-options">
+            <label for="sortSelect">Sort by:</label>
+            <select id="sortSelect" class="sort-select">
+              <option value="newest">Newest First</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="bedrooms">Most Bedrooms</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Properties Grid -->
+        {% if properties %}
+        <div class="properties-grid">
+          {% for property in properties %}
+          <a class="" href="{{ property.get_absolute_url }}"><div class="property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1|divisibleby:3|yesno:'0,100,200' }}">
+            <div class="property-image">
+              <img src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/property-placeholder.jpg' %}{% endif %}" alt="{{ property.title }}">
+              <span class="property-badge {% if property.is_featured %}featured{% endif %}">
+                {{ property.status.name }}
+              </span>
+              <div class="property-favorite">
+                <i class="bi bi-heart"></i>
+              </div>
+            </div>
+            <div class="property-details">
+              <div class="property-price">₦{{ property.price|floatformat:0|intcomma }}</div>
+              <h3 class="property-title">{{ property.title }}</h3>
+              <div class="property-location">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>{{ property.city.name }}, {{ property.state.name }}</span>
+              </div>
+              <div class="property-features">
+                <div class="feature-item">
+                  <i class="bi bi-door-closed-fill"></i>
+                  <span>{{ property.bedrooms }} Beds</span>
+                </div>
+                <div class="feature-item">
+                  <i class="bi bi-droplet-fill"></i>
+                  <span>{{ property.bathrooms }} Baths</span>
+                </div>
+                <div class="feature-item">
+                  <i class="bi bi-arrows-fullscreen"></i>
+                  <span>{{ property.square_feet }} sqft</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper">
+          <ul class="pagination">
+            <li><a href="#"><i class="bi bi-chevron-left"></i></a></li>
+            <li><a href="#" class="active">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">...</a></li>
+            <li><a href="#">10</a></li>
+            <li><a href="#"><i class="bi bi-chevron-right"></i></a></li>
+          </ul>
+        </div>
+        {% else %}
+        <!-- No Results -->
+        <div class="no-results" data-aos="fade-up">
+          <i class="bi bi-search"></i>
+          <h3>No Properties Found</h3>
+          <p>We couldn't find any properties matching your criteria. Try adjusting your filters.</p>
+          <a href="{% url 'properties' %}" class="btn-browse">Browse All Properties</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Auto-submit form when filters change
+  document.querySelectorAll('.filter-select').forEach(select => {
+    select.addEventListener('change', function() {
+      // Optional: Auto-submit on change
+      // document.getElementById('filterForm').submit();
+    });
+  });
+
+  // Remove filter tag functionality
+  document.querySelectorAll('.filter-tag i').forEach(icon => {
+    icon.addEventListener('click', function() {
+      const tag = this.parentElement;
+      tag.style.opacity = '0';
+      setTimeout(() => tag.remove(), 300);
+    });
+  });
+
+  // Sort functionality
+  document.getElementById('sortSelect').addEventListener('change', function() {
+    // Add your sorting logic here
+    console.log('Sort by:', this.value);
+  });
+</script>
+
+{% endblock content %}

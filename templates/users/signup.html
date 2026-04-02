@@ -1,0 +1,1178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account — Nestova Real Estate{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   SIGNUP PAGE — LUXURY GLASSMORPHISM DESIGN SYSTEM
+   ============================================================ */
+
+.register-section {
+  min-height: 100vh;
+  padding: 120px 0 80px;
+  background: var(--obsidian);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient glow orbs */
+.register-section::before {
+  content: '';
+  position: fixed;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.055), transparent 65%);
+  top: -280px; right: -200px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.register-section::after {
+  content: '';
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(13,27,62,0.7), transparent 65%);
+  bottom: -200px; left: -150px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.register-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   MAIN CARD
+   ============================================================ */
+.register-card {
+  background: rgba(18,18,26,0.88);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+}
+
+.register-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.45), transparent);
+  z-index: 2;
+}
+
+/* ============================================================
+   ACCOUNT TYPE SELECTION SCREEN
+   ============================================================ */
+.account-type-section {
+  padding: 60px 52px 64px;
+}
+
+.account-type-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.account-type-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.14), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.28);
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.account-type-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.5; }
+}
+
+.account-type-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+}
+
+.account-type-header h2 em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.account-type-header p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Type cards grid */
+.account-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.account-type-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 36px 28px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.account-type-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.account-type-card:hover {
+  background: rgba(201,168,76,0.06);
+  border-color: rgba(201,168,76,0.22);
+  transform: translateY(-6px);
+  box-shadow: 0 28px 56px rgba(0,0,0,0.45), 0 0 24px rgba(201,168,76,0.07);
+}
+
+.account-type-card:hover::before { opacity: 1; }
+
+.account-type-card.selected {
+  background: rgba(201,168,76,0.09);
+  border-color: rgba(201,168,76,0.4);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.4), 0 0 30px rgba(201,168,76,0.1);
+}
+
+.account-type-card.selected::before { opacity: 1; }
+
+.account-type-content { position: relative; z-index: 1; }
+
+/* Icon badge */
+.account-type-icon-wrap {
+  width: 60px; height: 60px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.06));
+  border: 1px solid rgba(201,168,76,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 22px;
+  transition: all 0.35s ease;
+}
+
+.account-type-card:hover .account-type-icon-wrap,
+.account-type-card.selected .account-type-icon-wrap {
+  background: linear-gradient(135deg, rgba(201,168,76,0.28), rgba(201,168,76,0.1));
+  box-shadow: 0 8px 24px rgba(201,168,76,0.2);
+  transform: scale(1.05);
+}
+
+.account-type-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.account-type-card > .account-type-content > p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.87rem;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+/* Feature list */
+.account-type-features {
+  list-style: none;
+  padding: 0; margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 18px;
+}
+
+.account-type-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.25s;
+}
+
+.account-type-features li::before {
+  content: '';
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23C9A84C' d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 10px;
+}
+
+.account-type-card:hover .account-type-features li { color: rgba(255,255,255,0.65); }
+
+/* Selected badge */
+.selected-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.08));
+  border: 1px solid rgba(201,168,76,0.4);
+  color: var(--gold-light);
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+.account-type-card.selected .selected-badge {
+  display: inline-flex;
+}
+
+.selected-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* ============================================================
+   REGISTRATION FORM SCREEN
+   ============================================================ */
+.form-side {
+  padding: 52px;
+  display: none;
+}
+
+.form-side.active { display: block; }
+
+/* Back button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.83rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 28px;
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.04);
+  letter-spacing: 0.03em;
+}
+
+.back-button:hover {
+  color: var(--gold-light);
+  border-color: rgba(201,168,76,0.25);
+  background: rgba(201,168,76,0.06);
+}
+
+/* Form header */
+.form-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.form-header-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.form-header-eyebrow::before,
+.form-header-eyebrow::after {
+  content: '';
+  flex: 1;
+  max-width: 40px;
+  height: 1px;
+  background: rgba(201,168,76,0.35);
+}
+
+.form-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+.form-header p {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Status messages */
+.register-msg {
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.register-msg.success {
+  background: rgba(30,140,80,0.15);
+  border: 1px solid rgba(60,200,110,0.3);
+  color: #6DFFA8;
+}
+
+.register-msg.error {
+  background: rgba(220,50,50,0.15);
+  border: 1px solid rgba(220,50,50,0.3);
+  color: #ff8a8a;
+}
+
+/* Upline badge */
+.upline-badge {
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.22);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  text-align: center;
+  display: none;
+}
+
+.upline-badge p { color: rgba(255,255,255,0.35); font-size: 0.82rem; margin: 0; }
+.upline-badge strong { color: var(--gold-light); font-size: 1rem; display: block; margin: 4px 0; }
+
+/* Section titles */
+.form-section-title {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin: 32px 0 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-section-title:first-of-type { margin-top: 0; }
+
+.form-section-subtitle {
+  color: rgba(255,255,255,0.3);
+  font-size: 0.83rem;
+  margin-bottom: 22px;
+  margin-top: -4px;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 22px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.required-star {
+  color: rgba(201,168,76,0.7);
+  margin-left: 3px;
+}
+
+/* Input wrapper */
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.2);
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.input-wrapper:focus-within .input-icon { color: var(--gold); }
+
+.form-control-custom {
+  width: 100%;
+  padding: 13px 16px 13px 44px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+}
+
+.form-control-custom::placeholder { color: rgba(255,255,255,0.2); }
+
+.form-control-custom:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,168,76,0.45);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.09);
+  color: #fff;
+}
+
+.form-control-custom.error {
+  border-color: rgba(220,50,50,0.5);
+  box-shadow: 0 0 0 3px rgba(220,50,50,0.08);
+}
+
+select.form-control-custom {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23C9A84C' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-color: rgba(255,255,255,0.05);
+}
+
+select.form-control-custom option { background: #12121A; color: #fff; }
+
+textarea.form-control-custom {
+  resize: vertical;
+  min-height: 90px;
+  padding-top: 13px;
+}
+
+/* Form row (2-col) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Phone group */
+.phone-group {
+  display: flex;
+  gap: 10px;
+}
+
+.country-select-wrapper {
+  position: relative;
+  width: 136px;
+  flex-shrink: 0;
+}
+
+.country-select {
+  width: 100%;
+  padding: 13px 10px 13px 42px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.75);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.country-select:focus {
+  border-color: rgba(201,168,76,0.45);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.09);
+  color: #fff;
+}
+
+.country-select option { background: #12121A; }
+
+.phone-input { flex: 1; padding-left: 16px !important; }
+
+/* Password toggle */
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.password-toggle:hover { color: var(--gold-light); }
+
+/* Inline validation messages */
+.field-error {
+  display: none;
+  color: #ff8a8a;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  align-items: center;
+  gap: 5px;
+}
+
+.field-error.show { display: flex; }
+
+.field-success {
+  display: none;
+  color: #6DFFA8;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  align-items: center;
+  gap: 5px;
+}
+
+.field-success.show { display: flex; }
+
+/* Helper text */
+.form-helper-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.25);
+  line-height: 1.4;
+}
+
+/* Submit button */
+.btn-register {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #0A0A0F;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  box-shadow: 0 8px 28px rgba(201,168,76,0.28);
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.btn-register::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.55s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(201,168,76,0.42);
+}
+
+.btn-register:hover::before { left: 100%; }
+
+.btn-register:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-register span { position: relative; z-index: 1; }
+
+/* Login & terms links */
+.login-link {
+  text-align: center;
+  margin-top: 22px;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.88rem;
+}
+
+.login-link a {
+  color: var(--gold-light);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  padding-bottom: 1px;
+}
+
+.login-link a:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+.terms-text {
+  text-align: center;
+  color: rgba(255,255,255,0.2);
+  font-size: 0.78rem;
+  margin-top: 14px;
+  line-height: 1.65;
+}
+
+.terms-text a {
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  transition: color 0.3s;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-bottom: 1px;
+}
+
+.terms-text a:hover { color: var(--gold-light); border-color: rgba(201,168,76,0.4); }
+
+/* ============================================================
+   PAGE ENTRY ANIMATION
+   ============================================================ */
+.register-card {
+  opacity: 0;
+  transform: translateY(32px);
+  animation: cardEntry 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+@keyframes cardEntry {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 991px) {
+  .account-types-grid { grid-template-columns: 1fr; }
+  .form-side, .account-type-section { padding: 40px 32px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 576px) {
+  .register-section { padding: 100px 0 60px; }
+  .form-side, .account-type-section { padding: 32px 20px; }
+  .account-type-card { padding: 28px 22px; }
+  .country-select-wrapper { width: 110px; }
+}
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+
+<section class="register-section">
+  <div class="container">
+    <div class="register-wrapper">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+
+          <div class="register-card">
+
+            <!-- ============================================================
+                 STEP 1 — ACCOUNT TYPE SELECTION
+                 ============================================================ -->
+            <div id="accountTypeSelection" class="account-type-section">
+
+              <div class="account-type-header">
+                <div class="account-type-eyebrow">Get Started</div>
+                <h2>Choose Your <em>Account Type</em></h2>
+                <p>Select the account that best fits your needs to begin</p>
+              </div>
+
+              <div class="account-types-grid">
+
+                <!-- Normal User -->
+                <div class="account-type-card" data-type="user">
+                  <div class="account-type-content">
+                    <div class="account-type-icon-wrap">👤</div>
+                    <h3>Normal User</h3>
+                    <p>Perfect for individuals looking to buy or rent properties</p>
+                    <ul class="account-type-features">
+                      <li>Browse all property listings</li>
+                      <li>Save favourite properties</li>
+                      <li>Contact agents directly</li>
+                      <li>Secure transactions</li>
+                    </ul>
+                    <span class="selected-badge">Selected</span>
+                  </div>
+                </div>
+
+                <!-- Agent -->
+                <div class="account-type-card" data-type="agent">
+                  <div class="account-type-content">
+                    <div class="account-type-icon-wrap">💼</div>
+                    <h3>Agent Account</h3>
+                    <p>For real estate professionals earning commissions</p>
+                    <ul class="account-type-features">
+                      <li>Earn 2% commission on sales</li>
+                      <li>Unique referral tracking</li>
+                      <li>Real-time dashboard</li>
+                      <li>Build agent network</li>
+                    </ul>
+                    <span class="selected-badge">Selected</span>
+                  </div>
+                </div>
+
+                <!-- Company -->
+                <div class="account-type-card" data-type="company">
+                  <div class="account-type-content">
+                    <div class="account-type-icon-wrap">🏢</div>
+                    <h3>Company Account</h3>
+                    <p>For real estate companies managing multiple listings</p>
+                    <ul class="account-type-features">
+                      <li>List multiple properties</li>
+                      <li>Company profile page</li>
+                      <li>Advanced analytics</li>
+                      <li>Priority support</li>
+                    </ul>
+                    <span class="selected-badge">Selected</span>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- /account-type-section -->
+
+            <!-- ============================================================
+                 STEP 2 — REGISTRATION FORM
+                 ============================================================ -->
+            <div id="registrationForm" class="form-side">
+
+              <button type="button" class="back-button" id="backButton">
+                <i class="bi bi-arrow-left"></i> Back to account types
+              </button>
+
+              <div class="form-header">
+                <div class="form-header-eyebrow">New Account</div>
+                <h2 id="formTitle">Create Account</h2>
+                <p id="formSubtitle">Start your journey today</p>
+              </div>
+
+              <!-- Success / Error messages -->
+              <div class="register-msg success" id="registerSuccessMessage">
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="success-register-message"></span>
+              </div>
+              <div class="register-msg error" id="registerErrorMessage">
+                <i class="bi bi-x-circle-fill"></i>
+                <span id="error-register-message-text"></span>
+              </div>
+
+              <!-- Upline badge (agents with referral) -->
+              <div id="uplineBadge" class="upline-badge">
+                <p>Referred by</p>
+                <strong id="uplineAgentName"></strong>
+                <p id="uplineCodeDisplay" style="color:rgba(255,255,255,0.25);font-size:0.78rem;margin-top:4px;"></p>
+              </div>
+
+              <form id="registerForm" method="post" action="{% url 'users:register' %}">
+                {% csrf_token %}
+                <input type="hidden" name="account_type" id="accountTypeInput" value="">
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+
+                <!-- ── BASIC INFORMATION ── -->
+                <h3 class="form-section-title"><i class="bi bi-person-lines-fill" style="color:var(--gold);"></i> Basic Information</h3>
+
+                <!-- Username -->
+                <div class="form-group">
+                  <label class="form-label" for="username">Username <span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-person-fill input-icon"></i>
+                    <input type="text" class="form-control-custom" id="username" name="username" placeholder="johndoe" required>
+                  </div>
+                  <div class="field-error" id="usernameError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                  <label class="form-label" for="email">Email Address <span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-envelope-fill input-icon"></i>
+                    <input type="email" class="form-control-custom" id="email" name="email" placeholder="john@example.com" required>
+                  </div>
+                  <div class="field-error" id="emailError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                  <label class="form-label" for="phoneNumber">Phone Number <span class="required-star">*</span></label>
+                  <div class="phone-group">
+                    <div class="country-select-wrapper">
+                      <i class="bi bi-telephone-fill input-icon"></i>
+                      <select class="country-select" id="countryCode" name="country_code">
+                        <option value="+234" selected>🇳🇬 +234</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                      </select>
+                    </div>
+                    <input type="tel" class="form-control-custom phone-input" id="phoneNumber" name="phone_number" placeholder="8012345678" required>
+                  </div>
+                  <div class="field-error" id="phoneError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                  <label class="form-label" for="password">Password <span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-lock-fill input-icon"></i>
+                    <input type="password" class="form-control-custom" id="password" name="password" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="togglePassword">
+                      <i class="bi bi-eye-fill"></i>
+                    </button>
+                  </div>
+                  <div class="field-error" id="passwordError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                  <label class="form-label" for="confirmPassword">Confirm Password <span class="required-star">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="bi bi-lock-fill input-icon"></i>
+                    <input type="password" class="form-control-custom" id="confirmPassword" name="confirm_password" placeholder="Confirm your password" required>
+                    <button type="button" class="password-toggle" id="toggleConfirmPassword">
+                      <i class="bi bi-eye-fill"></i>
+                    </button>
+                  </div>
+                  <div class="field-success" id="passwordMatch"><i class="bi bi-check-circle-fill"></i><span>Passwords match</span></div>
+                  <div class="field-error" id="confirmPasswordError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                </div>
+
+                <!-- ── AGENT FIELDS ── -->
+                <div id="agentFields" style="display:none;">
+                  <h3 class="form-section-title"><i class="bi bi-bank" style="color:var(--gold);"></i> Bank Information</h3>
+                  <p class="form-section-subtitle">Add your bank details to receive commission payments</p>
+
+                  <div class="form-group">
+                    <label class="form-label" for="bank">Select Your Bank <span class="required-star">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-bank input-icon"></i>
+                      <select class="form-control-custom" id="bank" name="bank">
+                        <option value="">— Choose Bank —</option>
+                        {% for bank in banks %}
+                        <option value="{{ bank.id }}">{{ bank.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="field-error" id="bankError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="accountName">Account Name <span class="required-star">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-person-badge input-icon"></i>
+                      <input type="text" class="form-control-custom" id="accountName" name="account_name" placeholder="Full name as on bank account">
+                    </div>
+                    <small class="form-helper-text">Enter your full name as registered with your bank</small>
+                    <div class="field-error" id="accountNameError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="accountNumber">Account Number <span class="required-star">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-credit-card input-icon"></i>
+                      <input type="text" class="form-control-custom" id="accountNumber" name="account_number" placeholder="0123456789" maxlength="10" pattern="\d{10}">
+                    </div>
+                    <small class="form-helper-text">Enter your 10-digit account number</small>
+                    <div class="field-error" id="accountNumberError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="uplineCode">Upline Referral Code <span style="color:rgba(255,255,255,0.25);font-size:0.65rem;">(Optional)</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-link-45deg input-icon"></i>
+                      <input type="text" class="form-control-custom" id="uplineCode" name="upline_code" value="{{ upline_code|default:'' }}" placeholder="Enter referral code if you have one">
+                    </div>
+                    <small class="form-helper-text">If another agent referred you, enter their code here</small>
+                  </div>
+                </div>
+
+                <!-- ── COMPANY FIELDS ── -->
+                <div id="companyFields" style="display:none;">
+                  <h3 class="form-section-title"><i class="bi bi-building" style="color:var(--gold);"></i> Company Information</h3>
+                  <p class="form-section-subtitle">Provide your company details</p>
+
+                  <div class="form-group">
+                    <label class="form-label" for="companyName">Company Name <span class="required-star">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-building input-icon"></i>
+                      <input type="text" class="form-control-custom" id="companyName" name="company_name" placeholder="ABC Real Estate Ltd">
+                    </div>
+                    <div class="field-error" id="companyNameError"><i class="bi bi-x-circle-fill"></i><span></span></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="registrationNumber">Registration Number <span style="color:rgba(255,255,255,0.25);font-size:0.65rem;">(Optional)</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-file-text input-icon"></i>
+                      <input type="text" class="form-control-custom" id="registrationNumber" name="registration_number" placeholder="RC123456">
+                    </div>
+                    <small class="form-helper-text">Company registration or RC number</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="companyEmail">Company Email <span style="color:rgba(255,255,255,0.25);font-size:0.65rem;">(Optional)</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-envelope-fill input-icon"></i>
+                      <input type="email" class="form-control-custom" id="companyEmail" name="company_email" placeholder="info@company.com">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="companyPhone">Company Phone <span style="color:rgba(255,255,255,0.25);font-size:0.65rem;">(Optional)</span></label>
+                    <div class="phone-group">
+                      <div class="country-select-wrapper">
+                        <i class="bi bi-telephone-fill input-icon"></i>
+                        <select class="country-select" id="companyCountryCode" name="company_country_code">
+                          <option value="+234" selected>🇳🇬 +234</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+44">🇬🇧 +44</option>
+                        </select>
+                      </div>
+                      <input type="tel" class="form-control-custom phone-input" id="companyPhone" name="company_phone" placeholder="8012345678">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="companyAddress">Company Address <span style="color:rgba(255,255,255,0.25);font-size:0.65rem;">(Optional)</span></label>
+                    <div class="input-wrapper">
+                      <i class="bi bi-geo-alt-fill input-icon" style="top:18px;transform:none;"></i>
+                      <textarea class="form-control-custom" id="companyAddress" name="company_address" rows="3" placeholder="123 Main Street, City"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit -->
+                <button id="register-btn" type="submit" class="btn-register">
+                  <span id="register-text">Create Account</span>
+                </button>
+
+                <div class="login-link">
+                  Already have an account? <a href="{% url 'users:login' %}">Sign in</a>
+                </div>
+
+                <div class="terms-text">
+                  By creating an account, you agree to our
+                  <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </div>
+
+              </form>
+            </div><!-- /form-side -->
+
+          </div><!-- /register-card -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+  const accountTypeSelection = document.getElementById('accountTypeSelection');
+  const registrationForm     = document.getElementById('registrationForm');
+  const accountTypeCards     = document.querySelectorAll('.account-type-card');
+  const backButton           = document.getElementById('backButton');
+  const accountTypeInput     = document.getElementById('accountTypeInput');
+  const formTitle            = document.getElementById('formTitle');
+  const formSubtitle         = document.getElementById('formSubtitle');
+  const agentFields          = document.getElementById('agentFields');
+  const companyFields        = document.getElementById('companyFields');
+  const form                 = document.getElementById('registerForm');
+  const registerBtn          = document.getElementById('register-btn');
+  const registerText         = document.getElementById('register-text');
+  const registerSuccessMsg   = document.getElementById('registerSuccessMessage');
+  const registerErrorMsg     = document.getElementById('registerErrorMessage');
+  const registerErrorText    = document.getElementById('error-register-message-text');
+  const registerSuccessText  = document.getElementById('success-register-message');
+  const togglePassword       = document.getElementById('togglePassword');
+  const passwordInput        = document.getElementById('password');
+  const toggleConfirmPwd     = document.getElementById('toggleConfirmPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+
+  // Pre-select from URL param
+  const urlParams       = new URLSearchParams(window.location.search);
+  const preSelectedType = urlParams.get('type');
+  if (preSelectedType) {
+    const preSelectedCard = document.querySelector(`.account-type-card[data-type="${preSelectedType}"]`);
+    if (preSelectedCard) { setTimeout(() => preSelectedCard.click(), 400); }
+  }
+
+  // Account type selection
+  accountTypeCards.forEach(card => {
+    card.addEventListener('click', function () {
+      accountTypeCards.forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+
+      const accountType = this.getAttribute('data-type');
+      accountTypeInput.value = accountType;
+
+      if (accountType === 'user') {
+        formTitle.textContent   = 'Create User Account';
+        formSubtitle.textContent = 'Start browsing properties today';
+        agentFields.style.display   = 'none';
+        companyFields.style.display = 'none';
+        document.querySelectorAll('#agentFields [required], #companyFields [required]').forEach(f => f.removeAttribute('required'));
+      } else if (accountType === 'agent') {
+        formTitle.textContent   = 'Register as an Agent';
+        formSubtitle.textContent = 'Start earning commissions today';
+        agentFields.style.display   = 'block';
+        companyFields.style.display = 'none';
+        ['bank','accountName','accountNumber'].forEach(id => document.getElementById(id).setAttribute('required','required'));
+        document.querySelectorAll('#companyFields [required]').forEach(f => f.removeAttribute('required'));
+      } else if (accountType === 'company') {
+        formTitle.textContent   = 'Register Your Company';
+        formSubtitle.textContent = 'Manage your real estate business';
+        agentFields.style.display   = 'none';
+        companyFields.style.display = 'block';
+        document.getElementById('companyName').setAttribute('required','required');
+        document.querySelectorAll('#agentFields [required]').forEach(f => f.removeAttribute('required'));
+      }
+
+      setTimeout(() => {
+        accountTypeSelection.style.display = 'none';
+        registrationForm.classList.add('active');
+      }, 280);
+    });
+  });
+
+  // Back button
+  backButton.addEventListener('click', function () {
+    registrationForm.classList.remove('active');
+    setTimeout(() => { accountTypeSelection.style.display = 'block'; }, 280);
+  });
+
+  // Password toggles
+  togglePassword.addEventListener('click', function () {
+    const t = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', t);
+    this.querySelector('i').classList.toggle('bi-eye-fill');
+    this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+  });
+
+  toggleConfirmPwd.addEventListener('click', function () {
+    const t = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    confirmPasswordInput.setAttribute('type', t);
+    this.querySelector('i').classList.toggle('bi-eye-fill');
+    this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+  });
+
+  // Password match
+  confirmPasswordInput.addEventListener('input', function () {
+    const matchEl = document.getElementById('passwordMatch');
+    const errEl   = document.getElementById('confirmPasswordError');
+    if (this.value.length > 0) {
+      if (passwordInput.value === this.value) {
+        matchEl.classList.add('show');
+        errEl.classList.remove('show');
+        this.classList.remove('error');
+      } else {
+        matchEl.classList.remove('show');
+      }
+    } else {
+      matchEl.classList.remove('show');
+    }
+  });
+
+  // CSRF helper
+  const getCsrfToken = () => {
+    for (const c of document.cookie.split(';').map(c => c.trim())) {
+      if (c.startsWith('csrftoken=')) return c.substring('csrftoken='.length);
+    }
+    return null;
+  };
+
+  // Form submission
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!accountTypeInput.value) { alert('Please select an account type'); return; }
+
+    registerBtn.disabled    = true;
+    registerText.textContent = 'Creating Account…';
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'X-CSRFToken': getCsrfToken() }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        registerSuccessMsg.style.display = 'flex';
+        registerSuccessText.textContent  = data.message;
+        registerErrorMsg.style.display   = 'none';
+        setTimeout(() => { if (data.redirect_url) window.location.href = data.redirect_url; }, 1500);
+      } else {
+        registerErrorMsg.style.display  = 'flex';
+        registerErrorText.textContent   = data.message;
+        registerSuccessMsg.style.display = 'none';
+        registerBtn.disabled    = false;
+        registerText.textContent = 'Create Account';
+      }
+    })
+    .catch(() => {
+      registerErrorMsg.style.display  = 'flex';
+      registerErrorText.textContent   = 'An error occurred. Please try again.';
+      registerBtn.disabled    = false;
+      registerText.textContent = 'Create Account';
+    });
+  });
+</script>
+{% endblock %}

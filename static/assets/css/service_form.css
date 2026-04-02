@@ -1,0 +1,397 @@
+/* Service Request Form - Estate Branding */
+/* Based on Register.html palette */
+
+:root {
+  --emerald-green: #046A38;
+  --metallic-gold: #D4AF37;
+  --charcoal-gray: #333333;
+  --emerald-light: #058a48;
+  --gold-light: #e6c45a;
+  --text-primary: #333333;
+  --text-secondary: #64748b;
+  --bg-gradient-start: #f0f7f4;
+  --bg-gradient-end: #e8f5ed;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(212, 175, 55, 0.2);
+  --glass-shadow: 0 20px 60px rgba(4, 106, 56, 0.15);
+}
+
+/* Background */
+body.service-page {
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  min-height: 100vh;
+  position: relative;
+}
+
+body.service-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23046A38' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Main Container */
+.service-container {
+  max-width: 900px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: 0 25px 70px rgba(4, 106, 56, 0.2);
+}
+
+/* Header Section */
+.form-header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.form-header::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, var(--metallic-gold), var(--gold-light));
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+
+.form-header h1 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  color: var(--emerald-green);
+  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+}
+
+.form-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Progress Steps */
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 40px;
+  max-width: 100%;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.progress-container::before {
+  content: '';
+  background-color: #e5e7eb;
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  right: 20px;
+  transform: translateY(-50%);
+  height: 3px;
+  z-index: 0;
+  border-radius: 4px;
+}
+
+.progress-bg {
+  background: linear-gradient(to right, var(--emerald-green), var(--emerald-light));
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  height: 3px;
+  width: 0%;
+  z-index: 0;
+  transition: 0.4s ease;
+  border-radius: 4px;
+}
+
+.progress-step {
+  background-color: #fff;
+  color: #9ca3af;
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e5e7eb;
+  font-weight: 700;
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 1;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.progress-step.active {
+  border-color: var(--emerald-green);
+  color: var(--emerald-green);
+  box-shadow: 0 0 0 4px rgba(4, 106, 56, 0.1);
+  transform: scale(1.1);
+}
+
+.progress-step.completed {
+  border-color: var(--emerald-green);
+  background: var(--emerald-green);
+  color: #fff;
+}
+
+.progress-step::after {
+  content: attr(data-title);
+  position: absolute;
+  top: 55px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.progress-step.active::after {
+  opacity: 1;
+  color: var(--emerald-green);
+}
+
+/* Form Steps */
+.form-step {
+  display: none;
+  animation: slideUp 0.5s ease;
+}
+
+.form-step.active {
+  display: block;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input Fields */
+.form-floating>.form-control,
+.form-floating>.form-select {
+  border: 2px solid #e5e7eb;
+  background-color: #fff;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.form-floating>.form-control:focus,
+.form-floating>.form-select:focus {
+  border-color: var(--emerald-green);
+  box-shadow: 0 0 0 4px rgba(4, 106, 56, 0.1);
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Option Cards (Radio Buttons) */
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.option-card-label {
+  cursor: pointer;
+  position: relative;
+}
+
+.option-card-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px 15px;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  height: 100%;
+  text-align: center;
+}
+
+.option-card i {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+}
+
+.option-card span {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.option-card-input:checked+.option-card {
+  border-color: var(--emerald-green);
+  background-color: #f0fdf4;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(4, 106, 56, 0.1);
+}
+
+.option-card-input:checked+.option-card i {
+  color: var(--emerald-green);
+}
+
+.option-card-input:checked+.option-card span {
+  color: var(--emerald-green);
+}
+
+.option-card:hover {
+  border-color: var(--metallic-gold);
+}
+
+.option-card:hover i {
+  color: var(--metallic-gold);
+}
+
+/* File Upload */
+.file-upload-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.file-upload-wrapper:hover,
+.file-upload-wrapper.dragover {
+  border-color: var(--emerald-green);
+  background-color: #f0fdf4;
+}
+
+.file-upload-content i {
+  font-size: 3rem;
+  color: var(--metallic-gold);
+  margin-bottom: 15px;
+}
+
+/* Navigation Buttons */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-nav {
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-prev {
+  background-color: #fff;
+  color: var(--text-secondary);
+  border: 2px solid #e5e7eb;
+}
+
+.btn-prev:hover {
+  background-color: #f9fafb;
+  color: var(--text-primary);
+  border-color: #d1d5db;
+}
+
+.btn-next {
+  background: linear-gradient(135deg, var(--emerald-green) 0%, var(--emerald-light) 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(4, 106, 56, 0.2);
+}
+
+.btn-next:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(4, 106, 56, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .service-container {
+    margin: 2rem auto;
+    padding: 0 15px;
+  }
+
+  .form-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .form-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .progress-step {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .progress-step::after {
+    display: none;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

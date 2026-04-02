@@ -1,0 +1,897 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block title %}Properties by {{ agent.user.get_full_name|default:agent.user.username }} | Nestova{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ============================================================
+     AGENT PROPERTIES PAGE — NESTOVA LUXURY DESIGN SYSTEM
+     ============================================================ */
+
+  /* ── Ambient background orbs ── */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    animation: orbFloat 20s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, #1a3a6e, transparent);
+    top: -200px; left: -200px;
+    opacity: .13;
+  }
+  .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #C9A84C, transparent);
+    top: 40%; right: -150px;
+    opacity: .06;
+    animation-delay: -7s;
+  }
+  .orb-3 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #0D1B3E, transparent);
+    bottom: -100px; left: 30%;
+    opacity: .18;
+    animation-delay: -14s;
+  }
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(40px,-30px) scale(1.05); }
+    66%      { transform: translate(-20px,40px) scale(0.95); }
+  }
+
+  /* ── Page hero banner ── */
+  .ap-hero {
+    position: relative;
+    padding: 140px 5vw 80px;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .ap-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(13,27,62,.65) 0%, rgba(10,10,15,.92) 100%);
+    z-index: 0;
+  }
+  .ap-hero-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+  .ap-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 22px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.18), rgba(201,168,76,.06));
+    border: 1px solid rgba(201,168,76,.38);
+    color: var(--gold-light);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .ap-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.6); opacity: .55; }
+  }
+  .ap-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -.5px;
+    margin-bottom: 14px;
+  }
+  .ap-hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .ap-hero-sub {
+    color: rgba(245,240,232,.55);
+    font-size: .97rem;
+    max-width: 460px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+
+  /* Breadcrumb */
+  .ap-breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: .8rem;
+    color: rgba(255,255,255,.35);
+  }
+  .ap-breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; transition: color .25s; }
+  .ap-breadcrumb a:hover { color: var(--gold-light); }
+  .ap-breadcrumb i { font-size: .6rem; }
+  .ap-breadcrumb .current { color: var(--gold); }
+
+  /* ── Agent identity card ── */
+  .ap-agent-wrap {
+    position: relative;
+    z-index: 2;
+    padding: 0 5vw 70px;
+    margin-top: -48px;
+  }
+  .ap-agent-card {
+    background: rgba(12,12,18,.88);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 24px;
+    padding: 36px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+    box-shadow: 0 40px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .ap-agent-left {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex: 1;
+    min-width: 260px;
+  }
+  .ap-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ap-avatar {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(201,168,76,.35);
+    box-shadow: 0 0 0 6px rgba(201,168,76,.08), 0 16px 40px rgba(0,0,0,.5);
+  }
+  .ap-avatar-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,.22);
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%,100% { transform: scale(1); opacity: .6; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+  .ap-agent-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .ap-agent-role {
+    font-size: .8rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .ap-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    background: rgba(34,197,94,.15);
+    border: 1px solid rgba(34,197,94,.3);
+    color: #4ade80;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+  }
+  .ap-stat-chips {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .ap-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 50px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    font-size: .78rem;
+    color: rgba(245,240,232,.65);
+  }
+  .ap-chip i { color: var(--gold); font-size: .8rem; }
+
+  /* CTA buttons */
+  .ap-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ap-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.05);
+    color: rgba(245,240,232,.85);
+    font-size: .88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all .3s ease;
+    backdrop-filter: blur(12px);
+  }
+  .ap-btn-outline:hover {
+    border-color: rgba(201,168,76,.45);
+    background: rgba(201,168,76,.08);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+  .ap-btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 28px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-size: .88rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: .03em;
+    transition: all .35s cubic-bezier(.175,.885,.32,1.275);
+    box-shadow: 0 0 28px rgba(201,168,76,.28), 0 8px 24px rgba(0,0,0,.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .ap-btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+    transition: left .5s ease;
+  }
+  .ap-btn-gold:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 46px rgba(201,168,76,.48), 0 12px 32px rgba(0,0,0,.4);
+    color: #0A0A0F;
+  }
+  .ap-btn-gold:hover::before { left: 100%; }
+
+  /* WhatsApp button */
+  .ap-btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 28px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(37,211,102,.25), rgba(37,211,102,.1));
+    border: 1px solid rgba(37,211,102,.4);
+    color: #4ade80;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .ap-btn-whatsapp:hover {
+    background: rgba(37,211,102,.3);
+    border-color: rgba(37,211,102,.6);
+    color: #86efac;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37,211,102,.2);
+  }
+
+  /* ── Properties grid section ── */
+  .ap-props-section {
+    position: relative;
+    z-index: 1;
+    padding: 20px 5vw 100px;
+  }
+  .ap-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+  }
+  .ap-section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.05));
+    border: 1px solid rgba(201,168,76,.25);
+    color: var(--gold);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .ap-section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.9rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -.3px;
+  }
+  .ap-section-title em { font-style: italic; color: var(--gold-light); }
+  .ap-count-pill {
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(201,168,76,.1);
+    border: 1px solid rgba(201,168,76,.22);
+    color: var(--gold-light);
+    font-size: .82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-bottom: 6px;
+  }
+
+  /* ── Property cards ── */
+  .ap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 28px;
+  }
+
+  .ap-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(18,18,26,.82);
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    transition: all .5s cubic-bezier(.175,.885,.32,1.275);
+    will-change: transform;
+  }
+  .ap-card:hover {
+    transform: translateY(-12px) rotateX(1.5deg);
+    box-shadow: 0 50px 100px rgba(0,0,0,.6), 0 0 38px rgba(201,168,76,.1);
+    border-color: rgba(201,168,76,.22);
+  }
+
+  /* Card image */
+  .ap-card-img {
+    position: relative;
+    height: 248px;
+    overflow: hidden;
+  }
+  .ap-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .8s cubic-bezier(.25,.46,.45,.94);
+  }
+  .ap-card:hover .ap-card-img img { transform: scale(1.1); }
+  .ap-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,15,.9) 0%, rgba(10,10,15,.18) 55%, transparent 100%);
+  }
+
+  /* Badge chips */
+  .ap-card-badge {
+    position: absolute;
+    top: 16px; left: 16px;
+    padding: 6px 15px;
+    border-radius: 50px;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    backdrop-filter: blur(16px);
+    z-index: 2;
+  }
+  .ap-card-badge.exclusive { background: rgba(180,30,100,.22); border: 1px solid rgba(220,60,130,.4); color: #FF7EB8; }
+  .ap-card-badge.hot       { background: rgba(220,80,20,.22);  border: 1px solid rgba(255,110,30,.4); color: #FFA56B; }
+  .ap-card-badge.new       { background: rgba(30,130,200,.22); border: 1px solid rgba(60,160,255,.4); color: #7EC8FF; }
+  .ap-card-badge.premium   { background: rgba(201,168,76,.18); border: 1px solid rgba(201,168,76,.45); color: var(--gold-light); }
+  .ap-card-badge.featured  { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; }
+
+  /* Quick-action buttons on hover */
+  .ap-card-actions {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+    opacity: 0;
+    transform: translateX(12px);
+    transition: all .3s ease;
+  }
+  .ap-card:hover .ap-card-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .ap-card-action-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(10,10,15,.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,.6);
+    font-size: .88rem;
+    text-decoration: none;
+    transition: all .25s;
+  }
+  .ap-card-action-btn:hover {
+    background: rgba(201,168,76,.3);
+    border-color: rgba(201,168,76,.5);
+    color: var(--gold-light);
+    transform: scale(1.12);
+  }
+  .ap-card-action-btn.whatsapp:hover {
+    background: rgba(37,211,102,.25);
+    border-color: rgba(37,211,102,.5);
+    color: #4ade80;
+  }
+
+  /* Card body */
+  .ap-card-body { padding: 22px 24px 24px; }
+  .ap-card-price {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .ap-card-title {
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+  .ap-card-title a { color: inherit; text-decoration: none; transition: color .25s; }
+  .ap-card-title a:hover { color: var(--gold-light); }
+  .ap-card-loc {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(245,240,232,.45);
+    font-size: .8rem;
+    margin-bottom: 16px;
+  }
+  .ap-card-loc i { color: var(--gold); font-size: .8rem; }
+
+  /* Spec pills */
+  .ap-card-specs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .ap-spec {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    font-size: .77rem;
+    color: rgba(245,240,232,.6);
+  }
+  .ap-spec i { color: var(--gold); font-size: .72rem; }
+
+  /* Card footer */
+  .ap-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ap-card-status {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,.4);
+  }
+  .ap-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(201,168,76,.18), rgba(201,168,76,.06));
+    border: 1px solid rgba(201,168,76,.3);
+    color: var(--gold-light);
+    font-size: .8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .ap-view-btn:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    border-color: transparent;
+    box-shadow: 0 6px 22px rgba(201,168,76,.35);
+    transform: translateY(-1px);
+  }
+  .ap-view-btn i { font-size: .7rem; transition: transform .25s; }
+  .ap-view-btn:hover i { transform: translateX(3px); }
+
+  /* ── Gold divider line ── */
+  .gold-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,.4), transparent);
+    margin: 0 5vw 60px;
+  }
+
+  /* ── Empty state ── */
+  .ap-empty {
+    text-align: center;
+    padding: 100px 20px;
+  }
+  .ap-empty-icon {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 2.5rem;
+    color: rgba(255,255,255,.2);
+  }
+  .ap-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+  .ap-empty p { color: rgba(245,240,232,.45); margin-bottom: 32px; }
+
+  /* ── Pagination ── */
+  .ap-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 64px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ap-page-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    color: rgba(245,240,232,.6);
+    font-size: .88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+  .ap-page-btn:hover,
+  .ap-page-btn.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: transparent;
+    color: #0A0A0F;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(201,168,76,.35);
+    transform: translateY(-2px);
+  }
+  .ap-page-btn.disabled {
+    opacity: .3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .ap-hero { padding: 120px 5vw 60px; }
+    .ap-agent-card { padding: 26px 22px; }
+    .ap-agent-left { gap: 18px; }
+    .ap-avatar { width: 72px; height: 72px; }
+    .ap-agent-info h3 { font-size: 1.4rem; }
+    .ap-grid { grid-template-columns: 1fr; gap: 20px; }
+    .ap-section-head { flex-direction: column; align-items: flex-start; }
+    .ap-props-section { padding: 20px 5vw 80px; }
+    .ap-agent-wrap { padding: 0 5vw 50px; }
+  }
+  @media (max-width: 480px) {
+    .ap-hero h1 { font-size: 2rem; }
+    .ap-actions { gap: 8px; }
+    .ap-btn-gold, .ap-btn-outline, .ap-btn-whatsapp { padding: 11px 20px; font-size: .82rem; }
+    .ap-card-img { height: 210px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Ambient orbs -->
+<div class="ambient-bg" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main class="main" style="position: relative; z-index: 1;">
+
+  <!-- ── Hero Banner ── -->
+  <section class="ap-hero">
+    <div class="ap-hero-inner">
+      <div class="ap-eyebrow">Licensed Real Estate Professional</div>
+      <h1>
+        Properties by
+        <em>{{ agent.user.get_full_name|default:agent.user.username }}</em>
+      </h1>
+      <p class="ap-hero-sub">
+        Explore {{ total_properties }} hand-verified
+        propert{{ total_properties|pluralize:"y,ies" }} listed by this agent
+        — each one curated to meet Nestova's premium standards.
+      </p>
+      <nav class="ap-breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <i class="bi bi-chevron-right"></i>
+        <a href="{% url 'agents:agent_profile' agent.slug %}">{{ agent.user.get_full_name|default:agent.user.username }}</a>
+        <i class="bi bi-chevron-right"></i>
+        <span class="current">Properties</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ── Agent Identity Card ── -->
+  <div class="ap-agent-wrap" data-aos="fade-up" data-aos-delay="100">
+    <div class="ap-agent-card">
+
+      <div class="ap-agent-left">
+        <div class="ap-avatar-wrap">
+          <div class="ap-avatar-ring"></div>
+          <img
+            src="{{ agent.user.get_users_image }}"
+            alt="{{ agent.user.get_full_name }}"
+            class="ap-avatar">
+        </div>
+
+        <div class="ap-agent-info">
+          <h3>{{ agent.user.get_full_name|default:agent.user.username }}</h3>
+          <p class="ap-agent-role">Real Estate Professional</p>
+
+          {% if agent.verification_status == 'verified' %}
+          <span class="ap-verified-badge">
+            <i class="bi bi-patch-check-fill"></i> Verified Agent
+          </span>
+          {% endif %}
+
+          <div class="ap-stat-chips">
+            <span class="ap-chip">
+              <i class="bi bi-houses"></i>
+              {{ total_properties }} Listing{{ total_properties|pluralize }}
+            </span>
+            
+            {% if agent.user.phone_number %}
+            <span class="ap-chip">
+              <i class="bi bi-telephone"></i>
+              {{ agent.user.phone_number }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="ap-actions">
+        <a href="{% url 'agents:agent_profile' agent.slug %}" class="ap-btn-outline">
+          <i class="bi bi-person"></i> View Profile
+        </a>
+
+        {% if agent.user.phone_number %}
+        <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}"
+           target="_blank" rel="noopener noreferrer"
+           class="ap-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        {% endif %}
+
+        {% if agent.user.email %}
+        <a href="mailto:{{ agent.user.email }}" class="ap-btn-gold">
+          <i class="bi bi-envelope-fill"></i> Send Message
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gold divider -->
+  <div class="gold-divider"></div>
+
+  <!-- ── Properties Grid ── -->
+  <section class="ap-props-section">
+    <div class="ap-section-head" data-aos="fade-up">
+      <div>
+        <div class="ap-section-badge">
+          <i class="bi bi-grid-3x3-gap"></i>
+          Portfolio
+        </div>
+        <h2 class="ap-section-title">
+          All <em>Listed</em> Properties
+        </h2>
+      </div>
+      <div class="ap-count-pill">
+        <i class="bi bi-houses"></i>
+        {{ total_properties }} Propert{{ total_properties|pluralize:"y,ies" }}
+      </div>
+    </div>
+
+    {% if properties %}
+
+    <div class="ap-grid">
+      {% for property in properties %}
+      <article class="ap-card" data-aos="fade-up" data-aos-delay="{% cycle '100' '150' '200' %}">
+
+        <!-- Image -->
+        <div class="ap-card-img">
+          <a href="{{ property.get_absolute_url }}">
+            <img
+              src="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'assets/img/real-estate/property-exterior-8.webp' %}{% endif %}"
+              alt="{{ property.title }}"
+              loading="lazy">
+          </a>
+          <div class="ap-card-overlay"></div>
+
+          <!-- Status badge -->
+          {% if property.is_exclusive %}
+          <span class="ap-card-badge exclusive">Exclusive</span>
+          {% elif property.is_hot %}
+          <span class="ap-card-badge hot">🔥 Hot</span>
+          {% elif property.is_new %}
+          <span class="ap-card-badge new">New</span>
+          {% elif property.is_premium %}
+          <span class="ap-card-badge premium">Premium</span>
+          {% elif property.is_featured %}
+          <span class="ap-card-badge featured">Featured</span>
+          {% endif %}
+
+          <!-- Hover actions -->
+          <div class="ap-card-actions">
+            <a href="{{ property.get_absolute_url }}"
+               class="ap-card-action-btn"
+               title="View property">
+              <i class="bi bi-eye"></i>
+            </a>
+            {% if agent.user.phone_number %}
+            <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}?text=Hi, I'm interested in {{ property.title|urlencode }}"
+               target="_blank" rel="noopener noreferrer"
+               class="ap-card-action-btn whatsapp"
+               title="WhatsApp agent">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="ap-card-body">
+          <div class="ap-card-price">{{ property.formatted_price }}</div>
+          <h3 class="ap-card-title">
+            <a href="{{ property.get_absolute_url }}">{{ property.title|truncatewords:8 }}</a>
+          </h3>
+          <div class="ap-card-loc">
+            <i class="bi bi-geo-alt-fill"></i>
+            {{ property.city.name }}, {{ property.state.code }}
+          </div>
+
+          <div class="ap-card-specs">
+            <span class="ap-spec">
+              <i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed{{ property.bedrooms|pluralize }}
+            </span>
+            <span class="ap-spec">
+              <i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath{{ property.bathrooms|pluralize }}
+            </span>
+            <span class="ap-spec">
+              <i class="bi bi-aspect-ratio"></i> {{ property.square_feet|floatformat:0|intcomma }} sqft
+            </span>
+          </div>
+
+          <div class="ap-card-foot">
+            <span class="ap-card-status">For Sale</span>
+            <a href="{{ property.get_absolute_url }}" class="ap-view-btn">
+              View Details <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+      </article>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if properties.has_other_pages %}
+    <nav class="ap-pagination" aria-label="Page navigation">
+
+      {% if properties.has_previous %}
+      <a href="?page={{ properties.previous_page_number }}" class="ap-page-btn" aria-label="Previous">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      {% else %}
+      <span class="ap-page-btn disabled"><i class="bi bi-chevron-left"></i></span>
+      {% endif %}
+
+      {% for num in properties.paginator.page_range %}
+        {% if properties.number == num %}
+        <span class="ap-page-btn active">{{ num }}</span>
+        {% elif num > properties.number|add:'-3' and num < properties.number|add:'3' %}
+        <a href="?page={{ num }}" class="ap-page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if properties.has_next %}
+      <a href="?page={{ properties.next_page_number }}" class="ap-page-btn" aria-label="Next">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      {% else %}
+      <span class="ap-page-btn disabled"><i class="bi bi-chevron-right"></i></span>
+      {% endif %}
+
+    </nav>
+    {% endif %}
+
+    {% else %}
+
+    <!-- Empty state -->
+    <div class="ap-empty" data-aos="fade-up">
+      <div class="ap-empty-icon">
+        <i class="bi bi-house-slash"></i>
+      </div>
+      <h3>No Properties Listed Yet</h3>
+      <p>This agent hasn't added any properties to their portfolio yet.<br>Check back soon or explore all available listings.</p>
+      <a href="{% url 'properties' %}" class="ap-btn-gold" style="text-decoration:none; display:inline-flex; align-items:center; gap:9px;">
+        <i class="bi bi-search"></i> Browse All Properties
+      </a>
+    </div>
+
+    {% endif %}
+
+  </section>
+
+</main>
+
+{% endblock content %}

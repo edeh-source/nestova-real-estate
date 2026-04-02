@@ -1,0 +1,1189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ apartment.title }} — Nestova Apartments{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   APARTMENT DETAIL — LUXURY GLASSMORPHISM DESIGN SYSTEM
+   ============================================================ */
+
+.prop-hero {
+  position: relative;
+  margin-top: 80px;
+  padding: 70px 0 56px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #0D1B3E 55%, #0A0A0F 100%);
+}
+
+.prop-hero::before {
+  content: '';
+  position: absolute;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.07), transparent 65%);
+  top: -300px; right: -200px;
+  pointer-events: none;
+}
+
+.prop-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+}
+
+.prop-hero-grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: 0.5;
+}
+
+.prop-hero-content { position: relative; z-index: 2; }
+
+.prop-hero-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.prop-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.prop-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+}
+
+.prop-status-pill.available {
+  background: rgba(30,140,80,0.18);
+  border-color: rgba(60,200,110,0.35);
+  color: #6DFFA8;
+}
+
+.prop-status-pill.booked {
+  background: rgba(180,40,40,0.18);
+  border-color: rgba(220,60,60,0.35);
+  color: #ff8a8a;
+}
+
+.prop-status-pill.maintenance {
+  background: rgba(30,100,200,0.18);
+  border-color: rgba(60,130,255,0.35);
+  color: #7EB8FF;
+}
+
+.prop-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+
+.prop-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.88rem;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.prop-hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-hero-meta i { color: var(--gold); }
+
+.breadcrumbs-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  font-size: 0.8rem;
+}
+
+.breadcrumbs-glass a { color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.3s; }
+.breadcrumbs-glass a:hover { color: var(--gold-light); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.18); font-size: 0.7rem; }
+.breadcrumbs-glass .current { color: var(--gold-light); font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.detail-section {
+  padding: 52px 0 80px;
+  background: var(--obsidian);
+}
+
+.glass-panel {
+  background: rgba(18,18,26,0.85);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.glass-panel-title {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   GALLERY
+   ============================================================ */
+.property-gallery { margin-bottom: 24px; }
+
+.main-image-container {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(18,18,26,0.8);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.main-property-image {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+  cursor: zoom-in;
+}
+
+.main-property-image:hover { transform: scale(1.02); }
+
+.image-nav-buttons {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.image-nav-btn {
+  pointer-events: all;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(10,10,15,0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.image-nav-btn:hover {
+  background: var(--gold);
+  color: #0A0A0F;
+  border-color: var(--gold);
+  transform: scale(1.1);
+}
+
+.img-count-badge {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  padding: 6px 14px;
+  background: rgba(10,10,15,0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.78rem;
+  font-weight: 500;
+  display: flex; align-items: center; gap: 6px;
+  z-index: 3;
+}
+
+.img-count-badge i { color: var(--gold); }
+
+.thumbnail-gallery {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.thumbnail-item {
+  width: 80px; height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.thumbnail-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.thumbnail-item:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-2px); }
+.thumbnail-item:hover img { transform: scale(1.1); }
+.thumbnail-item.active { border-color: var(--gold); box-shadow: 0 4px 16px rgba(201,168,76,0.2); }
+
+/* ============================================================
+   AMENITIES
+   ============================================================ */
+.amenity-subhead {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: all 0.3s ease;
+}
+
+.features-list li:hover {
+  background: rgba(201,168,76,0.06);
+  border-color: rgba(201,168,76,0.15);
+  color: rgba(255,255,255,0.85);
+  transform: translateX(4px);
+}
+
+.features-list li i { color: var(--gold); font-size: 1rem; flex-shrink: 0; }
+
+/* ============================================================
+   REVIEWS
+   ============================================================ */
+.rating-summary-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.rating-big-score {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stars-display { display: flex; gap: 4px; margin-bottom: 8px; }
+.stars-display i { color: var(--gold); font-size: 0.9rem; }
+.stars-display i.opacity-25 { color: rgba(255,255,255,0.2); }
+
+.rating-bar-label {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.rating-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.rating-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--gold-dark), var(--gold-light));
+}
+
+.review-item {
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.review-item:hover { border-color: rgba(201,168,76,0.15); }
+
+.review-avatar-initials {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1));
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold-light);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MAP
+   ============================================================ */
+.map-frame {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.prop-sidebar {
+  position: sticky;
+  top: 100px;
+}
+
+.price-card {
+  background: rgba(18,18,26,0.9);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 16px;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.price-display {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price-display small {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.3);
+  font-weight: 400;
+}
+
+.price-monthly {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 12px;
+}
+
+.price-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  margin-top: 8px;
+}
+
+.price-status-pill.available {
+  background: rgba(30,140,80,0.18);
+  border: 1px solid rgba(60,200,110,0.35);
+  color: #6DFFA8;
+}
+
+.price-status-pill.booked {
+  background: rgba(180,40,40,0.18);
+  border: 1px solid rgba(220,60,60,0.35);
+  color: #ff8a8a;
+}
+
+.prop-address {
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 20px;
+}
+
+.prop-address h4 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 4px;
+}
+
+.prop-address p {
+  font-size: 0.83rem;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-address p i { color: var(--gold); }
+
+.prop-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.prop-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.prop-stat:hover {
+  background: rgba(201,168,76,0.07);
+  border-color: rgba(201,168,76,0.18);
+}
+
+.prop-stat-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.prop-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+  display: block;
+}
+
+.prop-stat-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   BOOKING FORM
+   ============================================================ */
+.booking-card {
+  background: rgba(18,18,26,0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 16px;
+}
+
+.booking-card-header {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-group .form-control,
+.form-group .form-select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 11px 14px;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+.form-group .form-control:focus,
+.form-group .form-select:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  color: #fff;
+}
+
+.form-group .form-control::placeholder { color: rgba(255,255,255,0.22); }
+.form-group .form-select option { background: #12121A; color: #fff; }
+
+/* Price breakdown */
+.price-breakdown-card {
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.price-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 10px;
+}
+
+.price-breakdown-row.total {
+  border-top: 1px solid rgba(201,168,76,0.2);
+  padding-top: 12px;
+  margin-top: 4px;
+  color: var(--gold-light);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Buttons */
+.btn-book-now {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  text-decoration: none;
+  border: none;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #0A0A0F;
+  box-shadow: 0 6px 20px rgba(201,168,76,0.25);
+}
+
+.btn-book-now:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(201,168,76,0.4);
+  color: #0A0A0F;
+}
+
+.btn-login-book {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  text-decoration: none;
+  border: 1px solid rgba(201,168,76,0.35);
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04));
+  color: var(--gold-light);
+}
+
+.btn-login-book:hover {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #0A0A0F;
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(201,168,76,0.35);
+}
+
+/* Alert overrides */
+.alert-success {
+  background: rgba(30,140,80,0.15);
+  border: 1px solid rgba(60,200,110,0.3);
+  color: #6DFFA8;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+}
+
+.alert-danger {
+  background: rgba(220,50,50,0.15);
+  border: 1px solid rgba(220,50,50,0.3);
+  color: #ff8a8a;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+}
+
+/* ============================================================
+   SHARE CARD
+   ============================================================ */
+.share-card {
+  background: rgba(18,18,26,0.85);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+}
+
+.share-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.share-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.share-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.5);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.share-btn:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: rgba(201,168,76,0.3);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 991px) {
+  .prop-sidebar { position: static; }
+  .main-property-image { height: 340px; }
+}
+
+@media (max-width: 767px) {
+  .prop-hero { padding: 60px 0 44px; }
+  .main-property-image { height: 260px; }
+  .glass-panel { padding: 22px 18px; }
+  .prop-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+
+<main class="main">
+
+  <!-- ============================================================
+       PROP HERO
+       ============================================================ -->
+  <section class="prop-hero">
+    <div class="prop-hero-grain"></div>
+    <div class="container">
+      <div class="prop-hero-content">
+        <div class="prop-hero-badges">
+          <span class="prop-eyebrow">Apartment</span>
+          {% if apartment.status == 'available' %}
+          <span class="prop-status-pill available"><i class="bi bi-check-circle-fill" style="font-size:0.65rem;"></i> Available</span>
+          {% elif apartment.status == 'booked' %}
+          <span class="prop-status-pill booked"><i class="bi bi-x-circle-fill" style="font-size:0.65rem;"></i> Booked</span>
+          {% elif apartment.status == 'maintenance' %}
+          <span class="prop-status-pill maintenance"><i class="bi bi-tools" style="font-size:0.65rem;"></i> Maintenance</span>
+          {% endif %}
+        </div>
+        <h1>{{ apartment.title }}</h1>
+        <div class="prop-hero-meta">
+          <span><i class="bi bi-geo-alt-fill"></i> {{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }} {{ apartment.zip_code }}</span>
+          <span><i class="bi bi-door-open"></i> {{ apartment.bedrooms }} Bedrooms</span>
+          <span><i class="bi bi-droplet-fill"></i> {{ apartment.bathrooms }} Bathrooms</span>
+        </div>
+        <div class="breadcrumbs-glass">
+          <a href="{% url 'home' %}">Home</a>
+          <span class="sep">›</span>
+          <a href="{% url 'apartment_list' %}">Apartments</a>
+          <span class="sep">›</span>
+          <span class="current">{{ apartment.title }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DETAIL SECTION
+       ============================================================ -->
+  <section class="detail-section">
+    <div class="container">
+      <div class="row gy-4">
+
+        <!-- ---- MAIN COLUMN ---- -->
+        <div class="col-lg-8">
+
+          <!-- Gallery -->
+          <div class="property-gallery" data-aos="fade-up" data-aos-delay="100">
+            <div class="main-image-container">
+              {% if apartment.main_image %}
+              <img id="main-product-image" src="{{ apartment.main_image.url }}" alt="{{ apartment.title }}" class="main-property-image" data-zoom="{{ apartment.main_image.url }}">
+              {% else %}
+              <img id="main-product-image" src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200" alt="{{ apartment.title }}" class="main-property-image">
+              {% endif %}
+              <div class="image-nav-buttons">
+                <button class="image-nav-btn prev-image" type="button"><i class="bi bi-chevron-left"></i></button>
+                <button class="image-nav-btn next-image" type="button"><i class="bi bi-chevron-right"></i></button>
+              </div>
+              <div class="img-count-badge">
+                <i class="bi bi-images"></i>
+                <span id="imgCounter">1 / {{ apartment.images.count|add:"1" }}</span>
+              </div>
+            </div>
+            <div class="thumbnail-gallery">
+              {% if apartment.main_image %}
+              <div class="thumbnail-item active" data-image="{{ apartment.main_image.url }}">
+                <img src="{{ apartment.main_image.url }}" alt="{{ apartment.title }}">
+              </div>
+              {% endif %}
+              {% for image in images %}
+              <div class="thumbnail-item" data-image="{{ image.image.url }}">
+                <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="glass-panel" data-aos="fade-up" data-aos-delay="150">
+            <div class="glass-panel-title"><i class="bi bi-file-text"></i> About This Apartment</div>
+            <p style="color:rgba(255,255,255,0.65);font-size:0.95rem;line-height:1.8;margin:0;">{{ apartment.description }}</p>
+          </div>
+
+          <!-- Amenities -->
+          <div class="glass-panel" data-aos="fade-up" data-aos-delay="200">
+            <div class="glass-panel-title"><i class="bi bi-stars"></i> Amenities &amp; Features</div>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="amenity-subhead">Interior Features</div>
+                <ul class="features-list">
+                  {% if apartment.has_ac %}<li><i class="bi bi-thermometer-snow"></i>Air Conditioning</li>{% endif %}
+                  {% if apartment.has_heating %}<li><i class="bi bi-fire"></i>Heating System</li>{% endif %}
+                  {% if apartment.has_elevator %}<li><i class="bi bi-arrow-up-square"></i>Elevator Access</li>{% endif %}
+                  {% if apartment.has_balcony %}<li><i class="bi bi-door-open"></i>Balcony</li>{% endif %}
+                  {% if apartment.has_wifi %}<li><i class="bi bi-wifi"></i>High-Speed WiFi</li>{% endif %}
+                  <li><i class="bi bi-door-closed"></i>{{ apartment.bedrooms }} Bedroom{{ apartment.bedrooms|pluralize }}</li>
+                  <li><i class="bi bi-droplet"></i>{{ apartment.bathrooms }} Bathroom{{ apartment.bathrooms|pluralize }}</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <div class="amenity-subhead">Exterior &amp; Additional</div>
+                <ul class="features-list">
+                  {% if apartment.has_parking %}<li><i class="bi bi-p-circle"></i>Parking Space</li>{% endif %}
+                  {% if apartment.has_pool %}<li><i class="bi bi-water"></i>Swimming Pool</li>{% endif %}
+                  {% if apartment.has_gym %}<li><i class="bi bi-activity"></i>Fitness Center</li>{% endif %}
+                  {% if apartment.is_pet_friendly %}<li><i class="bi bi-heart"></i>Pet Friendly</li>{% endif %}
+                  <li><i class="bi bi-aspect-ratio"></i>{{ apartment.square_feet }} sq ft</li>
+                  {% if apartment.floor_number %}<li><i class="bi bi-building"></i>Floor {{ apartment.floor_number }}</li>{% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews -->
+          {% if reviews %}
+          <div class="glass-panel" data-aos="fade-up" data-aos-delay="250">
+            <div class="glass-panel-title"><i class="bi bi-chat-square-quote"></i> Guest Reviews</div>
+
+            {% if avg_ratings.total_reviews %}
+            <div class="rating-summary-card">
+              <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                  <div class="rating-big-score">{{ avg_ratings.avg_overall|floatformat:1 }}</div>
+                  <div class="stars-display justify-content-center">
+                    {% for i in "12345" %}
+                    <i class="bi bi-star-fill {% if forloop.counter > avg_ratings.avg_overall %}opacity-25{% endif %}"></i>
+                    {% endfor %}
+                  </div>
+                  <small style="color:rgba(255,255,255,0.3);font-size:0.78rem;">{{ avg_ratings.total_reviews }} review{{ avg_ratings.total_reviews|pluralize }}</small>
+                </div>
+                <div class="col-md-9">
+                  <div class="rating-bar-label"><span>Cleanliness</span><span>{{ avg_ratings.avg_cleanliness|floatformat:1 }}/5</span></div>
+                  <div class="rating-bar"><div class="rating-bar-fill" style="width:{% widthratio avg_ratings.avg_cleanliness 5 100 %}%"></div></div>
+                  <div class="rating-bar-label"><span>Communication</span><span>{{ avg_ratings.avg_communication|floatformat:1 }}/5</span></div>
+                  <div class="rating-bar"><div class="rating-bar-fill" style="width:{% widthratio avg_ratings.avg_communication 5 100 %}%"></div></div>
+                  <div class="rating-bar-label"><span>Location</span><span>{{ avg_ratings.avg_location|floatformat:1 }}/5</span></div>
+                  <div class="rating-bar"><div class="rating-bar-fill" style="width:{% widthratio avg_ratings.avg_location 5 100 %}%"></div></div>
+                  <div class="rating-bar-label"><span>Value for Money</span><span>{{ avg_ratings.avg_value|floatformat:1 }}/5</span></div>
+                  <div class="rating-bar"><div class="rating-bar-fill" style="width:{% widthratio avg_ratings.avg_value 5 100 %}%"></div></div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% for review in reviews %}
+            <div class="review-item">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div class="review-avatar-initials">{{ review.user.first_name|first|upper }}{{ review.user.last_name|first|upper }}</div>
+                  <div>
+                    <div style="font-weight:600;color:rgba(255,255,255,0.85);font-size:0.9rem;">{{ review.user.get_full_name }}</div>
+                    <small style="color:rgba(255,255,255,0.3);font-size:0.78rem;">{{ review.created_at|date:"F d, Y" }}</small>
+                  </div>
+                </div>
+                <div class="stars-display">
+                  {% for i in "12345" %}
+                  <i class="bi bi-star-fill {% if forloop.counter > review.overall_rating %}opacity-25{% endif %}" style="font-size:0.8rem;"></i>
+                  {% endfor %}
+                </div>
+              </div>
+              <div style="font-weight:600;color:rgba(255,255,255,0.75);font-size:0.9rem;margin-bottom:6px;">{{ review.title }}</div>
+              <p style="color:rgba(255,255,255,0.45);font-size:0.88rem;margin:0;line-height:1.65;">{{ review.comment }}</p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Map -->
+          <div class="glass-panel" data-aos="fade-up" data-aos-delay="300">
+            <div class="glass-panel-title"><i class="bi bi-map"></i> Location</div>
+            <div class="map-frame">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2965.0824050173574!2d-87.63000000000002!3d41.88844360000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e2c3cd0f4cbed%3A0xafe0a6ad09c0c000!2s{{ apartment.city }}%2C%20{{ apartment.state }}!5e0!3m2!1sen!2sus!4v1234567890123"
+                width="100%" height="360" style="border:0;display:block;" allowfullscreen="" loading="lazy">
+              </iframe>
+            </div>
+            <div>
+              <p style="color:rgba(255,255,255,0.45);font-size:0.9rem;margin:0;line-height:1.7;">
+                Located in {{ apartment.city }}, {{ apartment.state }}, this property offers convenient access to local amenities, shopping, dining, and entertainment.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ---- SIDEBAR ---- -->
+        <div class="col-lg-4">
+          <div class="prop-sidebar" data-aos="fade-up" data-aos-delay="100">
+
+            <!-- Price Card -->
+            <div class="price-card">
+              <div class="price-display">
+                ${{ apartment.price_per_night }}<small>/night</small>
+              </div>
+              {% if apartment.price_per_month %}
+              <div class="price-monthly">or ${{ apartment.price_per_month }}/month</div>
+              {% endif %}
+              <span class="price-status-pill {% if apartment.status == 'available' %}available{% else %}booked{% endif %}">
+                {{ apartment.get_status_display }}
+              </span>
+
+              <div class="prop-address">
+                <h4>{{ apartment.address }}</h4>
+                <p><i class="bi bi-geo-alt"></i> {{ apartment.city }}, {{ apartment.state }} {{ apartment.zip_code }}</p>
+              </div>
+
+              <div class="prop-stats-grid">
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-door-open"></i></div>
+                  <div>
+                    <span class="prop-stat-value">{{ apartment.bedrooms }}</span>
+                    <span class="prop-stat-label">Bedrooms</span>
+                  </div>
+                </div>
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-droplet"></i></div>
+                  <div>
+                    <span class="prop-stat-value">{{ apartment.bathrooms }}</span>
+                    <span class="prop-stat-label">Bathrooms</span>
+                  </div>
+                </div>
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-aspect-ratio"></i></div>
+                  <div>
+                    <span class="prop-stat-value">{{ apartment.square_feet }}</span>
+                    <span class="prop-stat-label">Sq Ft</span>
+                  </div>
+                </div>
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-people"></i></div>
+                  <div>
+                    <span class="prop-stat-value">{{ apartment.max_guests }}</span>
+                    <span class="prop-stat-label">Max Guests</span>
+                  </div>
+                </div>
+                {% if apartment.floor_number %}
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-building"></i></div>
+                  <div>
+                    <span class="prop-stat-value">{{ apartment.floor_number }}</span>
+                    <span class="prop-stat-label">Floor</span>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="prop-stat">
+                  <div class="prop-stat-icon"><i class="bi bi-shield-check"></i></div>
+                  <div>
+                    <span class="prop-stat-value" style="font-size:0.95rem;">${{ apartment.security_deposit }}</span>
+                    <span class="prop-stat-label">Deposit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="booking-card">
+              <div class="booking-card-header"><i class="bi bi-calendar-check"></i> Book This Apartment</div>
+
+              {% if messages %}
+              {% for message in messages %}
+              <div class="alert-{{ message.tags }} mb-3" role="alert">
+                {{ message }}
+              </div>
+              {% endfor %}
+              {% endif %}
+
+              <form action="{% url 'create_booking' apartment.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label>Check-in Date</label>
+                  <input type="date" name="check_in_date" class="form-control" id="checkInDate" required min="{{ today|date:'Y-m-d' }}">
+                </div>
+                <div class="form-group">
+                  <label>Check-out Date</label>
+                  <input type="date" name="check_out_date" class="form-control" id="checkOutDate" required>
+                </div>
+                <div class="form-group">
+                  <label>Number of Guests</label>
+                  <select name="number_of_guests" class="form-control" required>
+                    {% for i in "123456789"|make_list %}
+                    {% if forloop.counter <= apartment.max_guests %}
+                    <option value="{{ forloop.counter }}">{{ forloop.counter }} Guest{{ forloop.counter|pluralize }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" name="guest_phone" class="form-control" placeholder="+234 800 000 0000" required>
+                </div>
+                <div class="form-group">
+                  <label>Special Requests <span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">(Optional)</span></label>
+                  <textarea class="form-control" name="special_requests" rows="3" placeholder="Any special requirements…" style="resize:vertical;"></textarea>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="price-breakdown-card" id="priceBreakdown">
+                  <div class="price-breakdown-row">
+                    <span>${{ apartment.price_per_night }} × <span id="numberOfNights">0</span> nights</span>
+                    <span>$<span id="subtotal">0</span></span>
+                  </div>
+                  <div class="price-breakdown-row">
+                    <span>Security Deposit</span>
+                    <span>${{ apartment.security_deposit }}</span>
+                  </div>
+                  <div class="price-breakdown-row total">
+                    <span>Total</span>
+                    <span>$<span id="totalPrice">0</span></span>
+                  </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <button type="submit" class="btn-book-now">
+                  <i class="bi bi-calendar-check-fill"></i> Book Now
+                </button>
+                {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn-login-book">
+                  <i class="bi bi-box-arrow-in-right"></i> Login to Book
+                </a>
+                {% endif %}
+              </form>
+            </div>
+
+            <!-- Share -->
+            <div class="share-card">
+              <div class="share-label">Share This Apartment</div>
+              <div class="share-buttons">
+                <a href="#" class="share-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="share-btn" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" class="share-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                <a href="#" class="share-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                <a href="#" class="share-btn" title="Print"><i class="bi bi-printer"></i></a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+// ---- Thumbnail gallery
+const mainImg = document.getElementById('main-product-image');
+const thumbs = document.querySelectorAll('.thumbnail-item');
+const imgCounter = document.getElementById('imgCounter');
+
+thumbs.forEach((thumb, idx) => {
+  thumb.addEventListener('click', () => {
+    mainImg.src = thumb.dataset.image;
+    thumbs.forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+    if (imgCounter) imgCounter.textContent = `${idx + 1} / ${thumbs.length}`;
+  });
+});
+
+// ---- Image navigation
+const allImages = Array.from(thumbs).map(t => t.dataset.image);
+let currentIdx = 0;
+
+document.querySelector('.prev-image')?.addEventListener('click', () => {
+  currentIdx = (currentIdx - 1 + allImages.length) % allImages.length;
+  mainImg.src = allImages[currentIdx];
+  thumbs.forEach((t, i) => t.classList.toggle('active', i === currentIdx));
+  if (imgCounter) imgCounter.textContent = `${currentIdx + 1} / ${allImages.length}`;
+});
+
+document.querySelector('.next-image')?.addEventListener('click', () => {
+  currentIdx = (currentIdx + 1) % allImages.length;
+  mainImg.src = allImages[currentIdx];
+  thumbs.forEach((t, i) => t.classList.toggle('active', i === currentIdx));
+  if (imgCounter) imgCounter.textContent = `${currentIdx + 1} / ${allImages.length}`;
+});
+
+// ---- Price calculation
+const checkInInput = document.getElementById('checkInDate');
+const checkOutInput = document.getElementById('checkOutDate');
+const pricePerNight = {{ apartment.price_per_night }};
+const depositAmount = {{ apartment.security_deposit }};
+
+function calculatePrice() {
+  const checkIn = new Date(checkInInput.value);
+  const checkOut = new Date(checkOutInput.value);
+  if (checkIn && checkOut && checkOut > checkIn) {
+    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+    const subtotal = pricePerNight * nights;
+    const total = subtotal + depositAmount;
+    document.getElementById('numberOfNights').textContent = nights;
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('totalPrice').textContent = total.toFixed(2);
+    document.getElementById('priceBreakdown').style.display = 'block';
+  }
+}
+
+checkInInput?.addEventListener('change', function () {
+  const tomorrow = new Date(this.value);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  checkOutInput.min = tomorrow.toISOString().split('T')[0];
+  calculatePrice();
+});
+
+checkOutInput?.addEventListener('change', calculatePrice);
+</script>
+{% endblock %}
