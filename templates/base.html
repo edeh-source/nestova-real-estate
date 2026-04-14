@@ -2117,6 +2117,72 @@
     <i class="bi bi-arrow-up-short" aria-hidden="true"></i>
   </a>
 
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/2349014344271" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <i class="fab fa-whatsapp whatsapp-float__icon" aria-hidden="true"></i>
+    <span class="whatsapp-float__caption">Have any question?</span>
+  </a>
+
+  <style>
+    .whatsapp-float {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #fff;
+      border-radius: 50px;
+      padding: 10px 18px 10px 14px;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(37, 211, 102, 0.35), 0 2px 8px rgba(0,0,0,0.3);
+      transition: var(--transition);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      max-width: 220px;
+      overflow: hidden;
+    }
+
+    .whatsapp-float:hover {
+      background: linear-gradient(135deg, #2be574 0%, #0fa070 100%);
+      box-shadow: 0 8px 32px rgba(37, 211, 102, 0.55), 0 2px 12px rgba(0,0,0,0.35);
+      transform: translateY(-3px) scale(1.03);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .whatsapp-float__icon {
+      font-size: 1.6rem;
+      line-height: 1;
+      flex-shrink: 0;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+    }
+
+    .whatsapp-float__caption {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      color: #fff;
+    }
+
+    @media (max-width: 480px) {
+      .whatsapp-float {
+        padding: 11px;
+        border-radius: 50%;
+        max-width: unset;
+        bottom: 85px;
+        right: 16px;
+      }
+      .whatsapp-float__caption {
+        display: none;
+      }
+    }
+  </style>
+
   <!-- Preloader -->
   <div id="preloader"></div>
 
