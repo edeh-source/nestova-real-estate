@@ -1252,10 +1252,10 @@
 <!-- ── Page Hero ── -->
 <div class="pd-hero" data-reveal>
   <div class="pd-hero-eyebrow">
-    <i class="bi bi-box-seam"></i> Product Detail
+    <i class="bi bi-box-seam" style="color: white !important;"></i> Product Detail
   </div>
-  <h1>{{ product.name }}</h1>
-  <p class="pd-hero-sub">{{ product.short_description|striptags|truncatewords:20 }}</p>
+  <h1 style="color: white !important;">{{ product.name }}</h1>
+  <p class="pd-hero-sub" style="color: white !important;">{{ product.short_description|striptags|truncatewords:20 }}</p>
 
   <nav class="pd-breadcrumb">
     <a href="{% url 'home' %}"><i class="bi bi-house"></i> Home</a>
