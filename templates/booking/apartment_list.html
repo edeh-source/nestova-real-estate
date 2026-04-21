@@ -892,6 +892,64 @@
   pointer-events: none;
 }
 
+/* ============================================================
+   LISTING TABS
+   ============================================================ */
+.listing-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 6px;
+  background: rgba(18,18,26,0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  width: fit-content;
+}
+
+.listing-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.listing-tab:hover {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+}
+
+.listing-tab.active {
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.08));
+  border: 1px solid rgba(201,168,76,0.35);
+  color: var(--gold-light);
+}
+
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.08);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+}
+
+.listing-tab.active .tab-count {
+  background: rgba(201,168,76,0.2);
+  color: var(--gold-light);
+}
+
 /* Animation delays */
 .prop-card-wrap:nth-child(1) { animation-delay: 0.05s; }
 .prop-card-wrap:nth-child(2) { animation-delay: 0.10s; }
@@ -959,6 +1017,20 @@
         <!-- ---- MAIN CONTENT ---- -->
         <div class="col-lg-8">
 
+          <!-- ---- TABS ---- -->
+          <div class="listing-tabs">
+            <a href="?tab=own{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}"
+               class="listing-tab {% if active_tab == 'own' %}active{% endif %}">
+              <i class="bi bi-building"></i> Our Listings
+              <span class="tab-count">{{ apartments.paginator.count }}</span>
+            </a>
+            <a href="?tab=scraped{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}"
+               class="listing-tab {% if active_tab == 'scraped' %}active{% endif %}">
+              <i class="bi bi-globe"></i> External Listings
+              <span class="tab-count">{{ scraped.paginator.count }}</span>
+            </a>
+          </div>
+
           <!-- Toolbar -->
           <div class="props-toolbar">
             <div class="view-toggle">
@@ -970,9 +1042,16 @@
               </button>
             </div>
             <div class="results-count">
-              Showing <strong>{{ apartments.count }}</strong> apartment{{ apartments.count|pluralize }}
+              {% if active_tab == 'own' %}
+              Showing <strong>{{ apartments.paginator.count }}</strong> listing{{ apartments.paginator.count|pluralize }}
+              {% else %}
+              Showing <strong>{{ scraped.paginator.count }}</strong> listing{{ scraped.paginator.count|pluralize }}
+              {% endif %}
             </div>
             <form method="GET" action="{% url 'apartment_list' %}" id="sortForm" style="margin:0;">
+              <input type="hidden" name="tab" value="{{ active_tab }}">
+              {% if request.GET.search %}<input type="hidden" name="search" value="{{ request.GET.search }}">{% endif %}
+              {% if request.GET.city %}<input type="hidden" name="city" value="{{ request.GET.city }}">{% endif %}
               <select class="sort-select" name="sort" onchange="document.getElementById('sortForm').submit();">
                 <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest First</option>
                 <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
@@ -981,7 +1060,12 @@
             </form>
           </div>
 
-          <!-- ---- GRID VIEW ---- -->
+          <!-- ====================================================
+               OWN LISTINGS TAB
+               ==================================================== -->
+          {% if active_tab == 'own' %}
+
+          <!-- Grid View -->
           <div class="properties-grid" id="viewGrid">
             <div class="row g-4">
               {% for apartment in apartments %}
@@ -994,16 +1078,10 @@
                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ apartment.title }}" loading="lazy">
                     {% endif %}
                     <div class="property-badges">
-                      {% if apartment.status == 'available' %}
-                      <span class="badge featured">Available</span>
-                      {% elif apartment.status == 'maintenance' %}
-                      <span class="badge new">Maintenance</span>
-                      {% elif apartment.status == 'booked' %}
-                      <span class="badge sold">Booked</span>
-                      {% endif %}
-                      {% if apartment.property_type %}
-                      <span class="badge for-sale">{{ apartment.property_type.name }}</span>
-                      {% endif %}
+                      {% if apartment.status == 'available' %}<span class="badge featured">Available</span>
+                      {% elif apartment.status == 'maintenance' %}<span class="badge new">Maintenance</span>
+                      {% elif apartment.status == 'booked' %}<span class="badge sold">Booked</span>{% endif %}
+                      {% if apartment.property_type %}<span class="badge for-sale">{{ apartment.property_type.name }}</span>{% endif %}
                     </div>
                     <div class="property-overlay">
                       <button class="favorite-btn" title="Save apartment"><i class="bi bi-heart"></i></button>
@@ -1013,15 +1091,10 @@
                     </div>
                   </div>
                   <div class="property-content">
-                    <div class="property-price">
-                      ${{ apartment.price_per_night }}<span>/night</span>
-                    </div>
-                    <h4 class="property-title">
-                      <a href="{{ apartment.get_absolute_url }}">{{ apartment.title }}</a>
-                    </h4>
+                    <div class="property-price">₦{{ apartment.price_per_night }}<span>/night</span></div>
+                    <h4 class="property-title"><a href="{{ apartment.get_absolute_url }}">{{ apartment.title }}</a></h4>
                     <p class="property-location">
-                      <i class="bi bi-geo-alt-fill"></i>
-                      {{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }}
+                      <i class="bi bi-geo-alt-fill"></i>{{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }}
                     </p>
                     <div class="property-features">
                       <span><i class="bi bi-door-open"></i> {{ apartment.bedrooms }} Bed</span>
@@ -1032,14 +1105,10 @@
                       <i class="bi bi-person-circle" style="color:var(--gold);font-size:1rem;"></i>
                       {% if apartment.owner %}
                       <strong>{{ apartment.owner.get_full_name|default:apartment.owner.username }}</strong>
-                      {% else %}
-                      <strong>Property Manager</strong>
-                      {% endif %}
+                      {% else %}<strong>Property Manager</strong>{% endif %}
                       <small style="color:rgba(255,255,255,0.3);margin-left:4px;">· Max {{ apartment.max_guests }} guests</small>
                     </div>
-                    <a href="{{ apartment.get_absolute_url }}" class="btn-prop-view">
-                      View Details <i class="bi bi-arrow-right"></i>
-                    </a>
+                    <a href="{{ apartment.get_absolute_url }}" class="btn-prop-view">View Details <i class="bi bi-arrow-right"></i></a>
                   </div>
                 </div>
               </div>
@@ -1048,9 +1117,9 @@
                 <div class="empty-state">
                   <div class="empty-state-icon"><i class="bi bi-building-x"></i></div>
                   <h3>No Apartments Found</h3>
-                  <p>We couldn't find apartments matching your criteria. Try adjusting your filters or browse all listings.</p>
-                  <a href="{% url 'apartment_list' %}" class="btn-prop-view d-inline-flex mt-4" style="width:auto;padding:12px 28px;">
-                    <i class="bi bi-grid-3x3-gap me-2"></i> View All Apartments
+                  <p>Try adjusting your filters or check our external listings tab.</p>
+                  <a href="?tab=scraped" class="btn-prop-view d-inline-flex mt-4" style="width:auto;padding:12px 28px;">
+                    <i class="bi bi-globe me-2"></i> Browse External Listings
                   </a>
                 </div>
               </div>
@@ -1058,7 +1127,7 @@
             </div>
           </div>
 
-          <!-- ---- LIST VIEW ---- -->
+          <!-- List View -->
           <div class="properties-list-view" id="viewList">
             {% for apartment in apartments %}
             <div class="property-list-item">
@@ -1071,23 +1140,16 @@
                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ apartment.title }}" style="height:100%;min-height:220px;" loading="lazy">
                     {% endif %}
                     <div class="property-badges">
-                      {% if apartment.status == 'available' %}
-                      <span class="badge featured">Available</span>
-                      {% elif apartment.status == 'booked' %}
-                      <span class="badge sold">Booked</span>
-                      {% endif %}
+                      {% if apartment.status == 'available' %}<span class="badge featured">Available</span>
+                      {% elif apartment.status == 'booked' %}<span class="badge sold">Booked</span>{% endif %}
                     </div>
                   </div>
                 </div>
                 <div class="col-lg-8">
                   <div class="property-content" style="padding:28px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
-                      <h4 class="property-title mb-0">
-                        <a href="{{ apartment.get_absolute_url }}">{{ apartment.title }}</a>
-                      </h4>
-                      <div class="property-price" style="flex-shrink:0;">
-                        ${{ apartment.price_per_night }}<span>/night</span>
-                      </div>
+                      <h4 class="property-title mb-0"><a href="{{ apartment.get_absolute_url }}">{{ apartment.title }}</a></h4>
+                      <div class="property-price" style="flex-shrink:0;">₦{{ apartment.price_per_night }}<span>/night</span></div>
                     </div>
                     <p class="property-location mb-3">
                       <i class="bi bi-geo-alt-fill"></i> {{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }}
@@ -1101,11 +1163,8 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                       <div class="property-agent">
                         <i class="bi bi-person-circle" style="color:var(--gold);"></i>
-                        {% if apartment.owner %}
-                        <strong>{{ apartment.owner.get_full_name|default:apartment.owner.username }}</strong>
-                        {% else %}
-                        <strong>Property Manager</strong>
-                        {% endif %}
+                        {% if apartment.owner %}<strong>{{ apartment.owner.get_full_name|default:apartment.owner.username }}</strong>
+                        {% else %}<strong>Property Manager</strong>{% endif %}
                       </div>
                       <div style="display:flex;gap:10px;align-items:center;">
                         <button class="btn-outline-action favorite-btn" title="Save"><i class="bi bi-heart"></i></button>
@@ -1127,45 +1186,181 @@
             {% endfor %}
           </div>
 
-          <!-- ---- PAGINATION ---- -->
+          <!-- Pagination — own -->
           {% if apartments.has_other_pages %}
           <div class="pagination-wrap">
             <ul class="pagination">
               {% if apartments.has_previous %}
               <li class="page-item">
-                <a class="page-link" href="?page={{ apartments.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.property_type %}&property_type={{ request.GET.property_type }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.bedrooms %}&bedrooms={{ request.GET.bedrooms }}{% endif %}{% if request.GET.bathrooms %}&bathrooms={{ request.GET.bathrooms }}{% endif %}">
-                  <i class="bi bi-chevron-left"></i>
-                </a>
+                <a class="page-link" href="?tab=own&apt_page={{ apartments.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
+                  <i class="bi bi-chevron-left"></i></a>
               </li>
-              {% else %}
-              <li class="page-item disabled">
-                <span class="page-link"><i class="bi bi-chevron-left"></i></span>
-              </li>
-              {% endif %}
-
+              {% else %}<li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>{% endif %}
               {% for num in apartments.paginator.page_range %}
               {% if apartments.number == num %}
               <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
               {% elif num > apartments.number|add:'-3' and num < apartments.number|add:'3' %}
               <li class="page-item">
-                <a class="page-link" href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.property_type %}&property_type={{ request.GET.property_type }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.bedrooms %}&bedrooms={{ request.GET.bedrooms }}{% endif %}{% if request.GET.bathrooms %}&bathrooms={{ request.GET.bathrooms }}{% endif %}">{{ num }}</a>
+                <a class="page-link" href="?tab=own&apt_page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">{{ num }}</a>
               </li>
               {% endif %}
               {% endfor %}
-
               {% if apartments.has_next %}
               <li class="page-item">
-                <a class="page-link" href="?page={{ apartments.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.property_type %}&property_type={{ request.GET.property_type }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.bedrooms %}&bedrooms={{ request.GET.bedrooms }}{% endif %}{% if request.GET.bathrooms %}&bathrooms={{ request.GET.bathrooms }}{% endif %}">
-                  <i class="bi bi-chevron-right"></i>
-                </a>
+                <a class="page-link" href="?tab=own&apt_page={{ apartments.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
+                  <i class="bi bi-chevron-right"></i></a>
               </li>
-              {% else %}
-              <li class="page-item disabled">
-                <span class="page-link"><i class="bi bi-chevron-right"></i></span>
-              </li>
-              {% endif %}
+              {% else %}<li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>{% endif %}
             </ul>
           </div>
+          {% endif %}
+
+          {% else %}
+          <!-- ====================================================
+               SCRAPED / EXTERNAL LISTINGS TAB
+               ==================================================== -->
+
+          <!-- Grid View -->
+          <div class="properties-grid" id="viewGrid">
+            <div class="row g-4">
+              {% for listing in scraped %}
+              <div class="col-lg-6 col-md-6 prop-card-wrap">
+                <div class="property-card">
+                  <div class="property-image">
+                    {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" loading="lazy">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ listing.title }}" loading="lazy">
+                    {% endif %}
+                    <div class="property-badges">
+                      <span class="badge featured">Shortlet</span>
+                      <span class="badge new">{{ listing.source }}</span>
+                    </div>
+                    <div class="property-overlay">
+                      <button class="favorite-btn" title="Save listing"><i class="bi bi-heart"></i></button>
+                    </div>
+                  </div>
+                  <div class="property-content">
+                    <div class="property-price">{{ listing.price }}</div>
+                    <h4 class="property-title">
+                      <a href="{{ listing.url }}" target="_blank" rel="noopener">{{ listing.title|truncatewords:8 }}</a>
+                    </h4>
+                    <p class="property-location">
+                      <i class="bi bi-geo-alt-fill"></i>{{ listing.location }}
+                    </p>
+                    <div class="property-features">
+                      <span><i class="bi bi-buildings"></i> {{ listing.city|title }}</span>
+                      <span><i class="bi bi-clock-history"></i> {{ listing.synced_at|timesince }} ago</span>
+                    </div>
+                    <div class="property-agent">
+                      <i class="bi bi-globe" style="color:var(--gold);font-size:1rem;"></i>
+                      <strong>{{ listing.source }}</strong>
+                      <small style="color:rgba(255,255,255,0.3);margin-left:4px;">· External listing</small>
+                    </div>
+                    <a href="{{ listing.url }}" target="_blank" rel="noopener" class="btn-prop-view">
+                      View on {{ listing.source }} <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-12">
+                <div class="empty-state">
+                  <div class="empty-state-icon"><i class="bi bi-globe2"></i></div>
+                  <h3>No External Listings</h3>
+                  <p>External listings are synced every 6 hours. Check back soon or try different filters.</p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- List View -->
+          <div class="properties-list-view" id="viewList">
+            {% for listing in scraped %}
+            <div class="property-list-item">
+              <div class="row g-0 align-items-stretch">
+                <div class="col-lg-4">
+                  <div class="property-image" style="height:100%;min-height:220px;">
+                    {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy">
+                    {% endif %}
+                    <div class="property-badges">
+                      <span class="badge featured">Shortlet</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="property-content" style="padding:28px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+                      <h4 class="property-title mb-0">
+                        <a href="{{ listing.url }}" target="_blank" rel="noopener">{{ listing.title|truncatewords:10 }}</a>
+                      </h4>
+                      <div class="property-price" style="flex-shrink:0;">{{ listing.price }}</div>
+                    </div>
+                    <p class="property-location mb-3">
+                      <i class="bi bi-geo-alt-fill"></i> {{ listing.location }}
+                    </p>
+                    <div class="property-features" style="margin-bottom:16px;">
+                      <span><i class="bi bi-buildings"></i> {{ listing.city|title }}</span>
+                      <span><i class="bi bi-clock-history"></i> Synced {{ listing.synced_at|timesince }} ago</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                      <div class="property-agent">
+                        <i class="bi bi-globe" style="color:var(--gold);"></i>
+                        <strong>{{ listing.source }}</strong>
+                      </div>
+                      <div style="display:flex;gap:10px;align-items:center;">
+                        <button class="btn-outline-action favorite-btn" title="Save"><i class="bi bi-heart"></i></button>
+                        <a href="{{ listing.url }}" target="_blank" rel="noopener" class="btn-prop-view" style="padding:10px 20px;font-size:0.82rem;">
+                          View Listing <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-globe2"></i></div>
+              <h3>No External Listings</h3>
+              <p>External listings sync every 6 hours. Check back soon.</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Pagination — scraped -->
+          {% if scraped.has_other_pages %}
+          <div class="pagination-wrap">
+            <ul class="pagination">
+              {% if scraped.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?tab=scraped&scr_page={{ scraped.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
+                  <i class="bi bi-chevron-left"></i></a>
+              </li>
+              {% else %}<li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>{% endif %}
+              {% for num in scraped.paginator.page_range %}
+              {% if scraped.number == num %}
+              <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+              {% elif num > scraped.number|add:'-3' and num < scraped.number|add:'3' %}
+              <li class="page-item">
+                <a class="page-link" href="?tab=scraped&scr_page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">{{ num }}</a>
+              </li>
+              {% endif %}
+              {% endfor %}
+              {% if scraped.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?tab=scraped&scr_page={{ scraped.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
+                  <i class="bi bi-chevron-right"></i></a>
+              </li>
+              {% else %}<li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>{% endif %}
+            </ul>
+          </div>
+          {% endif %}
+
           {% endif %}
 
         </div>
@@ -1247,8 +1442,8 @@
               </form>
             </div>
 
-            <!-- Featured Apartments -->
-            {% if apartments %}
+            <!-- Featured Listings -->
+            {% if active_tab == 'own' and apartments %}
             <div class="sidebar-featured">
               <div class="sidebar-section-title">Featured Apartments</div>
               {% for apartment in apartments|slice:":3" %}
@@ -1261,7 +1456,25 @@
                 <div class="sidebar-prop-info">
                   <span class="sidebar-prop-title">{{ apartment.title|truncatewords:4 }}</span>
                   <div class="sidebar-prop-location"><i class="bi bi-geo-alt" style="color:var(--gold);margin-right:4px;font-size:0.7rem;"></i>{{ apartment.city }}, {{ apartment.state }}</div>
-                  <div class="sidebar-prop-price">${{ apartment.price_per_night }}<span style="font-family:var(--font-body);font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;">/night</span></div>
+                  <div class="sidebar-prop-price">₦{{ apartment.price_per_night }}<span style="font-family:var(--font-body);font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;">/night</span></div>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+            {% elif active_tab == 'scraped' and scraped %}
+            <div class="sidebar-featured">
+              <div class="sidebar-section-title">Top External Listings</div>
+              {% for listing in scraped|slice:":3" %}
+              <a href="{{ listing.url }}" target="_blank" rel="noopener" class="sidebar-prop-item">
+                {% if listing.image_url %}
+                <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="sidebar-prop-img">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=200" alt="{{ listing.title }}" class="sidebar-prop-img">
+                {% endif %}
+                <div class="sidebar-prop-info">
+                  <span class="sidebar-prop-title">{{ listing.title|truncatewords:4 }}</span>
+                  <div class="sidebar-prop-location"><i class="bi bi-geo-alt" style="color:var(--gold);margin-right:4px;font-size:0.7rem;"></i>{{ listing.location|truncatewords:3 }}</div>
+                  <div class="sidebar-prop-price">{{ listing.price }}</div>
                 </div>
               </a>
               {% endfor %}

@@ -265,3 +265,22 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"Payment for {self.booking.booking_number} - ${self.amount}"
+    
+
+class ScrapedListing(models.Model):
+    title       = models.CharField(max_length=500)
+    price       = models.CharField(max_length=100)
+    location    = models.CharField(max_length=300)
+    url         = models.URLField(unique=True)
+    image_url   = models.URLField(blank=True)
+    image_file = models.ImageField(upload_to='scraped/', blank=True, null=True)  
+    source      = models.CharField(max_length=100, default='propertypro.ng')
+    city        = models.CharField(max_length=100, default='lagos')
+    synced_at   = models.DateTimeField(auto_now=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-synced_at']
+
+    def __str__(self):
+        return self.title

@@ -1,7 +1,13 @@
 from django.contrib import admin
-from .models import Apartment, ApartmentImage, Booking, Review, Payment, ApartmentChoice
+from .models import Apartment, ApartmentImage, Booking, Review, Payment, ApartmentChoice, ScrapedListing
 
 
+
+@admin.register(ScrapedListing)
+class ScrapedListingAdmin(admin.ModelAdmin):
+    list_display = ['title', 'price', 'location', 'city']
+    list_filter = ['city']
+    search_fields = ['title', 'location']
 
 @admin.register(ApartmentChoice)
 class ApartmentChoiceAdmin(admin.ModelAdmin):

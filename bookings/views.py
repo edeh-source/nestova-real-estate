@@ -6,24 +6,28 @@ from django.db.models import Q, Avg, Count
 from django.utils import timezone
 from django.core.paginator import Paginator
 from datetime import datetime, timedelta
-from .models import Apartment, Booking, Review, Payment, ApartmentImage, ApartmentChoice
+from .models import Apartment, Booking, Review, Payment, ApartmentImage, ApartmentChoice, ScrapedListing
 import json
 
 
 def apartment_list(request):
-    """Display list of available apartments with filters"""
+    """Display list of available apartments with filters — combines own listings + scraped"""
     apartments = Apartment.objects.filter(status='available')
-    
-    # Filters
+    scraped    = ScrapedListing.objects.all()
+
+    # --- Shared filters ---
+    city       = request.GET.get('city')
+    search     = request.GET.get('search')
+    sort_by    = request.GET.get('sort', 'newest')
+
+    # --- Apartment-only filters ---
     property_type = request.GET.get('property_type')
-    city = request.GET.get('city')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    bedrooms = request.GET.get('bedrooms')
-    bathrooms = request.GET.get('bathrooms')
-    search = request.GET.get('search')
-    
-    # Apply filters
+    min_price     = request.GET.get('min_price')
+    max_price     = request.GET.get('max_price')
+    bedrooms      = request.GET.get('bedrooms')
+    bathrooms     = request.GET.get('bathrooms')
+
+    # Apply filters to Apartment queryset
     if property_type:
         apartments = apartments.filter(property_type=property_type)
     if city:
@@ -38,38 +42,56 @@ def apartment_list(request):
         apartments = apartments.filter(bathrooms__gte=bathrooms)
     if search:
         apartments = apartments.filter(
-            Q(title__icontains=search) | 
+            Q(title__icontains=search) |
             Q(description__icontains=search) |
             Q(city__icontains=search) |
             Q(address__icontains=search)
         )
-    
+
+    # Apply filters to ScrapedListing queryset
+    if city:
+        scraped = scraped.filter(city__icontains=city)
+    if search:
+        scraped = scraped.filter(
+            Q(title__icontains=search) |
+            Q(location__icontains=search)
+        )
+
     # Sorting
-    sort_by = request.GET.get('sort', 'newest')
     if sort_by == 'price_low':
         apartments = apartments.order_by('price_per_night')
+        scraped    = scraped.order_by('price')
     elif sort_by == 'price_high':
         apartments = apartments.order_by('-price_per_night')
-    elif sort_by == 'newest':
+        scraped    = scraped.order_by('-price')
+    else:
         apartments = apartments.order_by('-created_at')
-    
-    # Pagination
-    paginator = Paginator(apartments, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    # Get unique cities for filter
-    cities = Apartment.objects.values_list('city', flat=True).distinct()
-    apartmentchoice = ApartmentChoice.objects.values_list('name', flat=True).distinct()
-    
-    context = {
-        'apartments': page_obj,
-        'cities': cities,
-        'apartmentchoice': apartmentchoice
-    }
-    
-    return render(request, 'booking/apartment_list.html', context)
+        scraped    = scraped.order_by('-synced_at')
 
+    # Pagination — apartments
+    apt_paginator  = Paginator(apartments, 12)
+    apt_page_obj   = apt_paginator.get_page(request.GET.get('apt_page'))
+
+    # Pagination — scraped
+    scr_paginator  = Paginator(scraped, 12)
+    scr_page_obj   = scr_paginator.get_page(request.GET.get('scr_page'))
+
+    # Sidebar data
+    cities          = ScrapedListing.objects.values_list('city', flat=True).distinct()
+    apartmentchoice = ApartmentChoice.objects.values_list('name', flat=True).distinct()
+
+    # Active tab
+    active_tab = request.GET.get('tab', 'scraped' if not apartments.exists() else 'own')
+
+    context = {
+        'apartments':      apt_page_obj,
+        'scraped':         scr_page_obj,
+        'cities':          cities,
+        'apartmentchoice': apartmentchoice,
+        'active_tab':      active_tab,
+    }
+
+    return render(request, 'booking/apartment_list.html', context)
 
 def apartment_detail(request, slug):
     """Display detailed information about an apartment"""

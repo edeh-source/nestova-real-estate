@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import dj_database_url
 from environs import Env
+from celery.schedules import crontab
 
 env = Env()
 env.read_env()
@@ -77,6 +78,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'services.apps.ServicesConfig',
     'embed_video',
+    'django_celery_beat',
 ]
 
 
@@ -655,3 +657,31 @@ LOGGING = {
     },
 }
 """
+if DEBUG:
+    CELERY_BROKER_URL        = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND    = 'redis://localhost:6379/0'
+    CELERY_ACCEPT_CONTENT    = ['json']
+    CELERY_TASK_SERIALIZER   = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_TIMEZONE          = 'Africa/Lagos'
+    CELERY_TASK_TRACK_STARTED = True
+
+else:
+    CELERY_BROKER_URL = os.environ.get('REDIS_URL')
+    CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL')
+    CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+APIFY_API_TOKEN = os.environ.get('APIFY_API_TOKEN')
+APIFY_ACTOR_ID  = os.environ.get('APIFY_ACTOR_ID')
+
+
+
+
+
+
+CELERY_BEAT_SCHEDULE = {
+    'sync-propertypro-every-2-minutes': {
+        'task': 'booking.tasks.sync_propertypro_listings',
+        'schedule': crontab(minute='*/2'),  
+    },
+}
