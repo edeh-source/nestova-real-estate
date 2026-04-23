@@ -676,12 +676,20 @@ APIFY_ACTOR_ID  = os.environ.get('APIFY_ACTOR_ID')
 
 
 
-
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600,
+}
+CELERY_REDIS_BACKEND_USE_SSL = {
+    'ssl_cert_reqs': None,
+}
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': None,
+}
 
 
 CELERY_BEAT_SCHEDULE = {
     'sync-propertypro-every-2-minutes': {
-        'task': 'booking.tasks.sync_propertypro_listings',
+        'task': 'bookings.tasks.sync_propertypro_listings',
         'schedule': crontab(minute='*/2'),  
     },
 }
