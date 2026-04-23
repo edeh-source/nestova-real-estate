@@ -687,9 +687,3 @@ CELERY_BROKER_USE_SSL = {
 }
 
 
-CELERY_BEAT_SCHEDULE = {
-    'sync-propertypro-every-2-minutes': {
-        'task': 'bookings.tasks.sync_propertypro_listings',
-        'schedule': crontab(minute='*/2'),  
-    },
-}
