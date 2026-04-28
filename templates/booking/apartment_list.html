@@ -1241,9 +1241,9 @@
                     </div>
                   </div>
                   <div class="property-content">
-                    <div class="property-price">{{ listing.price }}</div>
+                    <div class="property-price">{{ listing.markup_price }}</div>
                     <h4 class="property-title">
-                      <a href="{{ listing.url }}" target="_blank" rel="noopener">{{ listing.title|truncatewords:8 }}</a>
+                      <a href="{{ listing.get_absolute_url }}">{{ listing.title|truncatewords:8 }}</a>
                     </h4>
                     <p class="property-location">
                       <i class="bi bi-geo-alt-fill"></i>{{ listing.location }}
@@ -1253,12 +1253,12 @@
                       <span><i class="bi bi-clock-history"></i> {{ listing.synced_at|timesince }} ago</span>
                     </div>
                     <div class="property-agent">
-                      <i class="bi bi-globe" style="color:var(--gold);font-size:1rem;"></i>
-                      <strong>{{ listing.source }}</strong>
-                      <small style="color:rgba(255,255,255,0.3);margin-left:4px;">· External listing</small>
+                      <i class="bi bi-whatsapp" style="color:#25D366;font-size:1rem;"></i>
+                      <strong>Listing Agent</strong>
+                      <small style="color:rgba(255,255,255,0.3);margin-left:4px;">· +2349014344271</small>
                     </div>
-                    <a href="{{ listing.url }}" target="_blank" rel="noopener" class="btn-prop-view">
-                      View on {{ listing.source }} <i class="bi bi-box-arrow-up-right"></i>
+                    <a href="{{ listing.get_absolute_url }}" class="btn-prop-view">
+                      View Details <i class="bi bi-arrow-right"></i>
                     </a>
                   </div>
                 </div>
@@ -1296,9 +1296,9 @@
                   <div class="property-content" style="padding:28px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
                       <h4 class="property-title mb-0">
-                        <a href="{{ listing.url }}" target="_blank" rel="noopener">{{ listing.title|truncatewords:10 }}</a>
+                        <a href="{{ listing.get_absolute_url }}">{{ listing.title|truncatewords:10 }}</a>
                       </h4>
-                      <div class="property-price" style="flex-shrink:0;">{{ listing.price }}</div>
+                      <div class="property-price" style="flex-shrink:0;">{{ listing.markup_price }}</div>
                     </div>
                     <p class="property-location mb-3">
                       <i class="bi bi-geo-alt-fill"></i> {{ listing.location }}
@@ -1309,13 +1309,13 @@
                     </div>
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                       <div class="property-agent">
-                        <i class="bi bi-globe" style="color:var(--gold);"></i>
-                        <strong>{{ listing.source }}</strong>
+                        <i class="bi bi-whatsapp" style="color:#25D366;"></i>
+                        <strong>Listing Agent</strong>
                       </div>
                       <div style="display:flex;gap:10px;align-items:center;">
                         <button class="btn-outline-action favorite-btn" title="Save"><i class="bi bi-heart"></i></button>
-                        <a href="{{ listing.url }}" target="_blank" rel="noopener" class="btn-prop-view" style="padding:10px 20px;font-size:0.82rem;">
-                          View Listing <i class="bi bi-box-arrow-up-right"></i>
+                        <a href="{{ listing.get_absolute_url }}" class="btn-prop-view" style="padding:10px 20px;font-size:0.82rem;">
+                          View Details <i class="bi bi-arrow-right"></i>
                         </a>
                       </div>
                     </div>
@@ -1465,16 +1465,20 @@
             <div class="sidebar-featured">
               <div class="sidebar-section-title">Top External Listings</div>
               {% for listing in scraped|slice:":3" %}
-              <a href="{{ listing.url }}" target="_blank" rel="noopener" class="sidebar-prop-item">
-                {% if listing.image_url %}
-                <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="sidebar-prop-img">
+              <a href="{{ listing.get_absolute_url }}" class="sidebar-prop-item">
+                {% if listing.image_file %}
+                <img src="{{ listing.image_file.url }}" alt="{{ listing.title }}" class="sidebar-prop-img"
+                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=200';">
+                {% elif listing.image_url %}
+                <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="sidebar-prop-img"
+                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=200';">
                 {% else %}
                 <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=200" alt="{{ listing.title }}" class="sidebar-prop-img">
                 {% endif %}
                 <div class="sidebar-prop-info">
                   <span class="sidebar-prop-title">{{ listing.title|truncatewords:4 }}</span>
                   <div class="sidebar-prop-location"><i class="bi bi-geo-alt" style="color:var(--gold);margin-right:4px;font-size:0.7rem;"></i>{{ listing.location|truncatewords:3 }}</div>
-                  <div class="sidebar-prop-price">{{ listing.price }}</div>
+                  <div class="sidebar-prop-price">{{ listing.markup_price }}</div>
                 </div>
               </a>
               {% endfor %}

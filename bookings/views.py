@@ -93,6 +93,20 @@ def apartment_list(request):
 
     return render(request, 'booking/apartment_list.html', context)
 
+AGENT_WHATSAPP = '+2349014344271'
+AGENT_WHATSAPP_URL = f'https://wa.me/{AGENT_WHATSAPP.replace("+", "")}'
+
+def scraped_detail(request, pk):
+    """Render a scraped listing on our own detail page — no redirect to propertypro.ng"""
+    listing = get_object_or_404(ScrapedListing, pk=pk)
+    context = {
+        'listing': listing,
+        'agent_whatsapp': AGENT_WHATSAPP,
+        'agent_whatsapp_url': AGENT_WHATSAPP_URL,
+    }
+    return render(request, 'booking/scraped_detail.html', context)
+
+
 def apartment_detail(request, slug):
     """Display detailed information about an apartment"""
     apartment = get_object_or_404(Apartment, slug=slug)

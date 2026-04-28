@@ -273,14 +273,41 @@ class ScrapedListing(models.Model):
     location    = models.CharField(max_length=300)
     url         = models.URLField(unique=True)
     image_url   = models.URLField(blank=True)
-    image_file = models.ImageField(upload_to='scraped/', blank=True, null=True)  
+    image_file  = models.ImageField(upload_to='scraped/', blank=True, null=True)
     source      = models.CharField(max_length=100, default='propertypro.ng')
     city        = models.CharField(max_length=100, default='lagos')
     synced_at   = models.DateTimeField(auto_now=True)
     created_at  = models.DateTimeField(auto_now_add=True)
+
+    MARKUP = 10000  # ₦10,000 agency fee added to every listing
 
     class Meta:
         ordering = ['-synced_at']
 
     def __str__(self):
         return self.title
+
+    @property
+    def markup_price(self):
+        """Return price string with ₦10,000 markup added.
+        Handles formats like: ₦185,000/day  |  ₦1,200,000/month  |  ₦50000
+        Returns original string unchanged if it can't be parsed.
+        """
+        import re
+        # Strip currency symbol, commas, spaces; grab first number block
+        match = re.search(r'[\d,]+', self.price.replace(',', ''))
+        if not match:
+            return self.price
+        try:
+            amount = int(match.group().replace(',', ''))
+            marked_up = amount + self.MARKUP
+            # Rebuild with commas and preserve suffix (e.g. /day, /month)
+            suffix_match = re.search(r'(/\S+)', self.price)
+            suffix = suffix_match.group(1) if suffix_match else ''
+            return f'₦{marked_up:,}{suffix}'
+        except (ValueError, AttributeError):
+            return self.price
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('scraped_detail', args=[self.pk])

@@ -5,6 +5,7 @@ urlpatterns = [
     # Apartment URLs
     path('', views.apartment_list, name='apartment_list'),
     path('apartment/<slug:slug>/', views.apartment_detail, name='apartment_details'),
+    path('shortlet/<int:pk>/', views.scraped_detail, name='scraped_detail'),
     
     # Booking URLs
     path('apartment/<int:apartment_id>/book/', views.create_booking, name='create_booking'),
@@ -19,4 +20,3 @@ urlpatterns = [
     # AJAX URLs
     path('api/check-availability/', views.check_availability, name='check_availability'),
 ]
-
