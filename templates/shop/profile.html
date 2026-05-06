@@ -1482,7 +1482,8 @@ function switchDashTab(tabId, btn) {
   const target = document.getElementById('tab-' + tabId);
   if (target) target.classList.add('active');
   if (btn) btn.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const nav = document.querySelector('.dash-tab-nav');
+  if (nav) nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Allow calling switchDashTab from notification bell in header
