@@ -131,12 +131,11 @@
     white-space: nowrap;
   }
 
-  /* --- Price pill — vertically centred right side on large screens --- */
+  /* --- Price pill — anchored top-right, never overlaps content --- */
   .hero-price-pill {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: clamp(1rem, 3vw, 2.5rem);
+    top: clamp(1rem, 3vw, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
     z-index: 3;
     text-align: center;
     min-width: clamp(100px, 14vw, 150px);
@@ -212,14 +211,13 @@
       max-width: 100%;
     }
 
-    /* Price pill moves to bottom-right above nav bar on mobile */
+    /* Price pill moves to bottom-left so it never covers the title */
     .hero-price-pill {
       position: absolute;
       top: auto;
-      bottom: 5.5rem;
+      bottom: 5.5rem;            /* above nav bar */
       right: 1rem;
       left: auto;
-      transform: none;
       min-width: 110px;
     }
 
@@ -251,7 +249,6 @@
       bottom: 6rem;
       min-width: 95px;
       padding: 0.5rem 0.65rem;
-      transform: none;
     }
 
     .hero-features {
