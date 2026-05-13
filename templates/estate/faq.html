@@ -1,0 +1,1507 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ — Nestova | Your Premier Real Estate Platform{% endblock %}
+
+{% block content %}
+
+<style>
+  /* ============================================================
+     FAQ PAGE — NESTOVA LUXURY GLASSMORPHISM
+     ============================================================ */
+
+  /* ---- Ambient Background ---- */
+  .faq-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .faq-ambient .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    animation: orbDrift 26s ease-in-out infinite;
+  }
+
+  .faq-ambient .orb-1 {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(13, 27, 62, 0.55), transparent);
+    top: -200px; left: -200px;
+    opacity: 0.28;
+  }
+
+  .faq-ambient .orb-2 {
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.18), transparent);
+    top: 20%; right: -120px;
+    opacity: 1;
+    animation-delay: -10s;
+  }
+
+  .faq-ambient .orb-3 {
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(13, 27, 62, 0.6), transparent);
+    bottom: -150px; left: 25%;
+    opacity: 0.22;
+    animation-delay: -18s;
+  }
+
+  .faq-ambient .orb-4 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.1), transparent);
+    bottom: 30%; left: -80px;
+    opacity: 1;
+    animation-delay: -5s;
+  }
+
+  @keyframes orbDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(35px, -28px) scale(1.05); }
+    66%       { transform: translate(-20px, 32px) scale(0.95); }
+  }
+
+  /* ---- Page Wrapper ---- */
+  .faq-page {
+    position: relative;
+    z-index: 1;
+    padding-top: calc(var(--nav-height) + 0px);
+    padding-bottom: 100px;
+    min-height: 100vh;
+  }
+
+  /* ---- Hero Section ---- */
+  .faq-hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+
+  .faq-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .faq-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 24px;
+    animation: fadeSlideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .faq-hero-badge i { font-size: 0.9rem; }
+
+  .faq-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 18px;
+    animation: fadeSlideDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+  }
+
+  .faq-hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .faq-hero p {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    animation: fadeSlideDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  }
+
+  /* ---- Search Bar ---- */
+  .faq-search-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
+    animation: fadeSlideDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  }
+
+  .faq-search-wrap i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  .faq-search {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+    backdrop-filter: blur(12px);
+  }
+
+  .faq-search::placeholder { color: var(--text-muted); }
+
+  .faq-search:focus {
+    border-color: rgba(201, 168, 76, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.08);
+  }
+
+  /* ---- Category Tabs ---- */
+  .faq-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 48px 0 40px;
+    animation: fadeSlideDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+  }
+
+  .faq-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+    letter-spacing: 0.02em;
+  }
+
+  .faq-tab:hover {
+    background: rgba(201, 168, 76, 0.08);
+    border-color: rgba(201, 168, 76, 0.25);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .faq-tab.active {
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(201, 168, 76, 0.08));
+    border-color: rgba(201, 168, 76, 0.5);
+    color: var(--gold-light);
+    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.15);
+  }
+
+  .faq-tab i { font-size: 0.9rem; }
+
+  /* ---- FAQ Section Groups ---- */
+  .faq-group {
+    margin-bottom: 64px;
+    animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .faq-group.hidden { display: none; }
+
+  .faq-group-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .faq-group-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.06));
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .faq-group-icon i {
+    color: var(--gold-light);
+    font-size: 1.1rem;
+  }
+
+  .faq-group-title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .faq-group-count {
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+  }
+
+  /* ---- Accordion ---- */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .faq-item {
+    background: rgba(18, 18, 26, 0.7);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+
+  .faq-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.25), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .faq-item.open {
+    border-color: rgba(201, 168, 76, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(201, 168, 76, 0.08);
+  }
+
+  .faq-item.open::before { opacity: 1; }
+
+  .faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition);
+  }
+
+  .faq-question:hover { background: rgba(255, 255, 255, 0.03); }
+
+  .faq-q-number {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--gold);
+    opacity: 0.7;
+    min-width: 28px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .faq-q-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .faq-chevron {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
+  .faq-item.open .faq-chevron {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.35);
+    color: var(--gold-light);
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item.open .faq-answer { max-height: 600px; }
+
+  .faq-answer-inner {
+    padding: 0 24px 24px 68px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .faq-answer-inner p { margin: 0 0 12px; }
+  .faq-answer-inner p:last-child { margin-bottom: 0; }
+
+  .faq-answer-inner a {
+    color: var(--gold-light);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .faq-answer-inner a:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  .faq-answer-inner ul {
+    padding-left: 0;
+    list-style: none;
+    margin: 12px 0;
+  }
+
+  .faq-answer-inner ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    color: var(--text-muted);
+  }
+
+  .faq-answer-inner ul li::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: 7px;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .faq-answer-inner .highlight-box {
+    background: rgba(201, 168, 76, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-top: 14px;
+    font-size: 0.85rem;
+  }
+
+  .faq-answer-inner .highlight-box i {
+    color: var(--gold);
+    margin-right: 8px;
+  }
+
+  /* ---- No Results State ---- */
+  .faq-no-results {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .faq-no-results i {
+    font-size: 3.5rem;
+    color: rgba(201, 168, 76, 0.2);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .faq-no-results h4 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .faq-no-results p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  /* ---- Contact CTA ---- */
+  .faq-cta {
+    margin-top: 80px;
+    padding: 60px 48px;
+    background: rgba(18, 18, 26, 0.8);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .faq-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.5), transparent);
+  }
+
+  .faq-cta h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .faq-cta p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+
+  .faq-cta-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-gold-faq {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 30px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: var(--radius-sm);
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 24px rgba(201, 168, 76, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-gold-faq::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-gold-faq:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(201, 168, 76, 0.4);
+    color: #0A0A0F;
+  }
+
+  .btn-gold-faq:hover::before { left: 100%; }
+
+  .btn-ghost-faq {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .btn-ghost-faq:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  /* ---- Stats Strip ---- */
+  .faq-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+    padding: 40px 0 56px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 20px;
+  }
+
+  .faq-stat { text-align: center; }
+
+  .faq-stat-number {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 300;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .faq-stat-label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ---- Keyframes ---- */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 991px) {
+    .faq-cta { padding: 48px 32px; }
+    .faq-stats { gap: 32px; }
+    .faq-answer-inner { padding-left: 44px; }
+  }
+
+  @media (max-width: 767px) {
+    .faq-hero { padding: 60px 0 48px; }
+    .faq-hero h1 { font-size: 2.5rem; }
+    .faq-group-header { flex-wrap: wrap; }
+    .faq-group-count { margin-left: 0; margin-top: 8px; }
+    .faq-cta { padding: 36px 20px; }
+    .faq-cta-actions { flex-direction: column; align-items: center; }
+    .faq-answer-inner { padding-left: 20px; padding-right: 16px; }
+    .faq-question { padding: 18px 18px; }
+    .faq-q-number { display: none; }
+    .faq-stats { gap: 24px; }
+    .faq-stat-number { font-size: 2rem; }
+    .faq-tabs { gap: 8px; }
+    .faq-tab { font-size: 0.76rem; padding: 8px 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .faq-hero h1 { font-size: 2rem; }
+    .faq-hero p { font-size: 0.95rem; }
+    .faq-group-title { font-size: 1.4rem; }
+    .faq-q-text { font-size: 0.88rem; }
+  }
+</style>
+
+<!-- Ambient Background -->
+<div class="faq-ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<div class="faq-page">
+  <div class="container">
+
+    <!-- ======== HERO ======== -->
+    <div class="faq-hero">
+      <div class="faq-hero-badge">
+        <i class="fas fa-circle-question"></i>
+        Help Center
+      </div>
+      <h1>Frequently Asked<br><em>Questions</em></h1>
+      <p>Everything you need to know about buying, selling, and renting properties on Nestova — answered clearly.</p>
+
+      <div class="faq-search-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" class="faq-search" id="faqSearch" placeholder="Search your question…" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- ======== STATS STRIP ======== -->
+    <div class="faq-stats">
+      <div class="faq-stat">
+        <div class="faq-stat-number">37</div>
+        <div class="faq-stat-label">Questions Answered</div>
+      </div>
+      <div class="faq-stat">
+        <div class="faq-stat-number">8</div>
+        <div class="faq-stat-label">Categories</div>
+      </div>
+      <div class="faq-stat">
+        <div class="faq-stat-number">24h</div>
+        <div class="faq-stat-label">Support Response</div>
+      </div>
+    </div>
+
+    <!-- ======== CATEGORY TABS ======== -->
+    <div class="faq-tabs">
+      <button class="faq-tab active" data-cat="all"><i class="fas fa-border-all"></i> All Topics</button>
+      <button class="faq-tab" data-cat="getting-started"><i class="fas fa-rocket"></i> Getting Started</button>
+      <button class="faq-tab" data-cat="listings"><i class="fas fa-house"></i> Listings</button>
+      <button class="faq-tab" data-cat="pricing"><i class="fas fa-tag"></i> Pricing & Slots</button>
+      <button class="faq-tab" data-cat="buying"><i class="fas fa-key"></i> Buying & Renting</button>
+      <button class="faq-tab" data-cat="payments"><i class="fas fa-credit-card"></i> Payments</button>
+      <button class="faq-tab" data-cat="orders"><i class="fas fa-box"></i> Orders & Shop</button>
+      <button class="faq-tab" data-cat="account"><i class="fas fa-user-shield"></i> Account</button>
+      <button class="faq-tab" data-cat="support"><i class="fas fa-headset"></i> Support</button>
+    </div>
+
+    <!-- ======== NO RESULTS ======== -->
+    <div class="faq-no-results" id="noResults">
+      <i class="fas fa-magnifying-glass"></i>
+      <h4>No results found</h4>
+      <p>Try a different keyword or browse the categories above.</p>
+    </div>
+
+    <!-- ======== FAQ GROUPS ======== -->
+
+    <!-- 1. GETTING STARTED -->
+    <div class="faq-group" data-cat="getting-started">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-rocket"></i></div>
+        <h2 class="faq-group-title">Getting Started</h2>
+        <span class="faq-group-count">5 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">What is Nestova and how does it work?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Nestova is Nigeria's premier online real estate marketplace that connects property buyers, sellers, renters, and landlords in one seamless platform. Whether you're looking to buy your dream home, rent an apartment, or list your property for sale or lease — Nestova makes it simple.</p>
+              <p>Here's how it works in three steps:</p>
+              <ul>
+                <li><strong>Register</strong> — Create a free account in minutes using your email address.</li>
+                <li><strong>Browse or List</strong> — Search thousands of verified property listings across Nigeria, or purchase a slot package to post your own property.</li>
+                <li><strong>Connect</strong> — Reach out to sellers and landlords directly, or receive inquiries on your listed properties through your dashboard.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">How do I create a Nestova account?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Creating an account is completely free and takes less than two minutes. Click the <strong>Sign Up</strong> button in the navigation bar, fill in your full name, email address, and a secure password, then verify your email. That's it — your account is active immediately.</p>
+              <p>You can also sign up using your Google account for faster access. Once registered, you'll have full access to browse listings, save favourites to your wishlist, and purchase slot packages to post properties.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">Is Nestova free to use?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Browsing properties, saving to your wishlist, and contacting sellers is completely free. You only pay when you want to <strong>post a property listing</strong>. We offer a range of affordable slot packages — including a free starter package — so you can choose what works best for you.</p>
+              <p>There are no hidden subscription fees. You pay once for your slots and use them whenever you're ready.</p>
+              <div class="highlight-box">
+                <i class="fas fa-circle-info"></i>
+                Visit our <a href="{% url 'listings:pricing' %}">Pricing page</a> to see all available packages and get started for free.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">What types of properties can I find on Nestova?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Nestova hosts a wide variety of residential and commercial properties across Nigeria, including:</p>
+              <ul>
+                <li>Apartments and flats (self-contained, 1–5+ bedroom)</li>
+                <li>Detached, semi-detached, and terraced houses</li>
+                <li>Duplexes and maisonettes</li>
+                <li>Luxury and shortlet properties</li>
+                <li>Land and plots</li>
+                <li>Commercial spaces — offices, shops, warehouses</li>
+              </ul>
+              <p>Listings are available for outright sale, rent, lease, and joint venture arrangements.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">05</span>
+            <span class="faq-q-text">Which states and cities does Nestova cover?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Nestova currently covers all 36 states and the FCT across Nigeria, with the highest density of listings in Lagos, Abuja, Port Harcourt, Ibadan, Enugu, and Kano. We're constantly expanding as more agents and landlords join the platform.</p>
+              <p>Use the location filter on the property search page to narrow results by state, city, or neighbourhood.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. PROPERTY LISTINGS -->
+    <div class="faq-group" data-cat="listings">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-house"></i></div>
+        <h2 class="faq-group-title">Property Listings</h2>
+        <span class="faq-group-count">6 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">How do I post a property on Nestova?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>To post a property you need an active listing slot. Once you have a slot, simply go to your <a href="{% url 'listings:dashboard' %}">Dashboard</a> and click <strong>Post Property</strong>, or visit the Post Property page directly. Fill in the property details — title, description, price, location, property type, and upload high-quality photos.</p>
+              <p>Your listing goes live as soon as you submit it. One slot is consumed per property posted.</p>
+              <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i>
+                Listings with at least 5 clear photos and a detailed description receive significantly more enquiries.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">What information do I need to post a property?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>You'll need to provide the following details when posting:</p>
+              <ul>
+                <li>Property title and a thorough description</li>
+                <li>Property type (apartment, house, land, commercial, etc.)</li>
+                <li>Listing type (for sale, for rent, for lease)</li>
+                <li>Price and negotiability</li>
+                <li>State, city, and street address or neighbourhood</li>
+                <li>Number of bedrooms, bathrooms, and other features</li>
+                <li>At least one high-quality featured image (additional photos recommended)</li>
+                <li>Your contact details (pre-filled from your profile)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">Can I edit or delete a listing after it's posted?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes. Head to your <a href="{% url 'listings:dashboard' %}">Dashboard</a>, find the property in your active listings table, and click the pencil icon to edit any detail — price, description, photos, or status. Changes are reflected immediately.</p>
+              <p>If a property has been sold or rented and you wish to remove the listing, you can delete it from your dashboard. Please note that deleting a listing does not refund the slot used to create it.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">What image formats and sizes are accepted?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>We accept <strong>JPG, JPEG, PNG, and WebP</strong> image formats. Each image should be no larger than <strong>5MB</strong>. For the best display quality, we recommend uploading images with a minimum resolution of 1200 × 800 pixels in landscape orientation.</p>
+              <p>You can upload multiple images per listing. The first image you upload — or the one you designate — becomes the featured thumbnail shown in search results.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">05</span>
+            <span class="faq-q-text">How can I track how many people view my listing?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Your Dashboard displays a <strong>Views</strong> count for each of your active listings in real time. Every unique visit to your property detail page is counted, giving you a clear picture of how much interest your listing is attracting.</p>
+              <p>If views are low, consider improving your title, writing a more compelling description, or adding more high-quality photographs.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">06</span>
+            <span class="faq-q-text">Are listings reviewed before going live?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Listings are published instantly upon submission. However, our moderation team periodically reviews listings for compliance with our property listing guidelines. Listings that contain misleading information, inappropriate content, or violate our terms of service will be removed and the account may be suspended.</p>
+              <p>We encourage all listers to provide accurate, honest, and up-to-date information to maintain trust across the platform.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. PRICING & SLOTS -->
+    <div class="faq-group" data-cat="pricing">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-tag"></i></div>
+        <h2 class="faq-group-title">Pricing & Slots</h2>
+        <span class="faq-group-count">6 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">What are listing slots and how do they work?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Listing slots are credits that let you post properties on Nestova. Each slot entitles you to publish one property listing. When you post a property, one slot is deducted from your account balance.</p>
+              <p>Slots are purchased in packages — from a free starter slot to bulk packages for high-volume agents. Unlike subscription-based models, slots <strong>never expire</strong>, so you can purchase in advance and use them at your own pace.</p>
+              <div class="highlight-box">
+                <i class="fas fa-circle-info"></i>
+                Visit <a href="{% url 'listings:pricing' %}">our Pricing page</a> to see all packages and current rates.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">Do listing slots expire?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>No — your slots never expire.</strong> Once purchased, they remain in your account indefinitely until you use them. You can buy a bulk package today and spread your listings over several months without any penalty or expiry date.</p>
+              <p>This makes Nestova a flexible, pay-once solution for property agents, developers, and individual landlords alike.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">Can I buy more than one package?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Absolutely. Packages are cumulative — purchasing multiple packages simply adds the new slots to your existing balance. For example, if you have 3 slots remaining and purchase a 10-slot package, your new balance will be 13 slots.</p>
+              <p>There is no limit to how many packages you can purchase.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">What happens if I run out of slots?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>If your slot balance reaches zero, the Post Property button will become unavailable and you'll be prompted to purchase a new package. Your existing live listings will remain active and visible to browsers — running out of slots only affects your ability to post <em>new</em> properties.</p>
+              <p>You can top up at any time from your <a href="{% url 'listings:dashboard' %}">Dashboard</a> or the Pricing page.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">05</span>
+            <span class="faq-q-text">Are there featured or priority listing options?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes. Our premium packages (10 slots and above) include <strong>Featured Listings</strong> and <strong>Priority Support</strong> as added benefits. Featured listings are promoted in prominent positions on search results and the homepage, giving your properties significantly more visibility.</p>
+              <p>If you're a high-volume agent or developer with specific requirements, please <a href="mailto:support@nestova.com">contact our team</a> to discuss a tailored enterprise plan.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">06</span>
+            <span class="faq-q-text">Can I get a refund for unused slots?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Slot purchases are generally non-refundable once the transaction is completed and slots have been added to your account. However, if you experience a technical error during purchase (e.g., payment was deducted but slots were not credited), please contact our support team within 48 hours and we will investigate and resolve the issue promptly.</p>
+              <p>For free packages, no payment is involved so no refund scenario applies.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. BUYING & RENTING -->
+    <div class="faq-group" data-cat="buying">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-key"></i></div>
+        <h2 class="faq-group-title">Buying & Renting</h2>
+        <span class="faq-group-count">5 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">How do I search for a property on Nestova?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Use the search bar on the homepage or browse the <a href="{% url 'properties' %}">Properties page</a>. You can filter results by:</p>
+              <ul>
+                <li>Location — state, city, or neighbourhood</li>
+                <li>Listing type — for sale, for rent, or for lease</li>
+                <li>Property type — apartment, house, land, commercial</li>
+                <li>Price range (minimum and maximum)</li>
+                <li>Number of bedrooms and bathrooms</li>
+              </ul>
+              <p>Listings are sorted by date by default. Use the sort options to view by price (low to high / high to low) or by popularity.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">How do I contact the seller or landlord of a property?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>On the property detail page, you'll find the lister's contact information including a phone number and, where provided, WhatsApp and email. You can reach out directly to schedule a viewing or make an enquiry.</p>
+              <p>We recommend verifying the property in person and using a licensed estate agent or lawyer before making any financial commitment on a purchase.</p>
+              <div class="highlight-box">
+                <i class="fas fa-triangle-exclamation" style="color: #f59e0b;"></i>
+                <strong style="color: #fbbf24;">Safety tip:</strong> Never transfer money to a seller before physically inspecting the property and confirming legal ownership.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">Does Nestova handle property transactions directly?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Nestova is a listing and discovery marketplace — we connect buyers with sellers and renters with landlords. The actual transaction, negotiation, and legal documentation happen directly between the parties involved.</p>
+              <p>We strongly recommend involving a qualified and licensed estate agent or solicitor for any property purchase or long-term lease agreement to protect your interests.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">How do I save a property I'm interested in?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Click the <strong>heart icon</strong> on any property card or property detail page to save it to your <a href="{% url 'shop:wishlist' %}">Wishlist</a>. You can revisit all saved properties from the Wishlist page in your account menu — perfect for comparing multiple options before making a decision.</p>
+              <p>You must be logged in to use the wishlist feature.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">05</span>
+            <span class="faq-q-text">What should I watch out for to avoid property scams?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Unfortunately, property fraud exists across Nigeria. Here are practical steps to protect yourself:</p>
+              <ul>
+                <li>Always inspect the property physically before paying anything</li>
+                <li>Verify the seller's identity and right to sell or rent the property</li>
+                <li>Confirm the Certificate of Occupancy (C of O) or other title documents</li>
+                <li>Use a registered estate agent or lawyer for all transactions</li>
+                <li>Be suspicious of prices far below market value — if it's too good to be true, it likely is</li>
+                <li>Never pay to "reserve" a property without a signed, witnessed agreement</li>
+              </ul>
+              <p>If you encounter a suspicious listing on Nestova, please use the <strong>Report</strong> button on the property page and our team will review it promptly.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5. PAYMENTS -->
+    <div class="faq-group" data-cat="payments">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-credit-card"></i></div>
+        <h2 class="faq-group-title">Payments</h2>
+        <span class="faq-group-count">4 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">What payment methods does Nestova accept?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Nestova accepts all major Nigerian and international payment options, including:</p>
+              <ul>
+                <li>Debit and credit cards (Visa, Mastercard, Verve)</li>
+                <li>Bank transfers (USSD and internet banking)</li>
+                <li>Paystack payment gateway</li>
+                <li>Mobile money (where applicable)</li>
+              </ul>
+              <p>All payments are processed securely through our payment partners. Nestova does not store your card details.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">Is my payment information secure?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes. All payment transactions on Nestova are processed through PCI-DSS-compliant payment gateways. We use SSL/TLS encryption for all data in transit, and your sensitive card data is never stored on our servers — it is tokenised and managed by our payment providers.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">I was charged but my slots were not credited. What do I do?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Occasionally, a payment may process successfully on the bank's end but a network issue prevents our system from receiving confirmation. If this happens:</p>
+              <ul>
+                <li>Wait 5–10 minutes — many pending transactions resolve automatically.</li>
+                <li>Refresh your Dashboard to check if your slot balance has updated.</li>
+                <li>If not resolved after 30 minutes, contact us at <a href="mailto:support@nestova.com">support@nestova.com</a> with your order reference number and proof of debit (screenshot or bank statement).</li>
+              </ul>
+              <p>We will investigate and credit your account or initiate a refund within 1–3 business days.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">Will I receive a receipt for my purchase?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes. A confirmation email with your order receipt is automatically sent to the email address associated with your account immediately after every successful payment. You can also view all past orders from the <a href="{% url 'shop:order_list' %}">My Orders</a> page in your account.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 6. ORDERS & SHOP -->
+    <div class="faq-group" data-cat="orders">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-box"></i></div>
+        <h2 class="faq-group-title">Orders & Shop</h2>
+        <span class="faq-group-count">4 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">What products does the Nestova shop offer?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>The Nestova shop carries a curated selection of home-related products and services to complement your real estate journey — including home décor, property maintenance tools, documentation services, and more. Browse the <a href="{% url 'shop:product_list' %}">shop catalogue</a> to see what's currently available.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">How do I track or view my shop orders?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>All your shop orders are accessible from the <a href="{% url 'shop:order_list' %}">My Orders</a> page. Each order shows the order number, items purchased, date, total amount, and current status (Pending, Completed, or Cancelled). You can click <strong>View Details</strong> on any order to see a full breakdown.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">Can I cancel or modify a shop order?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Orders in <strong>Pending</strong> status may be eligible for cancellation. Contact our support team as soon as possible at <a href="mailto:support@nestova.com">support@nestova.com</a> with your order number. Once an order moves to processing or has been dispatched, cancellation may no longer be possible.</p>
+              <p>We do not currently support in-place order modifications — if you need to change items, the best approach is to cancel and re-order.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">How does delivery work for shop items?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Delivery timelines and logistics vary by product type. Physical items are shipped to your provided address through our logistics partners, and estimated delivery times are shown at checkout. Digital services or documents are delivered electronically to your email. You will receive tracking information once your order has been processed.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 7. ACCOUNT & SECURITY -->
+    <div class="faq-group" data-cat="account">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-user-shield"></i></div>
+        <h2 class="faq-group-title">Account & Security</h2>
+        <span class="faq-group-count">4 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">How do I update my profile information?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Log in and navigate to your <a href="{% url 'shop:profile' %}">Profile page</a> from the account dropdown in the top navigation. Here you can update your name, phone number, profile photo, and other personal details. Changes are saved instantly.</p>
+              <p>Keeping your profile up to date ensures that prospective buyers and renters can reach you easily when they enquire about your listings.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">How do I reset my password?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>On the login page, click <strong>Forgot Password?</strong>. Enter your registered email address and we'll send you a password reset link. The link expires after 30 minutes for security purposes. If you don't see the email, check your spam or junk folder.</p>
+              <p>If you're already logged in and simply want to change your password, you can do so from the <a href="{% url 'shop:profile' %}">Profile</a> settings page.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">How do I change my email address?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Email address changes require verification for security. Visit your Profile page, update your email, and a verification link will be sent to the new address. The change will not take effect until you click the verification link.</p>
+              <p>If you're having trouble changing your email, contact support with proof of identity and account ownership.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">04</span>
+            <span class="faq-q-text">Can I delete my Nestova account?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes. If you wish to delete your account, please send a request to <a href="mailto:support@nestova.com">support@nestova.com</a> from your registered email address. Deleting your account will permanently remove all your profile data, listings, and purchase history.</p>
+              <div class="highlight-box">
+                <i class="fas fa-triangle-exclamation" style="color: #f59e0b;"></i>
+                <strong style="color: #fbbf24;">Please note:</strong> Account deletion is irreversible. Any remaining listing slots in your account will be forfeited and cannot be refunded.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 8. SUPPORT -->
+    <div class="faq-group" data-cat="support">
+      <div class="faq-group-header">
+        <div class="faq-group-icon"><i class="fas fa-headset"></i></div>
+        <h2 class="faq-group-title">Support</h2>
+        <span class="faq-group-count">3 questions</span>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">01</span>
+            <span class="faq-q-text">How do I contact Nestova support?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>You can reach our support team through any of the following channels:</p>
+              <ul>
+                <li><strong>Email:</strong> <a href="mailto:support@nestova.com">support@nestova.com</a></li>
+                <li><strong>WhatsApp:</strong> Click the green WhatsApp button at the bottom-right of any page for instant messaging.</li>
+                <li><strong>Contact form:</strong> Visit our <a href="{% url 'contact' %}">Contact page</a> to submit a detailed enquiry.</li>
+                <li><strong>Phone:</strong> +234 (0) 800 000 0000 (business hours: Mon–Fri, 8am–6pm WAT)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">02</span>
+            <span class="faq-q-text">How quickly will I get a response from support?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>We aim to respond to all support queries within <strong>24 hours</strong> on business days (Monday through Friday). Payment and technical issues are treated as high priority and typically resolved within the same business day.</p>
+              <p>For urgent matters, WhatsApp is the fastest way to reach us — our team monitors it throughout the day.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-q-number">03</span>
+            <span class="faq-q-text">How do I report a fraudulent or misleading listing?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Click the <strong>Report</strong> button on the property detail page and briefly describe the issue. Our moderation team reviews all reports within 24 hours. If the listing is found to violate our policies, it will be taken down and the lister's account will be investigated.</p>
+              <p>You can also email us directly at <a href="mailto:trust@nestova.com">trust@nestova.com</a> if you have evidence of fraud or a serious complaint. We take the safety and integrity of the platform very seriously.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======== STILL NEED HELP CTA ======== -->
+    <div class="faq-cta" data-aos="fade-up">
+      <h2>Still have questions?</h2>
+      <p>Our team is happy to help. Reach out and we'll get back to you within 24 hours on any business day.</p>
+      <div class="faq-cta-actions">
+        <a href="{% url 'contact' %}" class="btn-gold-faq">
+          <i class="fas fa-paper-plane"></i> Send a Message
+        </a>
+        <a href="https://wa.me/2349014344271" target="_blank" rel="noopener" class="btn-ghost-faq">
+          <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /faq-page -->
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ---- Accordion ---- */
+    document.querySelectorAll('.faq-question').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('.faq-item');
+        var isOpen = item.classList.contains('open');
+
+        // Close all in same group
+        item.closest('.faq-list').querySelectorAll('.faq-item.open').forEach(function (openItem) {
+          openItem.classList.remove('open');
+          openItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    /* ---- Category Tabs ---- */
+    var tabs = document.querySelectorAll('.faq-tab');
+    var groups = document.querySelectorAll('.faq-group');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+
+        var cat = tab.getAttribute('data-cat');
+
+        groups.forEach(function (g) {
+          if (cat === 'all' || g.getAttribute('data-cat') === cat) {
+            g.classList.remove('hidden');
+          } else {
+            g.classList.add('hidden');
+          }
+        });
+
+        // Clear search
+        document.getElementById('faqSearch').value = '';
+        document.getElementById('noResults').style.display = 'none';
+      });
+    });
+
+    /* ---- Search ---- */
+    document.getElementById('faqSearch').addEventListener('input', function () {
+      var query = this.value.trim().toLowerCase();
+      var noResults = document.getElementById('noResults');
+
+      if (!query) {
+        // Restore active tab state
+        var activeCat = document.querySelector('.faq-tab.active').getAttribute('data-cat');
+        groups.forEach(function (g) {
+          if (activeCat === 'all' || g.getAttribute('data-cat') === activeCat) {
+            g.classList.remove('hidden');
+          } else {
+            g.classList.add('hidden');
+          }
+          g.querySelectorAll('.faq-item').forEach(function (item) {
+            item.style.display = '';
+          });
+        });
+        noResults.style.display = 'none';
+        return;
+      }
+
+      // Switch to All tab visually
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      document.querySelector('[data-cat="all"]').classList.add('active');
+
+      var anyVisible = false;
+      groups.forEach(function (g) {
+        g.classList.remove('hidden');
+        var groupHasMatch = false;
+
+        g.querySelectorAll('.faq-item').forEach(function (item) {
+          var qText = item.querySelector('.faq-q-text').textContent.toLowerCase();
+          var aText = item.querySelector('.faq-answer-inner').textContent.toLowerCase();
+          if (qText.includes(query) || aText.includes(query)) {
+            item.style.display = '';
+            groupHasMatch = true;
+            anyVisible = true;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        g.classList.toggle('hidden', !groupHasMatch);
+      });
+
+      noResults.style.display = anyVisible ? 'none' : 'block';
+    });
+
+  });
+</script>
+
+{% endblock %}

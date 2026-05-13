@@ -2,446 +2,778 @@
 {% load static %}
 {% load humanize %}
 
+{% block title %}Pricing — Nestova | Property Posting Slots{% endblock %}
+
 {% block content %}
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+  /* ============================================================
+     PRICING PAGE — NESTOVA LUXURY GLASSMORPHISM
+     ============================================================ */
 
-    /* CSS Variables */
-    :root {
-        --primary-color: hsl(155, 70%, 45%);
-        --primary-light: hsl(155, 70%, 55%);
-        --primary-dark: hsl(155, 65%, 35%);
-        --primary-gradient: linear-gradient(135deg, hsl(155, 70%, 45%) 0%, hsl(155, 65%, 35%) 100%);
+  /* ---- Ambient Orbs ---- */
+  .pricing-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
 
-        --text-primary: hsl(220, 15%, 15%);
-        --text-secondary: hsl(220, 10%, 45%);
-        --text-muted: hsl(220, 10%, 65%);
+  .pricing-ambient .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    animation: orbDrift 24s ease-in-out infinite;
+  }
 
-        --surface-white: hsl(0, 0%, 100%);
-        --surface-light: hsl(0, 0%, 98%);
-        --border-color: hsl(220, 15%, 90%);
+  .pricing-ambient .orb-1 {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(13, 27, 62, 0.6), transparent);
+    top: -220px; left: -180px;
+    opacity: 0.3;
+  }
 
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  .pricing-ambient .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.2), transparent);
+    top: 15%; right: -140px;
+    opacity: 1;
+    animation-delay: -9s;
+  }
 
-        --radius-md: 12px;
-        --radius-lg: 20px;
-        --radius-xl: 28px;
-    }
+  .pricing-ambient .orb-3 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(13, 27, 62, 0.55), transparent);
+    bottom: -160px; left: 30%;
+    opacity: 0.22;
+    animation-delay: -17s;
+  }
 
-    .pricing-wrapper {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(220, 70%, 98%) 100%);
-        padding: 3rem 0;
-        min-height: 100vh;
-    }
+  .pricing-ambient .orb-4 {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.12), transparent);
+    bottom: 25%; left: -60px;
+    opacity: 1;
+    animation-delay: -4s;
+  }
 
-    .pricing-wrapper h1,
-    .pricing-wrapper h2,
-    .pricing-wrapper h3 {
-        font-family: 'Outfit', sans-serif;
-    }
+  @keyframes orbDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(30px, -24px) scale(1.04); }
+    66%       { transform: translate(-18px, 28px) scale(0.96); }
+  }
 
-    /* Breadcrumbs */
-    .modern-breadcrumbs {
-        background: var(--surface-white);
-        border-bottom: 1px solid var(--border-color);
-        padding: 1.5rem 0;
-        margin-bottom: 3rem;
-    }
+  /* ---- Page Shell ---- */
+  .pricing-page {
+    position: relative;
+    z-index: 1;
+    padding-top: calc(var(--nav-height) + 0px);
+    padding-bottom: 100px;
+    min-height: 100vh;
+  }
 
-    .modern-breadcrumbs .breadcrumb {
-        background: none;
-        margin: 0;
-        padding: 0;
-    }
+  /* ---- Breadcrumb ---- */
+  .pricing-breadcrumb {
+    padding: 24px 0 0;
+  }
 
-    .modern-breadcrumbs .breadcrumb-item+.breadcrumb-item::before {
-        content: "→";
-        color: var(--text-muted);
-    }
+  .pricing-breadcrumb ol {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
 
-    /* Hero Section */
-    .pricing-hero {
-        text-align: center;
-        max-width: 800px;
-        margin: 0 auto 4rem;
-    }
+  .pricing-breadcrumb li { display: flex; align-items: center; gap: 8px; }
 
-    .pricing-hero h1 {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-    }
+  .pricing-breadcrumb li + li::before {
+    content: '→';
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
 
-    .pricing-hero p {
-        font-size: 1.25rem;
-        color: var(--text-secondary);
-        margin-bottom: 2rem;
-    }
+  .pricing-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-    /* Current Status Card */
-    .status-card {
-        background: var(--surface-white);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        margin-bottom: 3rem;
-        box-shadow: var(--shadow-md);
-        border: 2px solid var(--primary-color);
-    }
+  .pricing-breadcrumb a:hover { color: var(--gold-light); }
+  .pricing-breadcrumb .active { color: var(--gold-light); }
 
-    .status-card h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-    }
+  /* ---- Hero ---- */
+  .pricing-hero {
+    text-align: center;
+    padding: 72px 0 64px;
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
 
-    .slots-display {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
+  .pricing-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
 
-    .slots-number {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--primary-color);
-    }
+  .pricing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 22px;
+    animation: fadeDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
 
-    .slots-label {
-        font-size: 1rem;
-        color: var(--text-secondary);
-    }
+  .pricing-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.12;
+    margin-bottom: 18px;
+    animation: fadeDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
+  }
 
-    .progress-bar-wrapper {
-        margin-bottom: 0.5rem;
-    }
+  .pricing-hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-    .progress {
-        height: 12px;
-        border-radius: 6px;
-        background: var(--surface-light);
-    }
+  .pricing-hero p {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin: 0;
+    animation: fadeDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.16s both;
+  }
 
-    .progress-bar {
-        background: var(--primary-gradient);
-        border-radius: 6px;
-    }
+  /* ---- Status Card (logged-in slot usage) ---- */
+  .slot-status-card {
+    background: rgba(18, 18, 26, 0.75);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    margin: 60px 0 56px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(201, 168, 76, 0.06);
+    animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  }
 
-    .progress-label {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-    }
+  .slot-status-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.5), transparent);
+  }
 
-    /* Package Grid */
-    .package-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+  .slot-status-card::after {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.08), transparent);
+    pointer-events: none;
+  }
 
-    .package-card {
-        background: var(--surface-white);
-        border-radius: var(--radius-xl);
-        padding: 2.5rem;
-        box-shadow: var(--shadow-md);
-        border: 2px solid var(--border-color);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
+  .slot-big-number {
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    font-weight: 300;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-    .package-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-lg);
-        border-color: var(--primary-color);
-    }
+  .slot-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
 
-    .package-card.featured {
-        border-color: var(--primary-color);
-        box-shadow: 0 8px 32px rgba(46, 202, 106, 0.2);
-    }
+  .slot-sublabel {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 2px;
+  }
 
-    .package-card.featured::before {
-        content: "Best Value";
-        position: absolute;
-        top: 20px;
-        right: -35px;
-        background: var(--primary-gradient);
-        color: white;
-        padding: 0.5rem 3rem;
-        transform: rotate(45deg);
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+  .slot-status-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
 
-    .package-name {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
+  .slot-progress-track {
+    height: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
 
-    .package-description {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 2rem;
-    }
+  .slot-progress-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-    .package-price {
-        margin-bottom: 1.5rem;
-    }
+  .slot-progress-text {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
 
-    .price-amount {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--primary-color);
-        display: flex;
-        align-items: baseline;
-        gap: 0.5rem;
-    }
+  .slot-divider {
+    width: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    align-self: stretch;
+    margin: 0 8px;
+  }
 
-    .price-currency {
-        font-size: 1.5rem;
-    }
+  /* ---- Package Grid ---- */
+  .package-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 64px;
+  }
 
-    .price-label {
-        font-size: 1rem;
-        color: var(--text-muted);
-        margin-top: 0.5rem;
-    }
+  /* ---- Package Card ---- */
+  .pkg-card {
+    background: rgba(18, 18, 26, 0.72);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s ease;
+    animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
 
-    .slots-count {
-        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(155, 90%, 92%) 100%);
-        border-radius: var(--radius-md);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
+  .pkg-card:nth-child(1) { animation-delay: 0.1s; }
+  .pkg-card:nth-child(2) { animation-delay: 0.2s; }
+  .pkg-card:nth-child(3) { animation-delay: 0.3s; }
+  .pkg-card:nth-child(4) { animation-delay: 0.4s; }
 
-    .slots-number-large {
-        font-size: 3.5rem;
-        font-weight: 800;
-        color: var(--primary-color);
-        line-height: 1;
-    }
+  .pkg-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: background 0.35s ease;
+  }
 
-    .slots-text {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        margin-top: 0.5rem;
-    }
+  .pkg-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    border-color: rgba(201, 168, 76, 0.22);
+  }
 
-    .package-features {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 2rem;
-    }
+  .pkg-card:hover::before {
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.35), transparent);
+  }
 
-    .package-features li {
-        padding: 0.75rem 0;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        border-bottom: 1px solid var(--surface-light);
-    }
+  /* Featured card */
+  .pkg-card.featured {
+    border-color: rgba(201, 168, 76, 0.35);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(201, 168, 76, 0.1);
+  }
 
-    .package-features li:last-child {
-        border-bottom: none;
-    }
+  .pkg-card.featured::before {
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.45), transparent);
+  }
 
-    .package-features i {
-        color: var(--primary-color);
-        font-size: 1.25rem;
-    }
+  .pkg-featured-ribbon {
+    position: absolute;
+    top: 22px; right: -32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 48px;
+    transform: rotate(45deg);
+  }
 
-    .buy-button {
-        width: 100%;
-        padding: 1rem;
-        background: var(--primary-gradient);
-        color: white;
-        border: none;
-        border-radius: var(--radius-md);
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-    }
+  /* Card inner elements */
+  .pkg-name {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
 
-    .buy-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(46, 202, 106, 0.3);
-        color: white;
-    }
+  .pkg-desc {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
 
-    .buy-button.secondary {
-        background: var(--surface-light);
-        color: var(--text-primary);
-        border: 2px solid var(--border-color);
-    }
+  /* Slot count display */
+  .pkg-slots-display {
+    background: rgba(201, 168, 76, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: var(--radius-md);
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
 
-    .buy-button.secondary:hover {
-        background: var(--surface-white);
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        box-shadow: var(--shadow-md);
-    }
+  .pkg-slots-display::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center top, rgba(201, 168, 76, 0.06), transparent 70%);
+    pointer-events: none;
+  }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .pricing-hero h1 {
-            font-size: 2rem;
-        }
+  .pkg-slots-number {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 300;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-        .pricing-hero p {
-            font-size: 1rem;
-        }
+  .pkg-slots-text {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
 
-        .package-grid {
-            grid-template-columns: 1fr;
-        }
+  /* Price */
+  .pkg-price-wrap { margin-bottom: 28px; }
 
-        .slots-number {
-            font-size: 2rem;
-        }
+  .pkg-price-free {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--text-primary);
+  }
 
-        .price-amount {
-            font-size: 2rem;
-        }
-    }
+  .pkg-price-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .pkg-price-currency {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .pkg-price-value {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 300;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .pkg-price-per {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* Features list */
+  .pkg-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 20px;
+  }
+
+  .pkg-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    font-family: var(--font-body);
+    font-size: 0.87rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .pkg-features li:last-child { border-bottom: none; }
+
+  .pkg-features .feat-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+  }
+
+  .pkg-features .feat-icon.check {
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    color: var(--gold-light);
+  }
+
+  .pkg-features .feat-icon.star {
+    background: rgba(201, 168, 76, 0.2);
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    color: var(--gold);
+  }
+
+  /* CTA Buttons */
+  .pkg-btn {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pkg-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .pkg-btn:hover::before { left: 100%; }
+
+  .pkg-btn.primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    box-shadow: 0 6px 24px rgba(201, 168, 76, 0.22);
+  }
+
+  .pkg-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(201, 168, 76, 0.4);
+    color: #0A0A0F;
+  }
+
+  .pkg-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+  }
+
+  .pkg-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  /* ---- Info Strip ---- */
+  .pricing-info-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 64px;
+    padding: 32px 40px;
+    background: rgba(18, 18, 26, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-md);
+    animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .info-item i {
+    color: var(--gold);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .info-item a {
+    color: var(--gold-light);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+    transition: border-color 0.2s ease;
+  }
+
+  .info-item a:hover { border-bottom-color: var(--gold); }
+
+  .info-divider {
+    width: 1px; height: 28px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ---- Keyframes ---- */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 991px) {
+    .slot-divider { display: none; }
+    .slot-status-card { padding: 28px 24px; }
+    .pricing-info-strip { flex-direction: column; gap: 20px; }
+    .info-divider { display: none; }
+  }
+
+  @media (max-width: 767px) {
+    .pricing-hero { padding: 56px 0 48px; }
+    .package-grid { grid-template-columns: 1fr; gap: 18px; }
+    .pkg-card { padding: 28px 24px; }
+    .pkg-slots-number { font-size: 3rem; }
+    .pkg-price-value { font-size: 2.4rem; }
+    .pricing-info-strip { padding: 24px 20px; text-align: center; }
+    .info-item { justify-content: center; }
+  }
+
+  @media (max-width: 480px) {
+    .pricing-hero h1 { font-size: 2.2rem; }
+    .slot-big-number { font-size: 3.5rem; }
+  }
 </style>
 
-<div class="pricing-wrapper">
-    <!-- Breadcrumbs -->
-    <section class="modern-breadcrumbs">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>Home</a>
-                    </li>
-                    <li class="breadcrumb-item active">Pricing</li>
-                </ol>
-            </nav>
-        </div>
-    </section>
+<!-- Ambient Background -->
+<div class="pricing-ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
 
-    <div class="container">
-        <!-- Hero Section -->
-        <div class="pricing-hero">
-            <h1>Property Posting Slots</h1>
-            <p>Purchase slots to list your properties. Slots never expire and can be used anytime.</p>
-        </div>
+<div class="pricing-page">
+  <div class="container">
 
-        <!-- Current Status (if logged in) -->
-        {% if user.is_authenticated and user_subscription %}
-        <div class="status-card">
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <div class="slots-display">
-                        <div class="slots-number">{{ user_subscription.remaining_slots }}</div>
-                        <div>
-                            <div class="slots-label">Remaining Slots</div>
-                            <div class="text-muted" style="font-size: 0.875rem;">of {{ user_subscription.total_slots }}
-                                total</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <h3>Your Slot Usage</h3>
-                    <div class="progress-bar-wrapper">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar"
-                                style="width: {{ user_subscription.slots_usage_percentage }}%"
-                                aria-valuenow="{{ user_subscription.slots_usage_percentage }}" aria-valuemin="0"
-                                aria-valuemax="100">
-                            </div>
-                        </div>
-                    </div>
-                    <p class="progress-label">{{ user_subscription.used_slots }} slots used • {{  user_subscription.remaining_slots }} slots available</p>
-                </div>
+    <!-- Breadcrumb -->
+    <nav class="pricing-breadcrumb" aria-label="breadcrumb">
+      <ol>
+        <li><a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><span class="active">Pricing</span></li>
+      </ol>
+    </nav>
+
+    <!-- Hero -->
+    <div class="pricing-hero">
+      <div class="pricing-badge">
+        <i class="fas fa-tag"></i>
+        Packages
+      </div>
+      <h1>Property Posting<br><em>Slots</em></h1>
+      <p>Purchase slots to list your properties on Nestova.<br>Slots never expire and can be used at any time.</p>
+    </div>
+
+    <!-- Current Slot Status (authenticated users only) -->
+    {% if user.is_authenticated and user_subscription %}
+    <div class="slot-status-card">
+      <div class="row align-items-center g-4">
+        <div class="col-md-3 text-center text-md-start">
+          <div class="slot-big-number">{{ user_subscription.remaining_slots }}</div>
+          <div class="slot-label">Remaining Slots</div>
+          <div class="slot-sublabel">of {{ user_subscription.total_slots }} total</div>
+        </div>
+        <div class="slot-divider d-none d-md-block"></div>
+        <div class="col-md-8">
+          <div class="slot-status-title">Your Slot Usage</div>
+          <div class="slot-progress-track">
+            <div class="slot-progress-fill"
+              style="width: {{ user_subscription.slots_usage_percentage }}%;"
+              role="progressbar"
+              aria-valuenow="{{ user_subscription.slots_usage_percentage }}"
+              aria-valuemin="0" aria-valuemax="100">
             </div>
+          </div>
+          <p class="slot-progress-text">
+            {{ user_subscription.used_slots }} slots used &nbsp;·&nbsp; {{ user_subscription.remaining_slots }} slots available
+          </p>
         </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Package Grid -->
+    <div class="package-grid">
+      {% for pkg in packages %}
+      <div class="pkg-card {% if pkg.slots_count == 10 %}featured{% endif %}">
+
+        {% if pkg.slots_count == 10 %}
+        <div class="pkg-featured-ribbon">Best Value</div>
         {% endif %}
 
-        <!-- Package Grid -->
-        <div class="package-grid">
-            {% for pkg in packages %}
-            <div class="package-card {% if pkg.slots_count == 10 %}featured{% endif %}">
-                <h3 class="package-name">{{ pkg.name }}</h3>
-                <p class="package-description">{{ pkg.description|default:"Perfect for your property listing needs" }}
-                </p>
+        <h3 class="pkg-name">{{ pkg.name }}</h3>
+        <p class="pkg-desc">{{ pkg.description|default:"Perfect for your property listing needs" }}</p>
 
-                <div class="slots-count">
-                    <div class="slots-number-large">{{ pkg.slots_count }}</div>
-                    <div class="slots-text">Property Posting Slots</div>
-                </div>
-
-                <div class="package-price">
-                    {% if pkg.price == 0 %}
-                    <div class="price-amount">
-                        <span>Free</span>
-                    </div>
-                    <p class="price-label">Get started at no cost</p>
-                    {% else %}
-                    <div class="price-amount">
-                        <span class="price-currency">₦</span>
-                        <span>{{ pkg.price|floatformat:0|intcomma }}</span>
-                    </div>
-                    <p class="price-label">₦{{ pkg.price_per_slot|floatformat:0|intcomma }} per slot</p>
-                    {% endif %}
-                </div>
-
-                <ul class="package-features">
-                    <li><i class="bi bi-check-circle-fill"></i> {{ pkg.slots_count }} Property Listing{% if pkg.slots_count > 1 %}s{% endif %}</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Slots Never Expire</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Post Anytime</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Manage from Dashboard</li>
-                    {% if pkg.slots_count >= 10 %}
-                    <li><i class="bi bi-star-fill"></i> Priority Support</li>
-                    <li><i class="bi bi-star-fill"></i> Featured Listings</li>
-                    {% endif %}
-                </ul>
-
-                {% if user.is_authenticated %}
-                <a href="{% url 'listings:subscribe' pkg.id %}" class="buy-button">
-                    {% if pkg.price == 0 %}
-                    Get Started
-                    {% else %}
-                    Purchase Package
-                    {% endif %}
-                </a>
-                {% else %}
-                <a href="{% url 'users:login' %}?next={% url 'listings:pricing' %}" class="buy-button secondary">
-                    Login to Purchase
-                </a>
-                {% endif %}
-            </div>
-            {% endfor %}
+        <!-- Slot count bubble -->
+        <div class="pkg-slots-display">
+          <div class="pkg-slots-number">{{ pkg.slots_count }}</div>
+          <div class="pkg-slots-text">Property Posting Slot{% if pkg.slots_count > 1 %}s{% endif %}</div>
         </div>
 
-        <!-- Info Section -->
-        <div class="text-center mt-5 mb-4">
-            <p class="text-muted">
-                <i class="bi bi-info-circle me-2"></i>
-                Purchased slots are permanent and cumulative. Buy multiple packages to increase your total!
-            </p>
-            <p class="text-muted">
-                Need help? <a href="mailto:support@nestova.com" style="color: var(--primary-color);">Contact Support</a>
-            </p>
+        <!-- Price -->
+        <div class="pkg-price-wrap">
+          {% if pkg.price == 0 %}
+          <div class="pkg-price-free">Free</div>
+          <p class="pkg-price-per">Get started at no cost</p>
+          {% else %}
+          <div class="pkg-price-amount">
+            <span class="pkg-price-currency">₦</span>
+            <span class="pkg-price-value">{{ pkg.price|floatformat:0|intcomma }}</span>
+          </div>
+          <p class="pkg-price-per">₦{{ pkg.price_per_slot|floatformat:0|intcomma }} per slot</p>
+          {% endif %}
         </div>
+
+        <!-- Features -->
+        <ul class="pkg-features">
+          <li>
+            <span class="feat-icon check"><i class="fas fa-check"></i></span>
+            {{ pkg.slots_count }} Property Listing{% if pkg.slots_count > 1 %}s{% endif %}
+          </li>
+          <li>
+            <span class="feat-icon check"><i class="fas fa-check"></i></span>
+            Slots Never Expire
+          </li>
+          <li>
+            <span class="feat-icon check"><i class="fas fa-check"></i></span>
+            Post Anytime
+          </li>
+          <li>
+            <span class="feat-icon check"><i class="fas fa-check"></i></span>
+            Manage from Dashboard
+          </li>
+          {% if pkg.slots_count >= 10 %}
+          <li>
+            <span class="feat-icon star"><i class="fas fa-star"></i></span>
+            Priority Support
+          </li>
+          <li>
+            <span class="feat-icon star"><i class="fas fa-star"></i></span>
+            Featured Listings
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- CTA -->
+        {% if user.is_authenticated %}
+        <a href="{% url 'listings:subscribe' pkg.id %}" class="pkg-btn primary">
+          {% if pkg.price == 0 %}
+          <i class="fas fa-rocket me-2"></i>Get Started Free
+          {% else %}
+          <i class="fas fa-bag-shopping me-2"></i>Purchase Package
+          {% endif %}
+        </a>
+        {% else %}
+        <a href="{% url 'users:login' %}?next={% url 'listings:pricing' %}" class="pkg-btn secondary">
+          <i class="fas fa-lock me-2"></i>Login to Purchase
+        </a>
+        {% endif %}
+
+      </div>
+      {% endfor %}
     </div>
+
+    <!-- Info Strip -->
+    <div class="pricing-info-strip">
+      <div class="info-item">
+        <i class="fas fa-layer-group"></i>
+        Slots are permanent and cumulative — buy multiple packages anytime.
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <i class="fas fa-lock"></i>
+        Payments secured by PCI-DSS compliant gateways.
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <i class="fas fa-headset"></i>
+        Need help? <a href="mailto:nestovagroups@gmail.com">Contact Support</a>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 {% endblock %}

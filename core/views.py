@@ -83,5 +83,10 @@ def dashboard_user(request):
 
 
 
+def faq(request):
+    return render(request, "estate/faq.html")
+
+
+
 def privacy_policy(request):
     return render(request, "estate/privacy.html")

@@ -12,6 +12,7 @@ urlpatterns = [
     path("service-details/", views.service_detail_page, name="service_details"),
     path("dashboard/", views.dashboard_user, name="dashboard"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    path("faq/", views.faq, name="faq"),
     
     
 ]
