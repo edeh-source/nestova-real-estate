@@ -20,7 +20,7 @@ class PropertySitemap(Sitemap):
         return obj.updated_at if hasattr(obj, 'updated_at') else obj.created_at
     
     def location(self, obj):
-        return f'/property/{obj.slug}/'
+        return f'/property/details/{obj.slug}/'
 
 
 class ProductSitemap(Sitemap):
