@@ -50,6 +50,7 @@ urlpatterns = [
     path('blog/', include('blogs.urls')),
     path('services/', include('services.urls')),
     path('', include("contact.urls")),
+    path('', include('events.urls', namespace='events')),
     
     # Allauth URLs (for social auth only - login/register handled by custom views)
     path('accounts/', include('allauth.urls')),

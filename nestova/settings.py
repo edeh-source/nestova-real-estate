@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'embed_video',
     'django_celery_beat',
+    'events.apps.EventsConfig',
 ]
 
 
@@ -117,7 +118,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'contact.context_processors.contact_info',  # Make ContactInfo available globally
+                'contact.context_processors.contact_info', 
+                'django.template.context_processors.media',
                 
         
             ],

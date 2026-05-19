@@ -73,12 +73,6 @@
     max-width: 680px;
     padding: clamp(1rem, 4vw, 2.5rem) clamp(1rem, 5vw, 3rem);
   }
-  .event-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;   /* anchors the top of the image */
-}
 
   /* --- Responsive font sizes (fluid scaling) --- */
   .hero-eyebrow {
@@ -248,29 +242,6 @@
   /* ============================================================
      BREAKPOINT: phones (≤ 480 px)
   ============================================================ */
-  /* ============================================================
-     EVENTS SKELETON — shimmer placeholders while cards load
-  ============================================================ */
-  .event-cell--skeleton {
-    background: linear-gradient(
-      90deg,
-      rgba(255,255,255,0.06) 25%,
-      rgba(255,255,255,0.12) 50%,
-      rgba(255,255,255,0.06) 75%
-    );
-    background-size: 200% 100%;
-    animation: evtShimmer 1.5s infinite;
-    border-radius: 12px;
-    min-height: 240px;
-    pointer-events: none;
-    cursor: default;
-  }
-
-  @keyframes evtShimmer {
-    0%   { background-position:  200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
   @media (max-width: 480px) {
     .hero-content-wrap {
       padding-bottom: 130px;
@@ -1131,21 +1102,89 @@
       </a>
     </div>
 
-    {# Skeleton — 8 shimmer cells shown instantly while the real grid loads #}
-    <div class="events-grid events-grid--skeleton" id="events-grid-skeleton" aria-hidden="true">
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
-      <div class="event-cell event-cell--skeleton"></div>
+    <div class="events-grid" data-reveal>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real2.jpg' %}"
+          alt="Nestova Property Launch — Lekki Phase 1" loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Grand Property Launch — Lekki Phase 1</div>
+          <div class="event-date">November 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real3.jpg' %}" alt="VIP Open House — Victoria Island"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">VIP Open House — Victoria Island Penthouse</div>
+          <div class="event-date">October 2023</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real4.jpg' %}" alt="Investor Forum — Abuja"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nestova Investor Forum — Abuja Hilton</div>
+          <div class="event-date">September 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real5.jpg' %}" alt="Client Appreciation Night 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Client Appreciation Night 2024</div>
+          <div class="event-date">August 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real6.jpg' %}" alt="Ikoyi Development Showcase"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Ikoyi Premium Development Showcase</div>
+          <div class="event-date">July 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real7.jpg' %}" alt="First-Time Buyer Workshop"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">First-Time Buyer Workshop — Lagos</div>
+          <div class="event-date">June 2024</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real9.jpg' %}" alt="Banana Island Site Tour"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Exclusive Banana Island Site Tour</div>
+          <div class="event-date">May 2023</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
+      <div class="event-cell" onclick="openLightbox(this)">
+        <img src="{% static 'assets/img/real-estate/nestova-real8.jpg' %}" alt="Real Estate Awards Gala 2024"
+          loading="lazy">
+        <div class="event-overlay">
+          <div class="event-name">Nigerian Real Estate Awards Gala 2024</div>
+          <div class="event-date">April 2025</div>
+        </div>
+        <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+      </div>
+
     </div>
-
-    {# Real grid — injected by JS after the section enters the viewport #}
-    <div class="events-grid" id="events-grid" data-reveal style="display:none;"></div>
-
   </section>
 
   <!-- Lightbox -->
@@ -1595,76 +1634,6 @@
   // Make openLightbox / closeLightbox available globally
   window.openLightbox = openLightbox;
   window.closeLightbox = closeLightbox;
-
-  
-  (function () {
-    const MEDIA_URL  = "{{ MEDIA_URL }}";
-    const EVENTS_URL = "{% url 'events:events-json' %}";
-    console.log(EVENTS_URL);
-    console.log(MEDIA_URL);
-
-    // Build one card DOM node from an API event object
-    function buildCard(ev) {
-      const cell = document.createElement('div');
-      cell.className = 'event-cell';
-      cell.setAttribute('onclick', 'openLightbox(this)');
-      cell.innerHTML =
-        '<img src="' + MEDIA_URL + ev.image + '" alt="' + ev.alt + '" loading="lazy">' +
-        '<div class="event-overlay">' +
-          '<div class="event-name">' + ev.name + '</div>' +
-          '<div class="event-date">' + ev.date + '</div>' +
-        '</div>' +
-        '<div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>';
-      return cell;
-    }
-
-    async function loadEvents() {
-      const grid     = document.getElementById('events-grid');
-      const skeleton = document.getElementById('events-grid-skeleton');
-      if (!grid || !skeleton) return;
-
-      try {
-        const res = await fetch(EVENTS_URL, { credentials: 'same-origin' });
-        if (!res.ok) throw new Error(res.status);
-        const data = await res.json();
-
-        const frag = document.createDocumentFragment();
-        (data.events || []).forEach(ev => frag.appendChild(buildCard(ev)));
-        grid.appendChild(frag);
-
-        // Swap skeleton → real grid
-        skeleton.style.display = 'none';
-        grid.style.display     = '';
-
-        // Wire up reveal observer for the newly-visible grid
-        revealObserver.observe(grid);
-
-      } catch (err) {
-        console.warn('Nestova events failed to load:', err);
-        skeleton.style.display = 'none';   // silently hide skeleton on error
-      }
-    }
-
-    // Trigger only when the section enters the viewport (200 px pre-load margin)
-    const section = document.getElementById('events');
-    if (section) {
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          function (entries, observer) {
-            if (entries[0].isIntersecting) {
-              observer.disconnect();
-              loadEvents();
-            }
-          },
-          { rootMargin: '200px' }
-        );
-        io.observe(section);
-      } else {
-        // Older-browser fallback: load after everything else is done
-        window.addEventListener('load', loadEvents);
-      }
-    }
-  })();
 
   // Reveal on scroll
   const revealObserver = new IntersectionObserver((entries) => {

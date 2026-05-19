@@ -50,7 +50,7 @@ class BlogSitemap(Sitemap):
         return obj.updated if hasattr(obj, 'updated') else obj.publish
     
     def location(self, obj):
-        return f'/blog/{obj.publish.year}/{obj.publish.month}/{obj.publish.day}/{obj.slug}/'
+        return f'/blog/details/{obj.publish.year}/{obj.publish.month}/{obj.publish.day}/{obj.slug}/'
 
 
 class StaticPagesSitemap(Sitemap):
