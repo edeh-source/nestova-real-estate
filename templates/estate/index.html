@@ -1598,18 +1598,20 @@
 
   
   (function () {
-    const MEDIA_URL  = "{{ MEDIA_URL }}";
-    const EVENTS_URL = "{% url 'events:events-json' %}";
-    console.log(EVENTS_URL);
-    console.log(MEDIA_URL);
+    
+    var EVENTS_URL = "{% url 'events:events-json' %}";
 
-    // Build one card DOM node from an API event object
     function buildCard(ev) {
-      const cell = document.createElement('div');
+      // .url already returns the correct path in both environments:
+      // - local dev:  /media/events/photo.jpg       (starts with /)
+      // - production: https://res.cloudinary.com/.. (starts with http)
+      var imgSrc = ev.image;
+
+      var cell = document.createElement('div');
       cell.className = 'event-cell';
       cell.setAttribute('onclick', 'openLightbox(this)');
       cell.innerHTML =
-        '<img src="' + MEDIA_URL + ev.image + '" alt="' + ev.alt + '" loading="lazy">' +
+        '<img src="' + imgSrc + '" alt="' + ev.alt + '" loading="lazy">' +
         '<div class="event-overlay">' +
           '<div class="event-name">' + ev.name + '</div>' +
           '<div class="event-date">' + ev.date + '</div>' +
@@ -1618,38 +1620,41 @@
       return cell;
     }
 
-    async function loadEvents() {
-      const grid     = document.getElementById('events-grid');
-      const skeleton = document.getElementById('events-grid-skeleton');
+    function loadEvents() {
+      var grid     = document.getElementById('events-grid');
+      var skeleton = document.getElementById('events-grid-skeleton');
       if (!grid || !skeleton) return;
 
-      try {
-        const res = await fetch(EVENTS_URL, { credentials: 'same-origin' });
-        if (!res.ok) throw new Error(res.status);
-        const data = await res.json();
+      fetch(EVENTS_URL, { credentials: 'same-origin' })
+        .then(function (res) {
+          if (!res.ok) { throw new Error(res.status); }
+          return res.json();
+        })
+        .then(function (data) {
+          var frag = document.createDocumentFragment();
+          (data.events || []).forEach(function (ev) {
+            frag.appendChild(buildCard(ev));
+          });
+          grid.appendChild(frag);
 
-        const frag = document.createDocumentFragment();
-        (data.events || []).forEach(ev => frag.appendChild(buildCard(ev)));
-        grid.appendChild(frag);
+          // Swap skeleton → real grid
+          skeleton.style.display = 'none';
+          grid.style.display     = '';
 
-        // Swap skeleton → real grid
-        skeleton.style.display = 'none';
-        grid.style.display     = '';
-
-        // Wire up reveal observer for the newly-visible grid
-        revealObserver.observe(grid);
-
-      } catch (err) {
-        console.warn('Nestova events failed to load:', err);
-        skeleton.style.display = 'none';   // silently hide skeleton on error
-      }
+          // Wire into reveal observer
+          revealObserver.observe(grid);
+        })
+        .catch(function (err) {
+          console.warn('Nestova events failed to load:', err);
+          skeleton.style.display = 'none';
+        });
     }
 
-    // Trigger only when the section enters the viewport (200 px pre-load margin)
-    const section = document.getElementById('events');
+    // Trigger only when the section enters the viewport (200px pre-load margin)
+    var section = document.getElementById('events');
     if (section) {
       if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
+        var io = new IntersectionObserver(
           function (entries, observer) {
             if (entries[0].isIntersecting) {
               observer.disconnect();
@@ -1660,7 +1665,6 @@
         );
         io.observe(section);
       } else {
-        // Older-browser fallback: load after everything else is done
         window.addEventListener('load', loadEvents);
       }
     }
