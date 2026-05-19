@@ -1,0 +1,768 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Events — Nestova in Action{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ============================================================
+     ALL EVENTS PAGE — matches Nestova design system exactly
+  ============================================================ */
+
+  /* Page always uses glass header (no hero carousel) */
+  #header { background: rgba(10,10,15,0.82) !important; }
+
+  /* ---- PAGE HERO BANNER ---- */
+  .page-hero {
+    position: relative;
+    padding: calc(var(--nav-height) + 60px) 0 64px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #0D1B3E 0%, #0A0A0F 55%, #060B1A 100%);
+  }
+
+  .page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 700px 400px at 10% 60%, rgba(201,168,76,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 300px at 90% 20%, rgba(13,27,62,0.6) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .page-hero-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .page-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb-row a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+
+  .breadcrumb-row a:hover { color: var(--gold-light); }
+
+  .breadcrumb-row .sep {
+    color: rgba(255,255,255,0.2);
+    font-size: 0.7rem;
+  }
+
+  .breadcrumb-row .current {
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  .page-hero-content {
+    max-width: 680px;
+  }
+
+  .page-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.12;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  .page-hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .page-hero p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    max-width: 520px;
+    margin: 0;
+  }
+
+  /* Stats row */
+  .hero-stats {
+    display: flex;
+    gap: 36px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero-stat-number {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+
+  .hero-stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Gold accent line */
+  .page-hero-line {
+    width: 56px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin-bottom: 20px;
+    border-radius: 2px;
+  }
+
+  /* ---- FILTER BAR ---- */
+  .filter-bar {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 36px 40px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .filter-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-white);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .filter-pill:hover {
+    border-color: rgba(201,168,76,0.35);
+    color: var(--gold-light);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .filter-pill.active {
+    background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.06));
+    border-color: rgba(201,168,76,0.45);
+    color: var(--gold-light);
+  }
+
+  .filter-count {
+    font-size: 0.7rem;
+    margin-left: 2px;
+    color: var(--text-muted);
+  }
+
+  .filter-pill.active .filter-count { color: var(--gold); }
+
+  /* ---- MAIN EVENTS SECTION ---- */
+  .all-events-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  /* ---- EVENTS GRID — matches homepage exactly ---- */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1200px) {
+    .events-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 860px) {
+    .events-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 520px) {
+    .events-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---- EVENT CELL — exact same as homepage ---- */
+  .event-cell {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 4 / 3;
+    background: var(--surface-2);
+  }
+
+  .event-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    display: block;
+  }
+
+  .event-cell:hover img { transform: scale(1.06); }
+
+  .event-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 16px 16px;
+    background: linear-gradient(to top, rgba(6,11,26,0.92) 0%, transparent 100%);
+    transform: translateY(4px);
+    transition: transform 0.35s ease;
+  }
+
+  .event-cell:hover .event-overlay { transform: translateY(0); }
+
+  .event-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .event-date {
+    font-size: 0.75rem;
+    color: var(--gold-light);
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  .event-expand {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .event-cell:hover .event-expand {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ---- EMPTY STATE ---- */
+  .events-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .events-empty i {
+    font-size: 3rem;
+    color: rgba(201,168,76,0.25);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .events-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .events-empty p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* ---- PAGINATION ---- */
+  .pagination-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 56px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-white);
+    color: var(--text-muted);
+  }
+
+  .page-btn:hover {
+    border-color: rgba(201,168,76,0.35);
+    color: var(--gold-light);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .page-btn.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: var(--gold);
+    color: #0A0A0F;
+    font-weight: 700;
+  }
+
+  .page-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* ---- LIGHTBOX — exact same as homepage ---- */
+  #eventsLightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(6,11,26,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 20px;
+  }
+
+  #eventsLightbox.lb-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lb-inner {
+    position: relative;
+    max-width: 90vw;
+    max-height: 88vh;
+  }
+
+  .lb-inner img {
+    max-width: 90vw;
+    max-height: 88vh;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+    display: block;
+  }
+
+  .lb-close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 1;
+  }
+
+  .lb-close:hover {
+    background: rgba(201,168,76,0.3);
+    transform: scale(1.1);
+  }
+
+  /* ---- CTA BUTTONS — match homepage ---- */
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F !important;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: var(--transition);
+    box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+    white-space: nowrap;
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.45);
+    color: #0A0A0F !important;
+  }
+
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--glass-white);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: var(--transition);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    white-space: nowrap;
+  }
+
+  .cta-secondary:hover {
+    border-color: rgba(201,168,76,0.35);
+    color: var(--gold-light);
+    background: rgba(201,168,76,0.08);
+    transform: translateY(-2px);
+  }
+
+  /* ---- REVEAL ANIMATIONS ---- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1),
+                transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---- AMBIENT ORBS ---- */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.07;
+  }
+
+  .orb-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    top: -200px; right: -100px;
+    animation: orbFloat 18s ease-in-out infinite;
+  }
+
+  .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #1a3a8f 0%, transparent 70%);
+    bottom: 20%; left: -150px;
+    animation: orbFloat 22s ease-in-out infinite reverse;
+  }
+
+  .orb-3 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--gold-dark) 0%, transparent 70%);
+    top: 60%; right: 10%;
+    animation: orbFloat 16s ease-in-out infinite 4s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(30px, -40px) scale(1.05); }
+    66%       { transform: translate(-20px, 20px) scale(0.97); }
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .page-hero-inner,
+    .filter-bar,
+    .all-events-section { padding-left: 20px; padding-right: 20px; }
+
+    .page-hero { padding-bottom: 44px; }
+
+    .hero-stats { gap: 24px; }
+
+    .filter-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-hero h1 { font-size: 1.9rem; }
+    .hero-stat-number { font-size: 1.6rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Ambient background orbs -->
+<div class="ambient-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main style="position:relative; z-index:1;">
+
+  <!-- ======================== PAGE HERO ======================== -->
+  <section class="page-hero">
+    <div class="page-hero-grain"></div>
+    <div class="page-hero-inner">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb-row" aria-label="Breadcrumb">
+        <a href="{% url 'home' %}"><i class="bi bi-house-fill"></i> Home</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
+        <span class="current">Events</span>
+      </nav>
+
+      <div class="page-hero-content" data-reveal>
+        <div class="page-hero-line"></div>
+        <div class="section-badge" style="margin-bottom:16px;">
+          <i class="bi bi-camera-fill"></i> In The Community
+        </div>
+        <h1>Nestova <em>in Action</em></h1>
+        <p>Behind every deal is a story. A complete gallery of our property launches,
+          client events, open houses, investor forums, and community initiatives.</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-number">{{ total_count }}</span>
+            <span class="hero-stat-label">Events</span>
+          </div>
+          {% if year_range %}
+          <div class="hero-stat">
+            <span class="hero-stat-number">{{ year_range }}</span>
+            <span class="hero-stat-label">Years Active</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================== FILTER BAR ======================== -->
+  {% if years %}
+  <div class="filter-bar" data-reveal>
+    <span class="filter-label"><i class="bi bi-funnel"></i> Filter by Year</span>
+    <div class="filter-pills">
+      <a href="{% url 'events:all-events' %}"
+         class="filter-pill {% if not active_year %}active{% endif %}">
+        All
+        <span class="filter-count">({{ total_count }})</span>
+      </a>
+      {% for y in years %}
+      <a href="{% url 'events:all-events' %}?year={{ y.year }}"
+         class="filter-pill {% if active_year == y.year %}active{% endif %}">
+        {{ y.year }}
+        <span class="filter-count">({{ y.count }})</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ======================== EVENTS GRID ======================== -->
+  <section class="all-events-section">
+
+    <div class="events-grid" data-reveal>
+
+      {% if events %}
+        {% for event in events %}
+        <div class="event-cell" onclick="openLightbox(this)">
+          <img
+            src="{{ event.image.url }}"
+            alt="{{ event.get_alt }}"
+            loading="{% if forloop.counter <= 8 %}eager{% else %}lazy{% endif %}">
+          <div class="event-overlay">
+            <div class="event-name">{{ event.name }}</div>
+            <div class="event-date">{{ event.formatted_date }}</div>
+          </div>
+          <div class="event-expand"><i class="bi bi-arrows-fullscreen"></i></div>
+        </div>
+        {% endfor %}
+
+      {% else %}
+        <div class="events-empty">
+          <i class="bi bi-camera"></i>
+          <h3>No Events Yet</h3>
+          <p>Check back soon — we're always out in the community.</p>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- ---- PAGINATION ---- -->
+    {% if events.has_other_pages %}
+    <nav class="pagination-wrap" aria-label="Event pages">
+
+      {% if events.has_previous %}
+      <a href="?page={{ events.previous_page_number }}{% if active_year %}&year={{ active_year }}{% endif %}"
+         class="page-btn" aria-label="Previous page">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      {% else %}
+      <span class="page-btn disabled"><i class="bi bi-chevron-left"></i></span>
+      {% endif %}
+
+      {% for num in events.paginator.page_range %}
+        {% if events.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+        {% elif num >= events.number|add:"-2" and num <= events.number|add:"2" %}
+          <a href="?page={{ num }}{% if active_year %}&year={{ active_year }}{% endif %}"
+             class="page-btn">{{ num }}</a>
+        {% elif num == 1 or num == events.paginator.num_pages %}
+          <a href="?page={{ num }}{% if active_year %}&year={{ active_year }}{% endif %}"
+             class="page-btn">{{ num }}</a>
+        {% elif num == events.number|add:"-3" or num == events.number|add:"3" %}
+          <span class="page-btn disabled" style="border:none;background:none;">…</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if events.has_next %}
+      <a href="?page={{ events.next_page_number }}{% if active_year %}&year={{ active_year }}{% endif %}"
+         class="page-btn" aria-label="Next page">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      {% else %}
+      <span class="page-btn disabled"><i class="bi bi-chevron-right"></i></span>
+      {% endif %}
+
+    </nav>
+    {% endif %}
+
+    <!-- Back to homepage CTA -->
+    <div style="text-align:center; margin-top:60px;" data-reveal>
+      <a href="{% url 'home' %}" class="cta-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Homepage
+      </a>
+    </div>
+
+  </section>
+
+  <!-- ======================== LIGHTBOX ======================== -->
+  <div id="eventsLightbox" onclick="closeLightbox(event)">
+    <div class="lb-inner">
+      <img id="lbImg" src="" alt="Event photo">
+      <button class="lb-close" onclick="closeLightbox()" aria-label="Close lightbox">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ── Lightbox ──────────────────────────────────────────────────────────────
+  function openLightbox(cell) {
+    var img = cell.querySelector('img');
+    if (!img) return;
+    document.getElementById('lbImg').src = img.src;
+    document.getElementById('eventsLightbox').classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(e) {
+    if (e && e.target !== document.getElementById('eventsLightbox')
+           && !e.target.closest('.lb-close')) return;
+    document.getElementById('eventsLightbox').classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.getElementById('eventsLightbox').classList.remove('lb-open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // ── Scroll reveal ─────────────────────────────────────────────────────────
+  var revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-reveal]').forEach(function (el) {
+    revealObserver.observe(el);
+  });
+</script>
+{% endblock %}
