@@ -69,6 +69,7 @@ class StaticPagesSitemap(Sitemap):
             'post_list',
             'shop:product_list',
             'apartment_list',
+            'events:all-events',
         ]
     
     def location(self, item):
