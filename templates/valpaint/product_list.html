@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'valpaint/css/valpaint.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="vp-ambient">
+  <div class="vp-orb vp-orb-1"></div>
+  <div class="vp-orb vp-orb-2"></div>
+</div>
+
+<main class="main" style="position:relative;z-index:1;padding-top:var(--nav-height);">
+  <div class="container" style="padding-top:3rem;padding-bottom:5rem;">
+
+    <!-- Breadcrumb -->
+    <nav class="vp-breadcrumb" aria-label="breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <i class="bi bi-chevron-right"></i>
+      <a href="{% url 'valpaint_home' %}">Valpaint</a>
+      <i class="bi bi-chevron-right"></i>
+      <span>All Products</span>
+    </nav>
+
+    <div class="vp-list-header" data-reveal>
+      <div class="section-badge"><i class="bi bi-collection"></i> Full Catalogue</div>
+      <h1 class="vp-section-title">Valpaint <em>Products</em></h1>
+    </div>
+
+    <div class="vp-list-layout">
+
+      <!-- ── Sidebar filters ── -->
+      <aside class="vp-filters" id="vpFilters">
+        <div class="vp-filters__head">
+          <span>Filter Products</span>
+          <button class="vp-filters__close" id="vpFiltersClose" aria-label="Close filters">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <form method="GET" action="{% url 'product_list' %}" id="vpFilterForm">
+          <!-- Search -->
+          <div class="vp-filters__group">
+            <label class="vp-filters__label">Search</label>
+            <div class="vp-filters__search-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" name="q" value="{{ search_query }}"
+                     placeholder="Product name…" class="vp-filters__search-input">
+            </div>
+          </div>
+
+          <!-- Use type -->
+          <div class="vp-filters__group">
+            <label class="vp-filters__label">Use Type</label>
+            <div class="vp-filters__options">
+              <label class="vp-radio {% if not active_use %}vp-radio--active{% endif %}">
+                <input type="radio" name="use" value="" {% if not active_use %}checked{% endif %}>
+                All
+              </label>
+              <label class="vp-radio {% if active_use == 'interior' %}vp-radio--active{% endif %}">
+                <input type="radio" name="use" value="interior" {% if active_use == 'interior' %}checked{% endif %}>
+                Interior
+              </label>
+              <label class="vp-radio {% if active_use == 'exterior' %}vp-radio--active{% endif %}">
+                <input type="radio" name="use" value="exterior" {% if active_use == 'exterior' %}checked{% endif %}>
+                Exterior
+              </label>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="vp-filters__group">
+            <label class="vp-filters__label">Category</label>
+            <div class="vp-filters__options">
+              <label class="vp-radio {% if not active_cat %}vp-radio--active{% endif %}">
+                <input type="radio" name="category" value="" {% if not active_cat %}checked{% endif %}>
+                All Categories
+              </label>
+              {% for cat in categories %}
+              <label class="vp-radio {% if active_cat == cat.slug %}vp-radio--active{% endif %}">
+                <input type="radio" name="category" value="{{ cat.slug }}"
+                       {% if active_cat == cat.slug %}checked{% endif %}>
+                {{ cat.name }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Finishes -->
+          <div class="vp-filters__group">
+            <label class="vp-filters__label">Finish Type</label>
+            <div class="vp-filters__options">
+              <label class="vp-radio {% if not active_fin %}vp-radio--active{% endif %}">
+                <input type="radio" name="finish" value="" {% if not active_fin %}checked{% endif %}>
+                All Finishes
+              </label>
+              {% for finish in all_finishes %}
+              <label class="vp-radio {% if active_fin == finish.slug %}vp-radio--active{% endif %}">
+                <input type="radio" name="finish" value="{{ finish.slug }}"
+                       {% if active_fin == finish.slug %}checked{% endif %}>
+                {{ finish.name }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <button type="submit" class="btn-getstarted" style="width:100%;justify-content:center;margin-top:0.5rem;">
+            Apply Filters
+          </button>
+          {% if active_cat or active_fin or active_use or search_query %}
+          <a href="{% url 'product_list' %}" class="vp-filters__clear">
+            <i class="bi bi-x-circle"></i> Clear all filters
+          </a>
+          {% endif %}
+        </form>
+      </aside>
+
+      <!-- ── Product grid ── -->
+      <div class="vp-list-main">
+        <div class="vp-list-toolbar">
+          <span class="vp-list-count">
+            {{ products|length }} product{{ products|length|pluralize }} found
+          </span>
+          <button class="vp-filters-toggle" id="vpFiltersToggle" aria-label="Open filters">
+            <i class="bi bi-sliders"></i> Filters
+          </button>
+        </div>
+
+        {% if products %}
+        <div class="vp-product-grid">
+          {% for product in products %}
+          <a href="{{ product.get_absolute_url }}" class="vp-product-card">
+            <div class="vp-product-card__img-wrap">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.image_alt|default:product.name }}" loading="lazy">
+              {% else %}
+                <div class="vp-product-card__img-placeholder">
+                  <i class="bi bi-paint-bucket"></i>
+                </div>
+              {% endif %}
+              {% if product.category %}
+              <div class="vp-product-card__badge">{{ product.category.name }}</div>
+              {% endif %}
+            </div>
+            <div class="vp-product-card__body">
+              <h3 class="vp-product-card__name">{{ product.name }}</h3>
+              {% if product.short_desc %}
+              <p class="vp-product-card__desc">{{ product.short_desc|truncatechars:90 }}</p>
+              {% endif %}
+              {% if product.finishes.exists %}
+              <div class="vp-product-card__finishes">
+                {% for finish in product.finishes.all|slice:":3" %}
+                <span class="vp-finish-tag">{{ finish.name }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              <div class="vp-product-card__footer">
+                {% if product.price_ngn %}
+                  <span class="vp-product-card__price">₦{{ product.price_ngn|floatformat:0 }}</span>
+                {% else %}
+                  <span class="vp-product-card__price-tba">Contact for price</span>
+                {% endif %}
+                <span class="vp-product-card__cta">View <i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="vp-empty">
+          <i class="bi bi-search"></i>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or <a href="{% url 'product_list' %}">clear all</a>.</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'valpaint/js/valpaint.js' %}"></script>
+{% endblock %}

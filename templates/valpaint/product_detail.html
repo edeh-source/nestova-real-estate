@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block seo_meta %}
+<meta name="description" content="{{ product.meta_description|default:product.short_desc }}">
+{% if product.image %}<meta property="og:image" content="{{ product.image.url }}">{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'valpaint/css/valpaint.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="vp-ambient">
+  <div class="vp-orb vp-orb-1"></div>
+  <div class="vp-orb vp-orb-2"></div>
+</div>
+
+<main class="main" style="position:relative;z-index:1;padding-top:var(--nav-height);">
+  <div class="container" style="padding-top:3rem;padding-bottom:5rem;">
+
+    <!-- Breadcrumb -->
+    <nav class="vp-breadcrumb" aria-label="breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <i class="bi bi-chevron-right"></i>
+      <a href="{% url 'valpaint_home' %}">Valpaint</a>
+      <i class="bi bi-chevron-right"></i>
+      <a href="{% url 'product_list' %}">Products</a>
+      {% if product.category %}
+      <i class="bi bi-chevron-right"></i>
+      <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+      {% endif %}
+      <i class="bi bi-chevron-right"></i>
+      <span>{{ product.name }}</span>
+    </nav>
+
+    <!-- ── Product detail layout ── -->
+    <div class="vp-detail-layout">
+
+      <!-- Left: image -->
+      <div class="vp-detail__image-col" data-reveal>
+        <div class="vp-detail__image-wrap">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.image_alt|default:product.name }}">
+          {% else %}
+            <div class="vp-detail__image-placeholder">
+              <i class="bi bi-paint-bucket"></i>
+              <span>{{ product.name }}</span>
+            </div>
+          {% endif %}
+          {% if not product.in_stock %}
+          <div class="vp-detail__stock-badge">Currently Out of Stock</div>
+          {% endif %}
+        </div>
+
+        <!-- Finishes chips -->
+        {% if product.finishes.exists %}
+        <div class="vp-detail__finishes">
+          <span class="vp-detail__finishes-label">Available finishes:</span>
+          {% for finish in product.finishes.all %}
+          <a href="{% url 'product_list' %}?finish={{ finish.slug }}"
+             class="vp-finish-tag">{{ finish.name }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Official link -->
+        {% if product.valpaint_url %}
+        <a href="{{ product.valpaint_url }}" target="_blank" rel="noopener" class="vp-origin-link mt-3 d-inline-flex">
+          View on Valpaint.it <i class="bi bi-arrow-up-right"></i>
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Right: info + form -->
+      <div class="vp-detail__info-col">
+        {% if product.category %}
+        <div class="section-badge" style="margin-bottom:1rem;">
+          {{ product.category.name }}
+          {% if product.category.use_type == 'interior' %}<span>— Interior</span>
+          {% elif product.category.use_type == 'exterior' %}<span>— Exterior</span>
+          {% else %}<span>— Interior &amp; Exterior</span>{% endif %}
+        </div>
+        {% endif %}
+
+        <h1 class="vp-detail__name">{{ product.name }}</h1>
+
+        {% if product.short_desc %}
+        <p class="vp-detail__short-desc">{{ product.short_desc }}</p>
+        {% endif %}
+
+        <!-- Price -->
+        <div class="vp-detail__price-row">
+          {% if product.price_ngn %}
+            <span class="vp-detail__price">₦{{ product.price_ngn|floatformat:0 }}</span>
+            {% if product.price_label %}
+            <span class="vp-detail__price-label">/ {{ product.price_label }}</span>
+            {% endif %}
+          {% else %}
+            <span class="vp-detail__price-tba">Contact us for pricing</span>
+          {% endif %}
+        </div>
+
+        <!-- Description -->
+        {% if product.description %}
+        <div class="vp-detail__description">
+          {{ product.description|linebreaks }}
+        </div>
+        {% endif %}
+
+        <!-- Applications list -->
+        {% if product.application_list %}
+        <div class="vp-detail__applications">
+          <h4>Applications</h4>
+          <ul>
+            {% for app in product.application_list %}
+            <li><i class="bi bi-check2-circle"></i> {{ app }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Quick actions -->
+        <div class="vp-detail__actions">
+          <a href="#detail-enquire" class="btn-getstarted">
+            <i class="bi bi-chat-text"></i> Enquire / Get Quote
+          </a>
+          <a href="https://wa.me/2349014344271?text=Hi%2C%20I%27m%20interested%20in%20{{ product.name|urlencode }}%20from%20Valpaint"
+             target="_blank" rel="noopener" class="vp-btn-ghost">
+            <i class="bi bi-whatsapp"></i> WhatsApp Us
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ── Enquiry form (anchored) ── -->
+    <div class="vp-enquire__wrapper" id="detail-enquire" style="margin-top:5rem;" data-reveal>
+      <div class="vp-enquire__left">
+        <div class="section-badge"><i class="bi bi-chat-dots"></i> Request a Quote</div>
+        <h2 class="vp-section-title">Interested in<br><em>{{ product.name }}?</em></h2>
+        <p>Leave your details and a Nestova specialist will contact you with pricing, availability and application guidance.</p>
+        <div class="vp-enquire__contact-items">
+          <div class="vp-enquire__contact">
+            <div class="contact-icon"><i class="bi bi-whatsapp"></i></div>
+            <div>
+              <div class="vp-enquire__contact-label">WhatsApp</div>
+              <a href="https://wa.me/2349014344271" class="vp-enquire__contact-val">+234 901 434 4271</a>
+            </div>
+          </div>
+          <div class="vp-enquire__contact">
+            <div class="contact-icon"><i class="bi bi-envelope"></i></div>
+            <div>
+              <div class="vp-enquire__contact-label">Email</div>
+              <a href="mailto:nestovagroups@gmail.com" class="vp-enquire__contact-val">nestovagroups@gmail.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vp-enquire__right">
+        <form method="POST" action="{% url 'submit_enquiry' %}"
+              id="vpEnquiryForm" class="vp-form">
+          {% csrf_token %}
+          <input type="hidden" name="product_slug" value="{{ product.slug }}">
+
+          <div class="vp-form__row">
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.full_name.label }}</label>
+              {{ enquiry_form.full_name }}
+            </div>
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.email.label }}</label>
+              {{ enquiry_form.email }}
+            </div>
+          </div>
+          <div class="vp-form__row">
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.phone.label }}</label>
+              {{ enquiry_form.phone }}
+            </div>
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.location.label }}</label>
+              {{ enquiry_form.location }}
+            </div>
+          </div>
+          <div class="vp-form__field">
+            <label>{{ enquiry_form.quantity.label }}</label>
+            {{ enquiry_form.quantity }}
+          </div>
+          <div class="vp-form__field">
+            <label>{{ enquiry_form.message.label }}</label>
+            {{ enquiry_form.message }}
+          </div>
+
+          <button type="submit" class="btn-getstarted vp-form__submit">
+            <span class="vp-form__submit-text">Send Enquiry</span>
+            <span class="vp-form__submit-loading" style="display:none">
+              <i class="bi bi-arrow-repeat vp-spin"></i> Sending…
+            </span>
+          </button>
+          <div class="vp-form__success" style="display:none">
+            <i class="bi bi-check-circle-fill"></i>
+            Thank you! We'll contact you shortly about <strong>{{ product.name }}</strong>.
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- ── Related products ── -->
+    {% if related %}
+    <div style="margin-top:5rem;" data-reveal>
+      <h2 class="vp-section-title">Related <em>Products</em></h2>
+      <div class="vp-product-grid" style="margin-top:2rem;">
+        {% for rp in related %}
+        <a href="{{ rp.get_absolute_url }}" class="vp-product-card">
+          <div class="vp-product-card__img-wrap">
+            {% if rp.image %}
+              <img src="{{ rp.image.url }}" alt="{{ rp.name }}" loading="lazy">
+            {% else %}
+              <div class="vp-product-card__img-placeholder"><i class="bi bi-paint-bucket"></i></div>
+            {% endif %}
+          </div>
+          <div class="vp-product-card__body">
+            <h3 class="vp-product-card__name">{{ rp.name }}</h3>
+            {% if rp.short_desc %}
+            <p class="vp-product-card__desc">{{ rp.short_desc|truncatechars:80 }}</p>
+            {% endif %}
+            <div class="vp-product-card__footer">
+              {% if rp.price_ngn %}
+                <span class="vp-product-card__price">₦{{ rp.price_ngn|floatformat:0 }}</span>
+              {% else %}
+                <span class="vp-product-card__price-tba">Contact for price</span>
+              {% endif %}
+              <span class="vp-product-card__cta">View <i class="bi bi-arrow-right"></i></span>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'valpaint/js/valpaint.js' %}"></script>
+{% endblock %}

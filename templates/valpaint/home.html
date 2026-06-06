@@ -1,0 +1,547 @@
+{% extends 'base.html' %}
+{% load valpaint_extras %}
+{% load static %}
+
+{% block title %}Valpaint — Premium Italian Decorative Paints | Nestova{% endblock %}
+
+{% block seo_meta %}
+<meta name="description" content="Nestova brings Valpaint — Italy's leading decorative paint brand — to Nigeria. Explore metallic, satin, cement, glitter and 20+ premium wall finishes for interior and exterior use.">
+<meta name="keywords" content="Valpaint Nigeria, Italian decorative paints Lagos, premium wall finishes Nigeria, Nestova Valpaint, luxury paints Nigeria">
+<meta property="og:title" content="Valpaint — Premium Italian Decorative Paints | Nestova">
+<meta property="og:description" content="Official Valpaint partner in Nigeria. Discover over 40 decorative paint products — metallic, cement, satin, glitter and more.">
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'valpaint/css/valpaint.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════
+     AMBIENT BACKGROUND ORBS
+════════════════════════════════════════════════════════ -->
+<div class="vp-ambient">
+  <div class="vp-orb vp-orb-1"></div>
+  <div class="vp-orb vp-orb-2"></div>
+  <div class="vp-orb vp-orb-3"></div>
+</div>
+
+<main class="main" style="position:relative;z-index:1;">
+
+  <!-- ═══════════════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-hero">
+    <div class="vp-hero__bg">
+      <!-- Layered paint-stroke gradient panels -->
+      <div class="vp-hero__panel vp-hero__panel--1"></div>
+      <div class="vp-hero__panel vp-hero__panel--2"></div>
+      <div class="vp-hero__panel vp-hero__panel--3"></div>
+      <div class="vp-hero__grain"></div>
+    </div>
+
+    <div class="container vp-hero__inner">
+      <div class="vp-hero__badge">
+        <span class="vp-pill">
+          <i class="bi bi-patch-check-fill"></i>
+          Official Partner — Nigeria
+        </span>
+      </div>
+
+      <div class="vp-hero__logo-pair">
+        <span class="vp-hero__nestova-name">Nestova</span>
+        <span class="vp-hero__x">×</span>
+        <span class="vp-hero__brand-name">Valpaint</span>
+      </div>
+
+      <h1 class="vp-hero__headline">
+        Italian Artistry,<br>
+        <em>Nigerian Walls</em>
+      </h1>
+
+      <p class="vp-hero__sub">
+        Discover over 40 premium decorative finishes — metallic, cement, satin, glitter and more — 
+        from Italy's most innovative paint manufacturer, now available through Nestova.
+      </p>
+
+      <div class="vp-hero__cta-row">
+        <a href="{% url 'product_list' %}" class="btn-getstarted">
+          Explore Products <i class="bi bi-arrow-right"></i>
+        </a>
+        <a href="#enquire" class="vp-btn-ghost">
+          <i class="bi bi-chat-text"></i> Get a Quote
+        </a>
+      </div>
+
+      <!-- Quick-stat band -->
+      <div class="vp-hero__stats">
+        <div class="vp-stat">
+          <span class="vp-stat__num">40+</span>
+          <span class="vp-stat__lbl">Unique Products</span>
+        </div>
+        <div class="vp-stat__divider"></div>
+        <div class="vp-stat">
+          <span class="vp-stat__num">20+</span>
+          <span class="vp-stat__lbl">Finish Options</span>
+        </div>
+        <div class="vp-stat__divider"></div>
+        <div class="vp-stat">
+          <span class="vp-stat__num">400+</span>
+          <span class="vp-stat__lbl">Global Resellers</span>
+        </div>
+        <div class="vp-stat__divider"></div>
+        <div class="vp-stat">
+          <span class="vp-stat__num">🇮🇹</span>
+          <span class="vp-stat__lbl">Made in Italy</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="vp-hero__scroll-hint">
+      <div class="vp-scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       PARTNERSHIP BANNER
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-partnership section-wrap">
+    <div class="container">
+      <div class="vp-partnership__card" data-reveal>
+        <div class="vp-partnership__left">
+          <div class="section-badge"><i class="bi bi-handshake"></i> Strategic Partnership</div>
+          <h2 class="vp-section-title">
+            Nestova is the <em>Official</em><br>
+            Valpaint Partner in Nigeria
+          </h2>
+          <p>
+            Valpaint S.p.A., headquartered in Polverigi, Italy, has been a leader in decorative coatings 
+            since its founding. With a research-driven approach and over 400 resellers worldwide, 
+            Valpaint brings unmatched innovation to interior and exterior wall decoration.
+          </p>
+          <p>
+            Through our exclusive partnership, Nestova now brings these premium Italian finishes 
+            directly to homeowners, developers, architects and designers across Nigeria — 
+            with local support, technical guidance and competitive pricing.
+          </p>
+          <div class="vp-partnership__badges">
+            <div class="vp-badge-item">
+              <i class="bi bi-shield-check"></i>
+              <span>Authentic Products</span>
+            </div>
+            <div class="vp-badge-item">
+              <i class="bi bi-headset"></i>
+              <span>Local Technical Support</span>
+            </div>
+            <div class="vp-badge-item">
+              <i class="bi bi-truck"></i>
+              <span>Nigeria-Wide Delivery</span>
+            </div>
+            <div class="vp-badge-item">
+              <i class="bi bi-palette2"></i>
+              <span>Colour Consultancy</span>
+            </div>
+          </div>
+        </div>
+        <div class="vp-partnership__right">
+          <div class="vp-origin-card">
+            <div class="vp-origin-flag">🇮🇹</div>
+            <div class="vp-origin-body">
+              <h3>Valpaint S.p.A.</h3>
+              <p>Via dell'Industria, 80<br>60020 Polverigi (AN) — Italy</p>
+              <a href="https://www.valpaint.it/en/" target="_blank" rel="noopener" class="vp-origin-link">
+                valpaint.it <i class="bi bi-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          <div class="vp-origin-card vp-origin-card--ng">
+            <div class="vp-origin-flag">🇳🇬</div>
+            <div class="vp-origin-body">
+              <h3>Available through Nestova</h3>
+              <p>Lagos, Nigeria<br>Nationwide delivery & consultation</p>
+              <a href="{% url 'contact' %}" class="vp-origin-link">
+                Contact Us <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       PRODUCT CATEGORIES
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-categories section-wrap" id="products">
+    <div class="container">
+      <div class="text-center mb-5" data-reveal>
+        <div class="section-badge"><i class="bi bi-grid-3x3-gap"></i> Product Lines</div>
+        <h2 class="vp-section-title">Find Your <em>Perfect Finish</em></h2>
+        <p class="vp-section-sub">
+          Whether you're decorating a living room, a commercial lobby or an exterior façade,
+          Valpaint has a solution crafted for every surface.
+        </p>
+      </div>
+
+      <div class="vp-cat-grid" data-reveal>
+        <!-- Interior paints -->
+        <a href="{% url 'product_list' %}?use=interior" class="vp-cat-card">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-house-heart"></i>
+          </div>
+          <h3>Interior Decorative Paints</h3>
+          <p>Water-based coatings, resins, additives and the Flat Color Collection for spectacular indoor results.</p>
+          <span class="vp-cat-card__cta">Browse Interior <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <!-- Exterior paints -->
+        <a href="{% url 'product_list' %}?use=exterior" class="vp-cat-card">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-building"></i>
+          </div>
+          <h3>Exterior Decorative Paints</h3>
+          <p>Weather-resistant finishes designed for façades, outdoor walls and high-durability exterior surfaces.</p>
+          <span class="vp-cat-card__cta">Browse Exterior <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <!-- Resins -->
+        <a href="{% url 'product_list' %}?category=resins" class="vp-cat-card">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-droplet-half"></i>
+          </div>
+          <h3>Resins</h3>
+          <p>Make decorated walls more hard-wearing, hygienic and easy to clean with Valpaint's premium resin range.</p>
+          <span class="vp-cat-card__cta">View Resins <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <!-- Additives -->
+        <a href="{% url 'product_list' %}?category=additives" class="vp-cat-card">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-stars"></i>
+          </div>
+          <h3>Additives</h3>
+          <p>Liquid and powder enhancers that add glossy, sparkly or metallic effects to any Valpaint base product.</p>
+          <span class="vp-cat-card__cta">View Additives <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <!-- Stencil Pictus -->
+        <a href="{% url 'product_list' %}?category=stencil" class="vp-cat-card">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-brush"></i>
+          </div>
+          <h3>Stencil Pictus</h3>
+          <p>Decorative stencil systems for creating unique patterns and motifs on walls with professional precision.</p>
+          <span class="vp-cat-card__cta">View Stencils <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <!-- All products CTA card -->
+        <a href="{% url 'product_list' %}" class="vp-cat-card vp-cat-card--all">
+          <div class="vp-cat-card__icon">
+            <i class="bi bi-collection"></i>
+          </div>
+          <h3>View All Products</h3>
+          <p>Browse the complete Valpaint catalogue — 40+ products, filterable by finish, use type and category.</p>
+          <span class="vp-cat-card__cta">Full Catalogue <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       FEATURED PRODUCTS
+  ════════════════════════════════════════════════════ -->
+  {% if featured %}
+  <section class="vp-featured section-wrap">
+    <div class="container">
+      <div class="vp-featured__header" data-reveal>
+        <div>
+          <div class="section-badge"><i class="bi bi-gem"></i> Curated Selection</div>
+          <h2 class="vp-section-title">Featured <em>Products</em></h2>
+        </div>
+        <a href="{% url 'product_list' %}" class="vp-btn-ghost">
+          See All Products <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="vp-product-grid" data-reveal>
+        {% for product in featured %}
+        <a href="{{ product.get_absolute_url }}" class="vp-product-card">
+          <div class="vp-product-card__img-wrap">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.image_alt|default:product.name }}" loading="lazy">
+            {% else %}
+              <div class="vp-product-card__img-placeholder">
+                <i class="bi bi-paint-bucket"></i>
+              </div>
+            {% endif %}
+            {% if product.category %}
+            <div class="vp-product-card__badge">{{ product.category.name }}</div>
+            {% endif %}
+            {% if not product.in_stock %}
+            <div class="vp-product-card__badge vp-product-card__badge--out">Out of Stock</div>
+            {% endif %}
+          </div>
+          <div class="vp-product-card__body">
+            <h3 class="vp-product-card__name">{{ product.name }}</h3>
+            {% if product.short_desc %}
+            <p class="vp-product-card__desc">{{ product.short_desc|truncatechars:90 }}</p>
+            {% endif %}
+            {% if product.finishes.exists %}
+            <div class="vp-product-card__finishes">
+              {% for finish in product.finishes.all|slice:":3" %}
+              <span class="vp-finish-tag">{{ finish.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            <div class="vp-product-card__footer">
+              {% if product.price_ngn %}
+                <span class="vp-product-card__price">₦{{ product.price_ngn|floatformat:0 }}
+                  {% if product.price_label %}<small>/ {{ product.price_label }}</small>{% endif %}
+                </span>
+              {% else %}
+                <span class="vp-product-card__price-tba">Contact for price</span>
+              {% endif %}
+              <span class="vp-product-card__cta">View Details <i class="bi bi-arrow-right"></i></span>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- ═══════════════════════════════════════════════════
+       FINISHES SHOWCASE (visual chips)
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-finishes section-wrap">
+    <div class="container">
+      <div class="text-center mb-5" data-reveal>
+        <div class="section-badge"><i class="bi bi-palette"></i> Finish Types</div>
+        <h2 class="vp-section-title">20+ Decorative <em>Finishes</em></h2>
+        <p class="vp-section-sub">Every surface tells a story. Choose yours.</p>
+      </div>
+
+      <div class="vp-finishes__grid" data-reveal>
+        <!-- Static finish cards — these match Valpaint's actual catalogue -->
+        {% for finish in all_finishes %}
+        <a href="{% url 'product_list' %}?finish={{ finish.slug }}" class="vp-finish-card">
+          <div class="vp-finish-card__swatch vp-finish-swatch--{{ finish.slug }}"></div>
+          <span>{{ finish.name }}</span>
+        </a>
+        {% empty %}
+        <!-- Fallback static finishes when DB is empty -->
+        {% for finish_name in "Metallic,Satin,Glitter,Cement,Velvet,Antiqued,Pearlescent,Sandy,Silk,Corten"|split:"," %}
+        <div class="vp-finish-card">
+          <div class="vp-finish-card__swatch"></div>
+          <span>{{ finish_name }}</span>
+        </div>
+        {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       WHY VALPAINT / USP STRIP
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-usp section-wrap">
+    <div class="container">
+      <div class="text-center mb-5" data-reveal>
+        <div class="section-badge"><i class="bi bi-award"></i> Why Valpaint</div>
+        <h2 class="vp-section-title">Italian Innovation,<br><em>World-Class Quality</em></h2>
+      </div>
+      <div class="vp-usp__grid" data-reveal>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-flask"></i></div>
+          <h3>R&amp;D Laboratory</h3>
+          <p>Every product is developed in Valpaint's in-house research lab, ensuring cutting-edge formulations and consistent quality across every batch.</p>
+        </div>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-leaf"></i></div>
+          <h3>Sustainable Philosophy</h3>
+          <p>Valpaint is committed to environmentally responsible manufacturing — water-based formulations that protect both your family and the planet.</p>
+        </div>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-palette2"></i></div>
+          <h3>Unmatched Finishes</h3>
+          <p>From Venetian stucco to industrial Corten effects, Valpaint offers over 20 distinct finish types that no standard paint brand can replicate.</p>
+        </div>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-globe2"></i></div>
+          <h3>Global Presence</h3>
+          <p>Over 400 resellers in more than 50 countries. Valpaint products are used in luxury residences, hotels and commercial spaces worldwide.</p>
+        </div>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-phone"></i></div>
+          <h3>Valpaint App</h3>
+          <p>Calculate the exact quantity you need and visualise finishes before you buy, using the official Valpaint Easy Calculator app.</p>
+        </div>
+        <div class="vp-usp__card">
+          <div class="vp-usp__icon"><i class="bi bi-headset"></i></div>
+          <h3>Nestova Technical Support</h3>
+          <p>Our trained team provides on-site guidance, application support and colour consultancy for every Valpaint project across Nigeria.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       ENQUIRY / QUOTE FORM
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-enquire section-wrap" id="enquire">
+    <div class="container">
+      <div class="vp-enquire__wrapper" data-reveal>
+
+        <div class="vp-enquire__left">
+          <div class="section-badge"><i class="bi bi-chat-dots"></i> Get a Quote</div>
+          <h2 class="vp-section-title">Ready to Transform<br><em>Your Space?</em></h2>
+          <p>Tell us about your project and a Nestova consultant will reach out with product recommendations, pricing and application advice — all tailored to your Nigerian context.</p>
+
+          <div class="vp-enquire__contact-items">
+            <div class="vp-enquire__contact">
+              <div class="contact-icon"><i class="bi bi-whatsapp"></i></div>
+              <div>
+                <div class="vp-enquire__contact-label">WhatsApp</div>
+                <a href="https://wa.me/2349014344271" class="vp-enquire__contact-val">+234 901 434 4271</a>
+              </div>
+            </div>
+            <div class="vp-enquire__contact">
+              <div class="contact-icon"><i class="bi bi-envelope"></i></div>
+              <div>
+                <div class="vp-enquire__contact-label">Email</div>
+                <a href="mailto:hello@nestova.ng" class="vp-enquire__contact-val">nestovagroups@gmail.com</a>
+              </div>
+            </div>
+            <div class="vp-enquire__contact">
+              <div class="contact-icon"><i class="bi bi-geo-alt"></i></div>
+              <div>
+                <div class="vp-enquire__contact-label">Showroom</div>
+                <span class="vp-enquire__contact-val">No 78 Ogunlana Drive
+Surulere, Lagos 101283
+Nigeria</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vp-enquire__right">
+          <form method="POST" action="{% url 'submit_enquiry' %}"
+                id="vpEnquiryForm" class="vp-form">
+            {% csrf_token %}
+
+            <div class="vp-form__row">
+              <div class="vp-form__field">
+                <label>{{ enquiry_form.full_name.label }}</label>
+                {{ enquiry_form.full_name }}
+                {% if enquiry_form.full_name.errors %}
+                  <div class="vp-form__error">{{ enquiry_form.full_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+              <div class="vp-form__field">
+                <label>{{ enquiry_form.email.label }}</label>
+                {{ enquiry_form.email }}
+                {% if enquiry_form.email.errors %}
+                  <div class="vp-form__error">{{ enquiry_form.email.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="vp-form__row">
+              <div class="vp-form__field">
+                <label>{{ enquiry_form.phone.label }}</label>
+                {{ enquiry_form.phone }}
+              </div>
+              <div class="vp-form__field">
+                <label>{{ enquiry_form.location.label }}</label>
+                {{ enquiry_form.location }}
+              </div>
+            </div>
+
+            <div class="vp-form__field">
+              <label>Product of Interest</label>
+              <select name="product_slug" class="vp-input">
+                <option value="">— General enquiry / not sure yet —</option>
+                {% for cat in categories %}
+                  {% if cat.products.exists %}
+                  <optgroup label="{{ cat.name }}">
+                    {% for p in cat.products.all %}
+                    <option value="{{ p.slug }}">{{ p.name }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.quantity.label }}</label>
+              {{ enquiry_form.quantity }}
+            </div>
+
+            <div class="vp-form__field">
+              <label>{{ enquiry_form.message.label }}</label>
+              {{ enquiry_form.message }}
+              {% if enquiry_form.message.errors %}
+                <div class="vp-form__error">{{ enquiry_form.message.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="btn-getstarted vp-form__submit">
+              <span class="vp-form__submit-text">Send Enquiry</span>
+              <span class="vp-form__submit-loading" style="display:none">
+                <i class="bi bi-arrow-repeat vp-spin"></i> Sending…
+              </span>
+            </button>
+
+            <div class="vp-form__success" style="display:none">
+              <i class="bi bi-check-circle-fill"></i>
+              Thank you! Our team will contact you shortly.
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       SUSTAINABILITY NOTE
+  ════════════════════════════════════════════════════ -->
+  <section class="vp-sustainability section-wrap">
+    <div class="container">
+      <div class="vp-sustainability__card" data-reveal>
+        <div class="vp-sustainability__icon"><i class="bi bi-tree"></i></div>
+        <div>
+          <h3>Built on Sustainability</h3>
+          <p>
+            Valpaint's entire philosophy is grounded in environmental responsibility.
+            Their water-based formulations are low VOC, safer for applicators and 
+            families, and designed to last — reducing repaint cycles and long-term waste.
+            When you choose Valpaint through Nestova, you're investing in your home 
+            <em>and</em> the environment.
+          </p>
+          <a href="https://www.valpaint.it/en/sustainability/" target="_blank" rel="noopener" class="vp-origin-link">
+            Valpaint Sustainability <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script src="{% static 'valpaint/js/valpaint.js' %}"></script>
+{% endblock %}

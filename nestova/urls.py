@@ -51,6 +51,7 @@ urlpatterns = [
     path('services/', include('services.urls')),
     path('', include("contact.urls")),
     path('', include('events.urls', namespace='events')),
+    path('valpaint/', include('valpaint.urls')),  # Valpaint URLs with prefix
     
     # Allauth URLs (for social auth only - login/register handled by custom views)
     path('accounts/', include('allauth.urls')),

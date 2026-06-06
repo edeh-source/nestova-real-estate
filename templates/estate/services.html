@@ -579,6 +579,8 @@
 
 .svc-block-wrap:nth-child(1) { animation-delay: 0.10s; }
 .svc-block-wrap:nth-child(2) { animation-delay: 0.20s; }
+.svc-block-wrap:nth-child(3) { animation-delay: 0.10s; }
+.svc-block-wrap:nth-child(4) { animation-delay: 0.20s; }
 .svc-card-wrap:nth-child(1)  { animation-delay: 0.10s; }
 .svc-card-wrap:nth-child(2)  { animation-delay: 0.20s; }
 .svc-card-wrap:nth-child(3)  { animation-delay: 0.30s; }
@@ -597,6 +599,346 @@
   .cta-block { padding: 32px 22px; }
   .cta-block h3 { font-size: 1.5rem; }
   .service-stats { flex-wrap: wrap; gap: 14px; }
+}
+
+/* ============================================================
+   VALPAINT FEATURED BLOCK
+   ============================================================ */
+.valpaint-block {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(18,18,26,0.95) 0%, rgba(10,10,30,0.98) 100%);
+  border: 1px solid rgba(201,168,76,0.18);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.valpaint-block:hover {
+  border-color: rgba(201,168,76,0.35);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.08);
+  transform: translateY(-4px);
+}
+
+/* Subtle Italian-flag top accent */
+.valpaint-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #009246 33.3%, #fff 33.3% 66.6%, #ce2b37 66.6%);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+.valpaint-block__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 420px;
+}
+
+.valpaint-block__visual {
+  position: relative;
+  overflow: hidden;
+}
+
+.valpaint-block__visual-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(100,80,180,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(201,168,76,0.07) 0%, transparent 45%),
+    linear-gradient(135deg, #0d0d1a 0%, #111128 100%);
+}
+
+/* Decorative paint-stroke blobs */
+.valpaint-block__visual-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.5;
+}
+.valpaint-block__visual-blob--1 {
+  width: 220px; height: 220px;
+  background: rgba(201,168,76,0.18);
+  top: -40px; left: -40px;
+}
+.valpaint-block__visual-blob--2 {
+  width: 180px; height: 180px;
+  background: rgba(100,80,200,0.15);
+  bottom: 20px; right: -30px;
+}
+.valpaint-block__visual-blob--3 {
+  width: 140px; height: 140px;
+  background: rgba(201,140,76,0.12);
+  bottom: -20px; left: 30%;
+}
+
+.valpaint-block__logo-area {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 36px;
+  text-align: center;
+}
+
+.valpaint-block__partnership-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.valpaint-block__logo-pair {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.valpaint-block__logo-nestova {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: -0.5px;
+}
+
+.valpaint-block__logo-x {
+  font-size: 1rem;
+  color: rgba(201,168,76,0.5);
+  font-weight: 300;
+}
+
+.valpaint-block__logo-brand {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 1px;
+}
+
+.valpaint-block__origin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 24px;
+}
+
+.valpaint-block__finish-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: center;
+}
+
+.valpaint-block__chip {
+  padding: 4px 12px;
+  border-radius: 50px;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.15);
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.04em;
+}
+
+.valpaint-block__content {
+  padding: 40px 44px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.valpaint-block__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--gold);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.valpaint-block__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.valpaint-block__title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.valpaint-block__desc {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  margin-bottom: 28px;
+}
+
+.valpaint-block__features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.valpaint-block__feat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.valpaint-block__feat i {
+  font-size: 0.7rem;
+  color: var(--gold);
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.valpaint-block__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.valpaint-block__stats {
+  display: flex;
+  gap: 24px;
+  padding: 18px 0;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 28px;
+}
+
+.valpaint-block__stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.valpaint-block__stat-num {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.valpaint-block__stat-lbl {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.btn-valpaint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  border-radius: 12px;
+  color: #0A0A0F;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: all 0.35s ease;
+  box-shadow: 0 8px 24px rgba(201,168,76,0.25);
+}
+
+.btn-valpaint:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(201,168,76,0.4);
+  color: #0A0A0F;
+}
+
+.btn-valpaint-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-valpaint-ghost:hover {
+  color: #fff;
+  border-color: var(--gold);
+}
+
+.btn-valpaint-ghost:hover i { transform: translateX(4px); }
+.btn-valpaint-ghost i { transition: transform 0.3s ease; font-size: 0.8rem; }
+
+@media (max-width: 991px) {
+  .valpaint-block__inner {
+    grid-template-columns: 1fr;
+  }
+  .valpaint-block__visual {
+    min-height: 240px;
+  }
+  .valpaint-block__content {
+    padding: 32px 28px;
+  }
+  .valpaint-block__features {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 575px) {
+  .valpaint-block__features {
+    grid-template-columns: 1fr;
+  }
+  .valpaint-block__stats {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
 }
 </style>
 {% endblock extra_head %}
@@ -686,6 +1028,119 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Divider -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Premium Partnerships</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <!-- ---- VALPAINT FEATURED BLOCK ---- -->
+      <div class="row svc-block-wrap" style="animation-delay:0.10s;">
+        <div class="col-12">
+          <div class="valpaint-block">
+            <div class="valpaint-block__inner">
+
+              <!-- Left: Visual / branding panel -->
+              <div class="valpaint-block__visual">
+                <div class="valpaint-block__visual-bg"></div>
+                <div class="valpaint-block__visual-blob valpaint-block__visual-blob--1"></div>
+                <div class="valpaint-block__visual-blob valpaint-block__visual-blob--2"></div>
+                <div class="valpaint-block__visual-blob valpaint-block__visual-blob--3"></div>
+                <div class="valpaint-block__logo-area">
+                  <div class="valpaint-block__partnership-pill">
+                    <i class="bi bi-patch-check-fill"></i>
+                    Official Partner — Nigeria
+                  </div>
+                  <div class="valpaint-block__logo-pair">
+                    <span class="valpaint-block__logo-nestova">Nestova</span>
+                    <span class="valpaint-block__logo-x">×</span>
+                    <span class="valpaint-block__logo-brand">Valpaint</span>
+                  </div>
+                  <div class="valpaint-block__origin">
+                    <span>🇮🇹</span>
+                    <span>Made in Italy — Polverigi, AN</span>
+                  </div>
+                  <div class="valpaint-block__finish-chips">
+                    <span class="valpaint-block__chip">Metallic</span>
+                    <span class="valpaint-block__chip">Satin</span>
+                    <span class="valpaint-block__chip">Cement</span>
+                    <span class="valpaint-block__chip">Glitter</span>
+                    <span class="valpaint-block__chip">Velvet</span>
+                    <span class="valpaint-block__chip">Pearlescent</span>
+                    <span class="valpaint-block__chip">+15 more</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Content -->
+              <div class="valpaint-block__content">
+                <div class="valpaint-block__eyebrow">
+                  <i class="bi bi-gem"></i> Premium Decorative Paints
+                </div>
+                <h3 class="valpaint-block__title">
+                  Italian Artistry,<br>
+                  <em>Nigerian Walls</em>
+                </h3>
+                <p class="valpaint-block__desc">
+                  As the official Valpaint partner in Nigeria, Nestova brings Italy's most
+                  innovative decorative paint brand directly to your doorstep. With over 40
+                  premium finishes — from metallic and satin to cement and Venetian stucco —
+                  we help homeowners, developers and designers achieve world-class wall
+                  transformations with local support and competitive pricing.
+                </p>
+
+                <div class="valpaint-block__stats">
+                  <div class="valpaint-block__stat-item">
+                    <span class="valpaint-block__stat-num">40+</span>
+                    <span class="valpaint-block__stat-lbl">Products</span>
+                  </div>
+                  <div class="valpaint-block__stat-item">
+                    <span class="valpaint-block__stat-num">20+</span>
+                    <span class="valpaint-block__stat-lbl">Finish Types</span>
+                  </div>
+                  <div class="valpaint-block__stat-item">
+                    <span class="valpaint-block__stat-num">400+</span>
+                    <span class="valpaint-block__stat-lbl">Global Resellers</span>
+                  </div>
+                </div>
+
+                <div class="valpaint-block__features">
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Authentic Italian Products</span>
+                  </div>
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Interior &amp; Exterior Finishes</span>
+                  </div>
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Local Technical Support</span>
+                  </div>
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Colour Consultancy</span>
+                  </div>
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Nigeria-Wide Delivery</span>
+                  </div>
+                  <div class="valpaint-block__feat">
+                    <i class="bi bi-check2"></i><span>Resins &amp; Additives</span>
+                  </div>
+                </div>
+
+                <div class="valpaint-block__actions">
+                  <a href="{% url 'valpaint_home' %}" class="btn-valpaint">
+                    <i class="bi bi-palette2"></i> Explore Valpaint
+                  </a>
+                  <a href="{% url 'product_list' %}" class="btn-valpaint-ghost">
+                    Browse Products <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Divider -->

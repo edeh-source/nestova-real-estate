@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'allauth',
+    'valpaint.apps.ValpaintConfig',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
