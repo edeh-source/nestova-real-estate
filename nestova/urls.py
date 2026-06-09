@@ -20,7 +20,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
+from django.http import HttpResponse
 from core.sitemaps import PropertySitemap, ProductSitemap, BlogSitemap, StaticPagesSitemap
+
+
+
+def health(request):
+    return HttpResponse("ok", status=200)
 
 # Sitemap configuration
 sitemaps = {
@@ -32,6 +38,7 @@ sitemaps = {
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health),
     
     # SEO URLs
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
