@@ -22,11 +22,20 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from core.sitemaps import PropertySitemap, ProductSitemap, BlogSitemap, StaticPagesSitemap
-
-
+from django.http import JsonResponse
+from django.db import connection
 
 def health(request):
-    return HttpResponse("ok", status=200)
+    try:
+        connection.ensure_connection()
+        db_ok = True
+    except Exception as e:
+        db_ok = str(e)
+    
+    return JsonResponse({
+        "status": "ok",
+        "db": db_ok,
+    }, status=200)
 
 # Sitemap configuration
 sitemaps = {
