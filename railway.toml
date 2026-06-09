@@ -1,3 +1,3 @@
 [deploy]
 releaseCommand = "python manage.py migrate --no-input"
-startCommand = "gunicorn nestova.wsgi:application --bind 0.0.0.0:$PORT --workers 2"
+startCommand = "gunicorn nestova.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level debug"
