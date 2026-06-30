@@ -3,180 +3,551 @@
 
 {% block content %}
 <style>
-    .verification-section {
-        padding: 80px 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Local fallback tokens — same values as base.html :root, kept here so this
+       block still renders correctly if ever previewed outside the full site shell. */
+    :root {
+        --gold: #C9A84C;
+        --gold-light: #E8C96E;
+        --gold-dark: #9A7A2E;
+        --obsidian: #0A0A0F;
+        --deep-blue: #0D1B3E;
+        --midnight: #060B1A;
+        --surface-1: rgba(18, 18, 26, 0.85);
+        --glass-border: rgba(255, 255, 255, 0.10);
+        --text-primary: #F5F0E8;
+        --text-muted: rgba(245, 240, 232, 0.55);
+        --gold-glow: rgba(201, 168, 76, 0.22);
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .verify-section {
+        position: relative;
+        padding: calc(var(--nav-height, 80px) + 70px) 0 100px;
         min-height: 90vh;
+        background: var(--obsidian);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
     }
 
-    .verification-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        padding: 50px;
-        max-width: 600px;
+    /* Ambient glow — quiet depth, not a loud gradient backdrop */
+    .verify-section::before,
+    .verify-section::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        pointer-events: none;
+    }
+
+    .verify-section::before {
+        width: 520px;
+        height: 520px;
+        top: -120px;
+        right: -120px;
+        background: var(--gold-glow);
+        opacity: 0.5;
+    }
+
+    .verify-section::after {
+        width: 600px;
+        height: 600px;
+        bottom: -200px;
+        left: -180px;
+        background: var(--deep-blue);
+        opacity: 0.55;
+    }
+
+    .verify-card {
+        position: relative;
+        z-index: 1;
+        background: var(--surface-1);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+        padding: 56px 48px;
+        max-width: 560px;
         margin: 0 auto;
+        overflow: hidden;
     }
 
-    .verification-header {
+    /* Hairline gold seal across the top edge */
+    .verify-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--gold) 25%, var(--gold-light) 50%, var(--gold) 75%, transparent);
+    }
+
+    .verify-header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 36px;
     }
 
-    .verification-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .verify-badge {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 22px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 20px;
-        font-size: 40px;
-        color: white;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.35);
+        box-shadow: 0 0 0 8px rgba(201, 168, 76, 0.06);
+        font-size: 28px;
+        color: var(--gold-light);
     }
 
-    .verification-title {
-        font-size: 32px;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 10px;
-    }
-
-    .verification-subtitle {
-        color: #64748b;
-        font-size: 16px;
-        line-height: 1.6;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-    .form-label {
+    .verify-eyebrow {
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        font-size: 0.78rem;
         font-weight: 600;
-        color: #334155;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 12px;
+    }
+
+    .verify-title {
+        font-family: var(--font-display, 'Cormorant Garamond', serif);
+        font-weight: 300;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        color: var(--text-primary);
+        margin-bottom: 14px;
+    }
+
+    .verify-subtitle {
+        color: var(--text-muted);
+        font-size: 0.96rem;
+        line-height: 1.7;
+        max-width: 420px;
+        margin: 0 auto 22px;
+    }
+
+    .verify-divider {
+        width: 64px;
+        height: 1.5px;
+        margin: 0 auto;
+        background: linear-gradient(to right, transparent, var(--gold), transparent);
+        border: none;
+    }
+
+    .verify-info {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 22px 24px;
+        margin-bottom: 34px;
+    }
+
+    .verify-info-label {
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .verify-info ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .verify-info li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        line-height: 1.5;
         margin-bottom: 10px;
-        display: block;
     }
 
-    .form-control,
-    .form-select {
+    .verify-info li:last-child {
+        margin-bottom: 0;
+    }
+
+    .verify-info li i {
+        color: var(--gold);
+        font-size: 0.8rem;
+        margin-top: 4px;
+        flex-shrink: 0;
+    }
+
+    .verify-group {
+        margin-bottom: 22px;
+    }
+
+    .verify-label {
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .verify-label i {
+        color: var(--gold);
+    }
+
+    .verify-field {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+    }
+
+    .verify-field:focus-within {
+        border-color: rgba(201, 168, 76, 0.45);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+    }
+
+    .verify-select,
+    .verify-input {
         width: 100%;
-        padding: 15px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 16px;
-        transition: all 0.3s ease;
+        background: transparent;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        color: var(--text-primary);
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        font-size: 0.96rem;
+        padding: 15px 18px;
     }
 
-    .form-control:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    .verify-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 18px center;
+        padding-right: 40px;
+    }
+
+    .verify-select option {
+        background: var(--obsidian);
+        color: var(--text-primary);
+    }
+
+    .verify-input::placeholder {
+        color: rgba(255, 255, 255, 0.28);
+    }
+
+    .verify-help {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        margin-top: 8px;
     }
 
     .btn-verify {
+        position: relative;
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 18px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 18px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-verify:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .info-box {
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-    }
-
-    .info-box h6 {
-        color: #0369a1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        color: var(--obsidian) !important;
+        font-family: var(--font-body, 'DM Sans', sans-serif);
         font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+        padding: 17px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        overflow: hidden;
+        box-shadow: 0 8px 26px rgba(201, 168, 76, 0.28);
+        transition: var(--transition);
+        margin-top: 8px;
+    }
+
+    .btn-verify::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-verify:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 34px rgba(201, 168, 76, 0.45);
+    }
+
+    .btn-verify:hover:not(:disabled)::before {
+        left: 100%;
+    }
+
+    .btn-verify:focus-visible {
+        outline: 2px solid var(--gold-light);
+        outline-offset: 3px;
+    }
+
+    .btn-verify:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .verify-back {
+        display: block;
+        text-align: center;
+        margin-top: 28px;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .verify-back:hover {
+        color: var(--gold-light);
+    }
+
+    /* Two-column row for first/last name */
+    .verify-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    /* Optional field badge */
+    .verify-optional {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 400;
+        margin-left: 4px;
+    }
+
+    /* Thin separator between personal details and ID section */
+    .verify-divider-thin {
+        height: 1px;
+        background: var(--glass-border);
+        margin: 8px 0 20px;
+    }
+
+    @media (max-width: 576px) {
+        .verify-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ── Alert banners ─────────────────────────────────────────── */
+    .verify-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.5;
         margin-bottom: 10px;
+        border: 1px solid transparent;
     }
 
-    .info-box ul {
-        margin: 0;
-        padding-left: 20px;
-        color: #0c4a6e;
+    .verify-alert--error {
+        background: rgba(220, 53, 69, 0.12);
+        border-color: rgba(220, 53, 69, 0.35);
+        color: #f87171;
     }
 
-    .info-box li {
-        margin-bottom: 8px;
+    .verify-alert--success {
+        background: rgba(34, 197, 94, 0.12);
+        border-color: rgba(34, 197, 94, 0.35);
+        color: #4ade80;
+    }
+
+    .verify-alert--info {
+        background: rgba(201, 168, 76, 0.12);
+        border-color: rgba(201, 168, 76, 0.35);
+        color: var(--gold-light);
+    }
+
+    .verify-alert--warning {
+        background: rgba(251, 191, 36, 0.12);
+        border-color: rgba(251, 191, 36, 0.35);
+        color: #fcd34d;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .verify-card {
+            animation: verifyRise 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    }
+
+    @keyframes verifyRise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .verify-card {
+            padding: 40px 26px;
+        }
+
+        .verify-badge {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
     }
 </style>
 
-<section class="verification-section">
+<section class="verify-section">
     <div class="container">
-        <div class="verification-card" data-aos="fade-up">
-            <div class="verification-header">
-                <div class="verification-icon">
+        <div class="verify-card">
+            <div class="verify-header">
+                <div class="verify-badge">
                     <i class="bi bi-shield-check"></i>
                 </div>
-                <h1 class="verification-title">Verify Your Identity</h1>
-                <p class="verification-subtitle">
-                    To ensure the safety and trust of our community, we require identity verification before you can
-                    post properties.
+                <p class="verify-eyebrow">Identity Verification</p>
+                <h1 class="verify-title">Verify Your Identity</h1>
+                <p class="verify-subtitle">
+                    To protect everyone buying and selling on Nestova, we confirm every identity
+                    before granting access to post properties.
                 </p>
+                <hr class="verify-divider">
             </div>
 
-            <div class="info-box">
-                <h6><i class="bi bi-info-circle me-2"></i>What You'll Need</h6>
+            <div class="verify-info">
+                <p class="verify-info-label"><i class="bi bi-info-circle"></i>What you'll need</p>
                 <ul>
-                    <li>Your National Identity Number (NIN)</li>
-                    <li>Or your Virtual NIN (vNIN)</li>
-                    <li>Or your Bank Verification Number (BVN)</li>
+                    <li><i class="bi bi-chevron-right"></i>Your National Identity Number (NIN)</li>
+                    <li><i class="bi bi-chevron-right"></i>Or your Virtual NIN (vNIN)</li>
+                    <li><i class="bi bi-chevron-right"></i>Or your Bank Verification Number (BVN)</li>
                 </ul>
             </div>
+
+            {% if error %}
+            <div class="verify-messages" style="margin-bottom: 24px;">
+                <div class="verify-alert verify-alert--error" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {{ error }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <div class="verify-messages" style="margin-bottom: 24px;">
+                {% for message in messages %}
+                <div class="verify-alert verify-alert--{{ message.tags }}" role="alert">
+                    {% if 'error' in message.tags %}
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {% elif 'success' in message.tags %}
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                    {% elif 'info' in message.tags %}
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                    {% else %}
+                        <i class="bi bi-bell-fill me-2"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <form method="POST" id="verificationForm">
                 {% csrf_token %}
 
-                <div class="form-group">
-                    <label class="form-label" for="id_type">
-                        <i class="bi bi-card-list me-2"></i>ID Type
-                    </label>
-                    <select name="id_type" id="id_type" class="form-select" required>
-                        <option value="">Select ID Type</option>
-                        <option value="nin">National Identity Number (NIN)</option>
-                        <option value="vnin">Virtual NIN (vNIN)</option>
-                        <option value="bvn">Bank Verification Number (BVN)</option>
-                    </select>
+                <div class="verify-row">
+                    <div class="verify-group">
+                        <label class="verify-label" for="first_name">
+                            <i class="bi bi-person"></i>First Name
+                        </label>
+                        <div class="verify-field">
+                            <input type="text" name="first_name" id="first_name" class="verify-input"
+                                placeholder="As it appears on your ID" required
+                                value="{{ first_name|default:prefill_first_name }}">
+                        </div>
+                    </div>
+
+                    <div class="verify-group">
+                        <label class="verify-label" for="last_name">
+                            <i class="bi bi-person"></i>Last Name / Surname
+                        </label>
+                        <div class="verify-field">
+                            <input type="text" name="last_name" id="last_name" class="verify-input"
+                                placeholder="As it appears on your ID" required
+                                value="{{ last_name|default:prefill_last_name }}">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="id_number">
-                        <i class="bi bi-123 me-2"></i>ID Number
+                <div class="verify-group">
+                    <label class="verify-label" for="date_of_birth">
+                        <i class="bi bi-calendar3"></i>Date of Birth <span class="verify-optional">(recommended)</span>
                     </label>
-                    <input type="text" name="id_number" id="id_number" class="form-control"
-                        placeholder="Enter your ID number" required maxlength="11">
-                    <small class="text-muted" id="id_help_text">Enter your 11-digit ID number</small>
+                    <div class="verify-field">
+                        <input type="date" name="date_of_birth" id="date_of_birth" class="verify-input"
+                            value="{{ date_of_birth }}">
+                    </div>
+                    <small class="verify-help">Providing your DOB increases verification accuracy</small>
+                </div>
+
+                <div class="verify-divider-thin"></div>
+
+                <div class="verify-group">
+                    <label class="verify-label" for="id_type">
+                        <i class="bi bi-card-list"></i>ID Type
+                    </label>
+                    <div class="verify-field">
+                        <select name="id_type" id="id_type" class="verify-select" required>
+                            <option value="">Select ID type</option>
+                            <option value="nin" {% if id_type == 'nin' %}selected{% endif %}>National Identity Number (NIN)</option>
+                            <option value="vnin" {% if id_type == 'vnin' %}selected{% endif %}>Virtual NIN (vNIN)</option>
+                            <option value="bvn" {% if id_type == 'bvn' %}selected{% endif %}>Bank Verification Number (BVN)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="verify-group">
+                    <label class="verify-label" for="id_number">
+                        <i class="bi bi-123"></i>ID Number
+                    </label>
+                    <div class="verify-field">
+                        <input type="text" name="id_number" id="id_number" class="verify-input"
+                            placeholder="Enter your ID number" required maxlength="11"
+                            value="{{ id_number }}">
+                    </div>
+                    <small class="verify-help" id="id_help_text">Enter your 11-digit ID number</small>
                 </div>
 
                 <button type="submit" class="btn-verify">
-                    <i class="bi bi-shield-check me-2"></i>Verify My Identity
+                    <i class="bi bi-shield-check"></i>Verify My Identity
                 </button>
             </form>
 
-            <div class="text-center mt-4">
-                <a href="{% url 'shop:profile' %}" class="text-muted">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Profile
-                </a>
-            </div>
+            <a href="{% url 'shop:profile' %}" class="verify-back">
+                <i class="bi bi-arrow-left me-2"></i>Back to Profile
+            </a>
         </div>
     </div>
 </section>
@@ -220,7 +591,6 @@
             return false;
         }
 
-        // Validate ID number length
         if (idType === 'nin' && idNumber.length !== 11) {
             e.preventDefault();
             alert('NIN must be exactly 11 digits');
@@ -239,7 +609,6 @@
             return false;
         }
 
-        // Show loading state
         const submitBtn = this.querySelector('button[type="submit"]');
         submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Verifying...';
         submitBtn.disabled = true;

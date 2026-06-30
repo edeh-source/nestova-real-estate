@@ -128,6 +128,17 @@
 
 <section class="verification-section">
     <div class="container">
+        {% if messages %}
+        <div class="verify-messages" style="max-width: 700px; margin: 0 auto 24px;">
+            {% for message in messages %}
+            <div class="verify-alert verify-alert--{{ message.tags }}" style="padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 10px; {% if 'error' in message.tags %}background: #fef2f2; border-color: #fee2e2; color: #ef4444;{% elif 'success' in message.tags %}background: #f0fdf4; border-color: #dcfce7; color: #22c55e;{% else %}background: #eff6ff; border-color: #dbeafe; color: #3b82f6;{% endif %}" role="alert">
+                <i class="bi {% if 'error' in message.tags %}bi-exclamation-triangle-fill{% elif 'success' in message.tags %}bi-check-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="status-card" data-aos="fade-up">
             {% with profile=agent|default:company %}
 

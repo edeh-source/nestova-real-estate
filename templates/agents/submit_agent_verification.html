@@ -1,169 +1,708 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Identity Verification — Nestova{% endblock %}
+
 {% block content %}
 <style>
-    .verify-form-section {
-        padding: 80px 0;
-        background: #f8fafc;
-    }
+  /* ============================================================
+     AGENT VERIFICATION FORM — NESTOVA DARK DESIGN SYSTEM
+     ============================================================ */
 
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        padding: 40px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
+  .av-page {
+    min-height: 100vh;
+    padding: calc(var(--nav-height) + 60px) 0 80px;
+    background: var(--obsidian);
+    position: relative;
+    overflow: hidden;
+  }
 
-    .form-header {
-        margin-bottom: 40px;
-        text-align: center;
-    }
+  .av-page::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.05) 0%, transparent 65%);
+    pointer-events: none;
+  }
 
-    .form-header h2 {
-        font-weight: 800;
-        color: #1e293b;
-    }
+  .av-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
 
-    .form-label {
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 10px;
-    }
+  /* ---- Page header ---- */
+  .av-header {
+    margin-bottom: 36px;
+  }
 
-    .form-control,
-    .form-select {
-        border-radius: 12px;
-        padding: 12px 15px;
-        border: 1px solid #e2e8f0;
-        transition: border-color 0.3s;
-    }
+  .av-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+    margin-bottom: 24px;
+  }
 
-    .form-control:focus {
-        border-color: #20c997;
-        box-shadow: 0 0 0 4px rgba(32, 201, 151, 0.1);
-    }
+  .av-back:hover {
+    color: var(--gold-light);
+    text-decoration: none;
+  }
 
-    .upload-box {
-        border: 2px dashed #e2e8f0;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        margin-bottom: 25px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
+  .av-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
 
-    .upload-box:hover {
-        border-color: #20c997;
-        background: #f0fdf4;
-    }
+  .av-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
 
-    .upload-icon {
-        font-size: 32px;
-        color: #94a3b8;
-        margin-bottom: 10px;
-    }
+  .av-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0 0 10px;
+    line-height: 1.15;
+  }
 
-    .btn-submit {
-        background: #20c997;
-        color: white;
-        padding: 15px 40px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        border: none;
-        transition: all 0.3s;
-    }
+  .av-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 520px;
+  }
 
-    .btn-submit:hover {
-        background: #198754;
-        transform: translateY(-2px);
-    }
+  /* ---- Form card ---- */
+  .av-card {
+    background: var(--surface-1);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    box-shadow:
+      0 32px 80px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
 
-    .info-tip {
-        background: #eff6ff;
-        padding: 15px;
-        border-radius: 10px;
-        color: #1d4ed8;
-        font-size: 14px;
-        margin-bottom: 30px;
-        display: flex;
-        align-items: flex-start;
+  /* Section within card */
+  .av-section {
+    padding: 36px 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .av-section:last-child { border-bottom: none; }
+
+  @media (max-width: 560px) {
+    .av-section { padding: 26px 22px; }
+  }
+
+  .av-section-label {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .av-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,168,76,0.2);
+  }
+
+  /* ---- Form controls ---- */
+  .av-field {
+    margin-bottom: 22px;
+  }
+
+  .av-field:last-child { margin-bottom: 0; }
+
+  .av-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .av-label .av-required {
+    color: var(--gold);
+    margin-left: 3px;
+  }
+
+  .av-hint {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .av-input,
+  .av-select {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: 13px 16px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .av-input::placeholder { color: var(--text-muted); }
+
+  .av-input:focus,
+  .av-select:focus {
+    border-color: rgba(201,168,76,0.45);
+    background: rgba(201,168,76,0.04);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  }
+
+  .av-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  .av-select option {
+    background: #12121A;
+    color: var(--text-primary);
+  }
+
+  /* ID number field — hidden until type chosen */
+  #id-number-wrap {
+    display: none;
+    animation: av-fadein 0.3s ease;
+  }
+
+  @keyframes av-fadein {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- File upload zones ---- */
+  .av-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 520px) {
+    .av-upload-grid { grid-template-columns: 1fr; }
+  }
+
+  .av-upload-zone {
+    position: relative;
+    border: 1.5px dashed rgba(255,255,255,0.12);
+    border-radius: var(--radius-md);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: rgba(255,255,255,0.02);
+    overflow: hidden;
+  }
+
+  .av-upload-zone:hover,
+  .av-upload-zone.has-file {
+    border-color: rgba(201,168,76,0.35);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .av-upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .av-upload-icon {
+    font-size: 1.6rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    transition: var(--transition);
+    display: block;
+  }
+
+  .av-upload-zone:hover .av-upload-icon,
+  .av-upload-zone.has-file .av-upload-icon {
+    color: var(--gold);
+  }
+
+  .av-upload-title {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .av-upload-sub {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .av-upload-chosen {
+    display: none;
+    font-size: 0.76rem;
+    color: var(--gold);
+    margin-top: 8px;
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  .av-upload-zone.has-file .av-upload-chosen { display: block; }
+  .av-upload-zone.has-file .av-upload-sub    { display: none; }
+
+  /* Full-width upload zone (selfie) */
+  .av-upload-zone-lg {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 24px 28px;
+    text-align: left;
+  }
+
+  .av-upload-zone-lg .av-upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .av-upload-zone-lg .av-upload-body { flex: 1; }
+
+  /* ---- Notice / tip box ---- */
+  .av-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-top: 20px;
+  }
+
+  .av-tip i {
+    color: var(--gold);
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .av-tip p {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: rgba(245,240,232,0.7);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .av-tip p strong {
+    color: var(--gold-light);
+  }
+
+  /* ---- Submit area ---- */
+  .av-submit-area {
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,0.015);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  @media (max-width: 560px) {
+    .av-submit-area {
+      padding: 24px 22px;
+      flex-direction: column-reverse;
+      align-items: stretch;
+      text-align: center;
     }
+  }
+
+  .av-submit-note {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .av-submit-note i {
+    color: var(--gold);
+    margin-right: 5px;
+  }
+
+  .btn-av-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 34px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 6px 28px rgba(201,168,76,0.28);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-av-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 36px rgba(201,168,76,0.4);
+  }
+
+  .btn-av-submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Loading state */
+  .btn-av-submit .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(10,10,15,0.3);
+    border-top-color: #0A0A0F;
+    border-radius: 50%;
+    animation: av-spin 0.7s linear infinite;
+  }
+
+  .btn-av-submit.loading .spinner { display: block; }
+  .btn-av-submit.loading .btn-label { display: none; }
+
+  @keyframes av-spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
 
-<section class="verify-form-section">
-    <div class="container">
-        <div class="form-card" data-aos="fade-up">
-            <div class="form-header">
-                <h2>Agent Identity Verification</h2>
-                <p>Please provide clear copies of your identification documents</p>
-            </div>
+<section class="av-page">
+  <div class="av-container">
 
-            <div class="info-tip">
-                <i class="bi bi-info-circle-fill me-2 mt-1"></i>
-                <div>
-                    Make sure all text on your ID is legible and your face is clearly visible in the selfie.
-                    Invalid or blurry documents will lead to rejection.
-                </div>
-            </div>
-
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label">ID Type</label>
-                        <select name="id_type" class="form-select" required>
-                            <option value="">Select ID Type</option>
-                            <option value="nin">National Identity Number (NIN)</option>
-                            <option value="vnin">Virtual NIN (vNIN)</option>
-                            <option value="bvn">Bank Verification Number (BVN)</option>
-                            <option value="passport">International Passport</option>
-                            <option value="voters_card">Voter's Card</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label">ID Number</label>
-                        <input type="text" name="id_number" class="form-control" placeholder="Enter ID number" required>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">ID Card Front Side</label>
-                    <div class="upload-box" onclick="document.getElementById('id_front').click()">
-                        <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-                        <p class="mb-0" id="front-text">Click to upload ID front side</p>
-                        <input type="file" id="id_front" name="id_card_front" hidden accept="image/*" required
-                            onchange="updateFileName(this, 'front-text')">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Selfie with ID</label>
-                    <div class="upload-box" onclick="document.getElementById('selfie').click()">
-                        <div class="upload-icon"><i class="bi bi-person-bounding-box"></i></div>
-                        <p class="mb-0" id="selfie-text">Upload a selfie holding your ID</p>
-                        <input type="file" id="selfie" name="selfie" hidden accept="image/*" required
-                            onchange="updateFileName(this, 'selfie-text')">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit mt-3">Submit for Review</button>
-            </form>
-        </div>
+    <!-- Back link + header -->
+    <div class="av-header" data-aos="fade-down">
+      <a href="{% url 'agents:verification_dashboard' %}" class="av-back">
+        <i class="bi bi-arrow-left"></i> Verification status
+      </a>
+      <div class="av-eyebrow">Agent Verification</div>
+      <h1 class="av-title">Confirm your identity</h1>
+      <p class="av-subtitle">
+        Submit a valid ID and a selfie so we can match your details.
+        Verification is usually instant — or within 24 hours if manual review is needed.
+      </p>
     </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" id="av-form" novalidate>
+      {% csrf_token %}
+
+      {% if error %}
+      <div class="verify-messages" style="margin-bottom: 24px;">
+          <div class="verify-alert verify-alert--error" style="background: rgba(220, 53, 69, 0.12); border: 1px solid rgba(220, 53, 69, 0.35); color: #f87171; padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;" role="alert">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              {{ error }}
+          </div>
+      </div>
+      {% endif %}
+
+      {% if messages %}
+      <div class="verify-messages" style="margin-bottom: 24px;">
+          {% for message in messages %}
+          <div class="verify-alert verify-alert--{{ message.tags }}" style="padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; {% if 'error' in message.tags %}background: rgba(220, 53, 69, 0.12); border-color: rgba(220, 53, 69, 0.35); color: #f87171;{% elif 'success' in message.tags %}background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #4ade80;{% else %}background: rgba(255,255,255,0.05); color: var(--text-primary);{% endif %}" role="alert">
+              <i class="bi {% if 'error' in message.tags %}bi-exclamation-triangle-fill{% elif 'success' in message.tags %}bi-check-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+              {{ message }}
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="av-card" data-aos="fade-up" data-aos-delay="60">
+
+        <!-- Section 1 — ID type + number -->
+        <div class="av-section">
+          <div class="av-section-label">Identity document</div>
+
+          <div class="av-upload-grid" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
+            <div class="av-field">
+              <label for="first_name" class="av-label">
+                First name <span class="av-required">*</span>
+              </label>
+              <input type="text" name="first_name" id="first_name"
+                     class="av-input" placeholder="As on your ID"
+                     value="{{ first_name|default:prefill_first_name }}" required>
+            </div>
+            <div class="av-field">
+              <label for="last_name" class="av-label">
+                Last name / Surname <span class="av-required">*</span>
+              </label>
+              <input type="text" name="last_name" id="last_name"
+                     class="av-input" placeholder="As on your ID"
+                     value="{{ last_name|default:prefill_last_name }}" required>
+            </div>
+          </div>
+
+          <div class="av-field" style="margin-bottom: 22px;">
+            <label for="date_of_birth" class="av-label">
+              Date of birth <span class="av-optional">(recommended)</span>
+            </label>
+            <input type="date" name="date_of_birth" id="date_of_birth"
+                   class="av-input" value="{{ date_of_birth }}">
+            <span class="av-hint" style="margin-top: 4px;">Providing your DOB increases verification accuracy</span>
+          </div>
+
+          <div class="av-field">
+            <label for="id_type" class="av-label">
+              Document type <span class="av-required">*</span>
+            </label>
+            <select name="id_type" id="id_type" class="av-select" required>
+              <option value="" disabled selected>Select an ID type</option>
+              <option value="nin" {% if id_type == 'nin' %}selected{% endif %}>National Identity Number (NIN)</option>
+              <option value="vnin" {% if id_type == 'vnin' %}selected{% endif %}>Virtual NIN (vNIN)</option>
+              <option value="bvn" {% if id_type == 'bvn' %}selected{% endif %}>Bank Verification Number (BVN)</option>
+              <option value="passport" {% if id_type == 'passport' %}selected{% endif %}>International Passport</option>
+              <option value="voters_card" {% if id_type == 'voters_card' %}selected{% endif %}>Voter's Card</option>
+            </select>
+          </div>
+
+          <!-- ID number — shown once type is selected -->
+          <div class="av-field" id="id-number-wrap">
+            <label for="id_number" class="av-label" id="id-number-label">
+              ID number <span class="av-required">*</span>
+            </label>
+            <span class="av-hint" id="id-number-hint"></span>
+            <input type="text" name="id_number" id="id_number"
+                   class="av-input" placeholder="Enter your ID number"
+                   autocomplete="off" spellcheck="false"
+                   value="{{ id_number|default:'' }}">
+          </div>
+        </div>
+
+        <!-- Section 2 — Document photos -->
+        <div class="av-section">
+          <div class="av-section-label">Upload documents</div>
+
+          <div class="av-upload-grid">
+            <!-- Front of ID -->
+            <div class="av-field">
+              <label class="av-label">ID card — front <span class="av-required">*</span></label>
+              <div class="av-upload-zone" id="zone-front">
+                <input type="file" name="id_card_front" id="id_card_front"
+                       accept="image/*,.pdf" required>
+                <i class="bi bi-card-image av-upload-icon"></i>
+                <div class="av-upload-title">Front of ID</div>
+                <div class="av-upload-sub">JPG, PNG or PDF · max 5 MB</div>
+                <div class="av-upload-chosen" id="chosen-front"></div>
+              </div>
+            </div>
+
+            <!-- Back of ID -->
+            <div class="av-field">
+              <label class="av-label">ID card — back</label>
+              <div class="av-upload-zone" id="zone-back">
+                <input type="file" name="id_card_back" id="id_card_back"
+                       accept="image/*,.pdf">
+                <i class="bi bi-card-image av-upload-icon"></i>
+                <div class="av-upload-title">Back of ID</div>
+                <div class="av-upload-sub">If applicable · max 5 MB</div>
+                <div class="av-upload-chosen" id="chosen-back"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selfie -->
+          <div class="av-field" style="margin-top:16px;">
+            <label class="av-label">Selfie with ID <span class="av-required">*</span></label>
+            <div class="av-upload-zone av-upload-zone-lg" id="zone-selfie">
+              <input type="file" name="selfie" id="selfie"
+                     accept="image/*" capture="user" required>
+              <i class="bi bi-camera av-upload-icon"></i>
+              <div class="av-upload-body">
+                <div class="av-upload-title">Photo of you holding your ID</div>
+                <div class="av-upload-sub">Face and ID clearly visible · max 5 MB</div>
+                <div class="av-upload-chosen" id="chosen-selfie"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="av-tip">
+            <i class="bi bi-lightbulb"></i>
+            <p>
+              <strong>Tips for a successful selfie:</strong>
+              Good lighting, face uncovered, hold the ID next to your face.
+              The name on the ID must match your Nestova account name exactly.
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /av-card -->
+
+      <!-- Submit row -->
+      <div class="av-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="av-submit-area">
+          <p class="av-submit-note">
+            <i class="bi bi-lock"></i>
+            Your documents are encrypted in transit and stored securely.
+            We only use them to verify your identity and will never share them.
+          </p>
+          <button type="submit" class="btn-av-submit" id="av-submit-btn">
+            <div class="spinner"></div>
+            <span class="btn-label">
+              <i class="bi bi-shield-check"></i>
+              Submit for verification
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
 </section>
 
+{% block extra_scripts %}
 <script>
-    function updateFileName(input, targetId) {
-        if (input.files && input.files[0]) {
-            document.getElementById(targetId).innerText = input.files[0].name;
-            document.getElementById(targetId).parentElement.style.borderColor = '#20c997';
-        }
+(function () {
+  /* ---- ID type → show number field + update hints ---- */
+  const idTypeMeta = {
+    nin:         { label: 'NIN',              hint: '11-digit National Identity Number' },
+    vnin:        { label: 'Virtual NIN',      hint: '16-character Virtual NIN from the NIMC app' },
+    bvn:         { label: 'BVN',              hint: '11-digit Bank Verification Number' },
+    passport:    { label: 'Passport number',  hint: 'e.g. A12345678' },
+    voters_card: { label: 'Voter\'s card number', hint: 'As printed on your PVC' },
+  };
+
+  const select     = document.getElementById('id_type');
+  const numberWrap = document.getElementById('id-number-wrap');
+  const numberLabel = document.getElementById('id-number-label');
+  const numberHint  = document.getElementById('id-number-hint');
+  const numberInput = document.getElementById('id_number');
+
+  function updateIDNumberField(focus = true) {
+    const meta = idTypeMeta[select.value];
+    if (meta) {
+      numberLabel.childNodes[0].textContent = meta.label + ' ';
+      numberHint.textContent = meta.hint;
+      numberInput.placeholder = 'Enter your ' + meta.label.toLowerCase();
+      numberWrap.style.display = 'block';
+      if (focus) {
+        numberInput.focus();
+      }
+    } else {
+      numberWrap.style.display = 'none';
     }
+  }
+
+  select.addEventListener('change', function () {
+    updateIDNumberField(true);
+  });
+
+  // Run on page load for pre-selected value
+  if (select.value) {
+    updateIDNumberField(false);
+  }
+
+  /* ---- Upload zone — file name feedback ---- */
+  function wireUploadZone(inputId, zoneId, chosenId) {
+    const input  = document.getElementById(inputId);
+    const zone   = document.getElementById(zoneId);
+    const chosen = document.getElementById(chosenId);
+    if (!input) return;
+
+    input.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        const name = this.files[0].name;
+        chosen.textContent = '✓ ' + (name.length > 30 ? name.slice(0, 27) + '…' : name);
+        zone.classList.add('has-file');
+      } else {
+        chosen.textContent = '';
+        zone.classList.remove('has-file');
+      }
+    });
+  }
+
+  wireUploadZone('id_card_front', 'zone-front',  'chosen-front');
+  wireUploadZone('id_card_back',  'zone-back',   'chosen-back');
+  wireUploadZone('selfie',        'zone-selfie', 'chosen-selfie');
+
+  /* ---- Submit loading state ---- */
+  const form      = document.getElementById('av-form');
+  const submitBtn = document.getElementById('av-submit-btn');
+
+  form.addEventListener('submit', function (e) {
+    // Basic validation
+    const idType = select.value;
+    const idNum  = document.getElementById('id_number').value.trim();
+    const front  = document.getElementById('id_card_front').files.length;
+    const selfie = document.getElementById('selfie').files.length;
+
+    if (!idType || !idNum || !front || !selfie) {
+      // Let browser handle the required fields; don't show loading
+      return;
+    }
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+  });
+})();
 </script>
+{% endblock %}
 {% endblock %}

@@ -137,15 +137,43 @@ def submit_agent_verification(request):
         messages.info(request, "You are already verified.")
         return redirect('agents:verification_dashboard')
 
+    ctx = {
+        'agent': agent,
+        'prefill_first_name': agent.user.first_name or '',
+        'prefill_last_name': agent.user.last_name or '',
+    }
+
     if request.method == 'POST':
         from django.utils import timezone
         from .verification_service import VerificationService
         
-        id_type = request.POST.get('id_type')
-        id_number = request.POST.get('id_number')
+        id_type = request.POST.get('id_type', '').strip()
+        id_number = request.POST.get('id_number', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        date_of_birth = request.POST.get('date_of_birth', '').strip()
         id_card_front = request.FILES.get('id_card_front')
         id_card_back = request.FILES.get('id_card_back')
         selfie = request.FILES.get('selfie')
+
+        # Preserve inputs for form re-fill
+        ctx.update({
+            'id_type': id_type,
+            'id_number': id_number,
+            'first_name': first_name,
+            'last_name': last_name,
+            'date_of_birth': date_of_birth,
+        })
+
+        # Basic validation
+        if not id_type or not id_number:
+            ctx['error'] = "Please provide both ID type and ID number."
+            return render(request, 'agents/submit_agent_verification.html', ctx)
+
+        if id_type in ('nin', 'vnin', 'bvn'):
+            if not first_name or not last_name:
+                ctx['error'] = "Please enter your first name and last name exactly as they appear on your ID."
+                return render(request, 'agents/submit_agent_verification.html', ctx)
 
         # Save documents
         agent.id_type = id_type
@@ -157,36 +185,65 @@ def submit_agent_verification(request):
         agent.verification_status = 'in_review'
         agent.save()
 
+        # Update user names if not already set
+        user = request.user
+        if not user.first_name:
+            user.first_name = first_name
+        if not user.last_name:
+            user.last_name = last_name
+        user.save()
+
         # AUTOMATIC VERIFICATION with confidence scoring
         service = VerificationService()
         verification_success = False
         api_data = {}
         
-        # Try verification based on ID type
-        if id_type == 'nin' and id_number:
-            success, result = service.verify_nin(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-                agent.id_verified = True
-        
-        elif id_type == 'vnin' and id_number:
-            success, result = service.verify_vnin(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-                agent.id_verified = True
-        
-        elif id_type == 'bvn' and id_number:
-            success, result = service.verify_bvn(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-                agent.id_verified = True
+        try:
+            # Try verification based on ID type
+            if id_type == 'nin' and id_number:
+                success, result = service.verify_nin(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None
+                )
+                if success:
+                    verification_success = True
+                    api_data = result
+                    agent.id_verified = True
+            
+            elif id_type == 'vnin' and id_number:
+                success, result = service.verify_vnin(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None
+                )
+                if success:
+                    verification_success = True
+                    api_data = result
+                    agent.id_verified = True
+            
+            elif id_type == 'bvn' and id_number:
+                success, result = service.verify_bvn(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None
+                )
+                if success:
+                    verification_success = True
+                    api_data = result
+                    agent.id_verified = True
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            ctx['error'] = f"Verification processing error: {str(e)}"
+            return render(request, 'agents/submit_agent_verification.html', ctx)
         
         # Calculate confidence score if verification succeeded
         if verification_success and api_data:
-            confidence_result = service.calculate_confidence_score(api_data, request.user, agent)
+            confidence_result = service.calculate_confidence_score(
+                api_data, request.user,
+                submitted_first_name=first_name,
+                submitted_last_name=last_name,
+                submitted_dob=date_of_birth or None,
+                user_profile=agent
+            )
             
             # Store verification data
             agent.verification_data = {
@@ -194,7 +251,13 @@ def submit_agent_verification(request):
                 'confidence_score': confidence_result['overall_confidence'],
                 'confidence_breakdown': confidence_result['breakdown'],
                 'checks_performed': confidence_result['checks_performed'],
-                'verified_at': timezone.now().isoformat()
+                'verified_at': timezone.now().isoformat(),
+                'submitted': {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'date_of_birth': date_of_birth,
+                    'id_type': id_type,
+                }
             }
             
             overall_confidence = confidence_result['overall_confidence']
@@ -212,11 +275,6 @@ def submit_agent_verification(request):
                     f"✅ Verification successful! Your identity has been verified with {overall_confidence:.0f}% confidence. "
                     "You can now post properties."
                 )
-                
-                # TODO: Send approval email notification
-                # from .notifications import notify_verification_approved
-                # notify_verification_approved(request.user, 'agent')
-                
                 return redirect('agents:verification_dashboard')
             
             # Manual review for medium confidence
@@ -229,7 +287,6 @@ def submit_agent_verification(request):
                     f"⏳ Your verification is under review (confidence: {overall_confidence:.0f}%). "
                     "Our team will review your documents and notify you within 24-48 hours."
                 )
-                
                 return redirect('agents:verification_dashboard')
             
             # Auto-reject for low confidence
@@ -246,11 +303,10 @@ def submit_agent_verification(request):
                     f"❌ Verification failed. The information provided does not match our records "
                     f"(confidence: {overall_confidence:.0f}%). Please check your details and try again."
                 )
-                
                 return redirect('agents:verification_dashboard')
         
         else:
-            # API verification failed - send to manual review
+            # API verification failed or not eligible for automatic matching - send to manual review
             agent.verification_status = 'in_review'
             agent.save()
             
@@ -259,10 +315,9 @@ def submit_agent_verification(request):
                 "⏳ Your verification documents have been submitted and are under review. "
                 "We'll notify you once the review is complete."
             )
-            
             return redirect('agents:verification_dashboard')
 
-    return render(request, 'agents/submit_agent_verification.html', {'agent': agent})
+    return render(request, 'agents/submit_agent_verification.html', ctx)
 
 @login_required
 @company_required

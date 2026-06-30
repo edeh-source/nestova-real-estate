@@ -71,6 +71,12 @@ class User(PermissionsMixin, AbstractBaseUser):
         ('agent', 'Agent'),
         ('company', 'Company'),
     ]
+    VERIFICATION_STATUS_CHOICES = [
+        ('pending', 'Pending Verification'),
+        ('in_review', 'In Review'),
+        ('verified', 'Verified'),
+        ('rejected', 'Rejected'),
+    ]
     
     id = models.UUIDField(unique=True, primary_key=True, editable=False, default=uuid.uuid4)
     username = models.CharField(max_length=256, db_index=True, unique=True)
@@ -79,7 +85,12 @@ class User(PermissionsMixin, AbstractBaseUser):
     phone_number = PhoneNumberField(unique=True, db_index=True, blank=True, null=True)
     email = models.EmailField(unique=True, max_length=200)
     image = models.ImageField(upload_to="users_image", blank=True, null=True)
-    
+    verification_status = models.CharField(
+        max_length=20,
+        choices=VERIFICATION_STATUS_CHOICES,
+        default='pending',
+        help_text="Mirrors Agent/Company verification_status for consistent admin filtering"
+    )
     # Account type
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPE_CHOICES, default='user')
     

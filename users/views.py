@@ -15,6 +15,12 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import redirect, render
+
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -169,7 +175,7 @@ def register_page(request):
             return JsonResponse({
             "status": "success",
             "message": "Account Created Successfully!",
-            "redirect_url": reverse("login")
+            "redirect_url": reverse("users:login")
             })    
     else:
         # Get banks for agent signup
@@ -409,7 +415,7 @@ def password_reset_confirm(request, uidb64, token):
         })
 
 
-from django.contrib.auth.decorators import login_required
+
 
 @login_required
 def submit_user_verification(request):
@@ -417,96 +423,155 @@ def submit_user_verification(request):
     if request.user.id_verified and request.user.can_post_properties:
         messages.info(request, "You are already verified and can post properties.")
         return redirect('shop:profile')
-    
+
+    # Context shared by both GET and error re-renders
+    ctx = {
+        'user': request.user,
+        # Pre-fill name fields from user model if available
+        'prefill_first_name': request.user.first_name or '',
+        'prefill_last_name': request.user.last_name or '',
+    }
+
     if request.method == 'POST':
         from django.utils import timezone
         from agents.verification_service import VerificationService
-        
-        id_type = request.POST.get('id_type')  # nin, vnin, or bvn
-        id_number = request.POST.get('id_number')
-        
+
+        id_type      = request.POST.get('id_type', '').strip()
+        id_number    = request.POST.get('id_number', '').strip()
+        first_name   = request.POST.get('first_name', '').strip()
+        last_name    = request.POST.get('last_name', '').strip()
+        date_of_birth = request.POST.get('date_of_birth', '').strip()
+
+        # Preserve all field values so the form re-fills on error
+        ctx.update({
+            'id_type':      id_type,
+            'id_number':    id_number,
+            'first_name':   first_name,
+            'last_name':    last_name,
+            'date_of_birth': date_of_birth,
+        })
+
+        # ── Basic validation ────────────────────────────────────────
         if not id_type or not id_number:
-            messages.error(request, "Please provide both ID type and ID number.")
-            return redirect('users:submit_user_verification')
-        
-        # Save ID info
+            ctx['error'] = "Please provide both ID type and ID number."
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+        if id_type not in ('nin', 'vnin', 'bvn'):
+            ctx['error'] = "Invalid ID type selected. Choose NIN, vNIN, or BVN."
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+        if not first_name or not last_name:
+            ctx['error'] = "Please enter your first name and last name exactly as they appear on your ID."
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+        # ── Persist what was submitted ──────────────────────────────
         request.user.id_type = id_type
         request.user.id_number = id_number
+        # Update name on user model if not already set
+        if not request.user.first_name:
+            request.user.first_name = first_name
+        if not request.user.last_name:
+            request.user.last_name = last_name
         request.user.save()
-        
-        # Perform verification
+
+        # ── Call Dojah API ──────────────────────────────────────────
         service = VerificationService()
-        verification_success = False
-        api_data = {}
-        
-        if id_type == 'nin':
-            success, result = service.verify_nin(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-        elif id_type == 'vnin':
-            success, result = service.verify_vnin(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-        elif id_type == 'bvn':
-            success, result = service.verify_bvn(request.user, id_number)
-            if success:
-                verification_success = True
-                api_data = result
-        else:
-            messages.error(request, "Invalid ID type selected.")
-            return redirect('users:submit_user_verification')
-        
-        # Calculate confidence and auto-approve/reject
-        if verification_success and api_data:
-            confidence_result = service.calculate_confidence_score(api_data, request.user)
-            
+        try:
+            if id_type == 'nin':
+                success, result = service.verify_nin(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None,
+                )
+            elif id_type == 'vnin':
+                success, result = service.verify_vnin(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None,
+                )
+            else:  # bvn
+                success, result = service.verify_bvn(
+                    request.user, id_number,
+                    first_name=first_name, last_name=last_name, dob=date_of_birth or None,
+                )
+        except Exception as exc:
+            import traceback
+            traceback.print_exc()
+            ctx['error'] = f"An unexpected error occurred while contacting the verification service: {exc}"
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+        # ── API returned failure ────────────────────────────────────
+        if not success:
+            error_msg = result if isinstance(result, str) else "Verification failed. Please try again."
+            ctx['error'] = f"Verification failed: {error_msg}"
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+        # ── API succeeded — evaluate confidence ────────────────────
+        try:
+            confidence_result = result['confidence']
+
             request.user.verification_data = {
-                'api_response': api_data,
+                'api_response': result,
                 'confidence_score': confidence_result['overall_confidence'],
                 'confidence_breakdown': confidence_result['breakdown'],
-                'verified_at': timezone.now().isoformat()
+                'verified_at': timezone.now().isoformat(),
+                'submitted': {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'date_of_birth': date_of_birth,
+                    'id_type': id_type,
+                }
             }
-            
+
             overall_confidence = confidence_result['overall_confidence']
-            recommendation = confidence_result['recommendation']
-            
+            recommendation     = confidence_result['recommendation']
+
             if recommendation == 'auto_approve':
                 request.user.id_verified = True
                 request.user.can_post_properties = True
                 request.user.id_verification_date = timezone.now()
+                request.user.verification_status = 'verified'
                 request.user.save()
-                
                 messages.success(
                     request,
-                    f"✅ Verification successful! Your identity has been verified with {overall_confidence:.0f}% confidence. "
-                    "You can now post properties."
+                    f"✅ Verification successful! Your identity has been verified "
+                    f"with {overall_confidence:.0f}% confidence. You can now post properties."
                 )
                 return redirect('shop:profile')
-            
+
             elif recommendation == 'manual_review':
+                request.user.verification_status = 'in_review'
                 request.user.save()
                 messages.info(
                     request,
                     f"⏳ Your verification is under review (confidence: {overall_confidence:.0f}%). "
-                    "Our team will review your information and notify you within 24-48 hours."
+                    "Our team will review your information and notify you within 24–48 hours."
                 )
                 return redirect('shop:profile')
-            
-            else:
+
+            else:  # auto_reject
+                request.user.verification_status = 'rejected'
                 request.user.save()
-                messages.error(
-                    request,
-                    f"❌ Verification failed. The information provided does not match our records "
-                    f"(confidence: {overall_confidence:.0f}%). Please check your details and try again."
+                breakdown = confidence_result.get('breakdown', {})
+                failed_fields = [
+                    k.replace('_', ' ').title()
+                    for k, v in breakdown.items()
+                    if isinstance(v, dict) and v.get('score', 100) < 60
+                ]
+                hint = (
+                    f" Fields that didn't match: {', '.join(failed_fields)}."
+                    if failed_fields else ""
                 )
-                return redirect('users:submit_user_verification')
-        else:
-            error_msg = result if isinstance(result, str) else "Verification failed. Please try again."
-            messages.error(request, f"Verification failed: {error_msg}")
-            return redirect('users:submit_user_verification')
-    
-    return render(request, 'users/submit_user_verification.html', {
-        'user': request.user
-    })
+                ctx['error'] = (
+                    f"❌ Verification failed (confidence: {overall_confidence:.0f}%). "
+                    f"The details you entered do not match the records for this {id_type.upper()}.{hint} "
+                    "Please double-check your name and date of birth and try again."
+                )
+                return render(request, 'users/submit_user_verification.html', ctx)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            ctx['error'] = f"Verification processing error: {str(e)}"
+            return render(request, 'users/submit_user_verification.html', ctx)
+
+    # GET request — show the form
+    return render(request, 'users/submit_user_verification.html', ctx)

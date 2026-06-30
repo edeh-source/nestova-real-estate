@@ -1,144 +1,740 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Company Verification — Nestova{% endblock %}
+
 {% block content %}
 <style>
-    .verify-form-section {
-        padding: 80px 0;
-        background: #f8fafc;
-    }
+  /* ============================================================
+     COMPANY VERIFICATION FORM — NESTOVA DARK DESIGN SYSTEM
+     ============================================================ */
 
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        padding: 40px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
+  .cv-page {
+    min-height: 100vh;
+    padding: calc(var(--nav-height) + 60px) 0 80px;
+    background: var(--obsidian);
+    position: relative;
+    overflow: hidden;
+  }
 
-    .form-header {
-        margin-bottom: 40px;
-        text-align: center;
-    }
+  .cv-page::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    left: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.05) 0%, transparent 65%);
+    pointer-events: none;
+  }
 
-    .form-header h2 {
-        font-weight: 800;
-        color: #1e293b;
-    }
+  .cv-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
 
-    .form-label {
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 10px;
-    }
+  /* ---- Page header ---- */
+  .cv-header { margin-bottom: 36px; }
 
-    .form-control {
-        border-radius: 12px;
-        padding: 12px 15px;
-        border: 1px solid #e2e8f0;
-    }
+  .cv-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+    margin-bottom: 24px;
+  }
 
-    .upload-box {
-        border: 2px dashed #e2e8f0;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        margin-bottom: 25px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
+  .cv-back:hover { color: var(--gold-light); text-decoration: none; }
 
-    .upload-box:hover {
-        border-color: #20c997;
-        background: #f0fdf4;
-    }
+  .cv-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
 
-    .upload-icon {
-        font-size: 32px;
-        color: #94a3b8;
-        margin-bottom: 10px;
-    }
+  .cv-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
 
-    .btn-submit {
-        background: #20c997;
-        color: white;
-        padding: 15px 40px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        border: none;
-    }
+  .cv-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0 0 10px;
+    line-height: 1.15;
+  }
 
-    .info-tip {
-        background: #fffbeb;
-        padding: 15px;
-        border-radius: 10px;
-        color: #92400e;
-        font-size: 14px;
-        margin-bottom: 30px;
-        display: flex;
+  .cv-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 540px;
+  }
+
+  /* ---- Company name display strip ---- */
+  .cv-company-strip {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: var(--radius-md);
+    padding: 16px 22px;
+    margin-bottom: 28px;
+  }
+
+  .cv-company-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .cv-company-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cv-company-label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 3px;
+  }
+
+  .cv-company-name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cv-name-match-note {
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* ---- Form card ---- */
+  .cv-card {
+    background: var(--surface-1);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    box-shadow:
+      0 32px 80px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .cv-section {
+    padding: 36px 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .cv-section:last-child { border-bottom: none; }
+
+  @media (max-width: 560px) {
+    .cv-section { padding: 26px 22px; }
+  }
+
+  .cv-section-label {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cv-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,168,76,0.2);
+  }
+
+  /* ---- Form controls ---- */
+  .cv-field { margin-bottom: 22px; }
+  .cv-field:last-child { margin-bottom: 0; }
+
+  .cv-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .cv-label .cv-required { color: var(--gold); margin-left: 3px; }
+  .cv-label .cv-optional {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 6px;
+  }
+
+  .cv-hint {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .cv-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: 13px 16px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cv-input::placeholder { color: var(--text-muted); }
+
+  .cv-input:focus {
+    border-color: rgba(201,168,76,0.45);
+    background: rgba(201,168,76,0.04);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  }
+
+  /* Input with prefix */
+  .cv-input-group {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .cv-input-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-right: none;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .cv-input-group .cv-input {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    border-left: none;
+  }
+
+  .cv-input-group .cv-input:focus {
+    border-left: 1px solid rgba(201,168,76,0.45);
+    margin-left: -1px;
+  }
+
+  /* ---- Upload zones ---- */
+  .cv-upload-zone {
+    position: relative;
+    border: 1.5px dashed rgba(255,255,255,0.12);
+    border-radius: var(--radius-md);
+    padding: 24px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: rgba(255,255,255,0.02);
+    overflow: hidden;
+  }
+
+  .cv-upload-zone:hover,
+  .cv-upload-zone.has-file {
+    border-color: rgba(201,168,76,0.35);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .cv-upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cv-upload-icon {
+    font-size: 1.7rem;
+    color: var(--text-muted);
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+
+  .cv-upload-zone:hover .cv-upload-icon,
+  .cv-upload-zone.has-file .cv-upload-icon { color: var(--gold); }
+
+  .cv-upload-body { flex: 1; min-width: 0; }
+
+  .cv-upload-title {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .cv-upload-sub {
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .cv-upload-chosen {
+    display: none;
+    font-size: 0.76rem;
+    color: var(--gold);
+    margin-top: 4px;
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  .cv-upload-zone.has-file .cv-upload-chosen { display: block; }
+
+  .cv-upload-fields { display: flex; flex-direction: column; gap: 14px; }
+
+  /* ---- Tip box ---- */
+  .cv-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-top: 20px;
+  }
+
+  .cv-tip i { color: var(--gold); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  .cv-tip p {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: rgba(245,240,232,0.7);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .cv-tip p strong { color: var(--gold-light); }
+
+  /* ---- Process steps (how it works) ---- */
+  .cv-how-it-works {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 520px) {
+    .cv-how-it-works { grid-template-columns: 1fr; }
+  }
+
+  .cv-step {
+    text-align: center;
+    padding: 20px 14px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-md);
+  }
+
+  .cv-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 auto 12px;
+  }
+
+  .cv-step-text {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .cv-step-text strong {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+  }
+
+  /* ---- Submit area ---- */
+  .cv-submit-area {
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,0.015);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  @media (max-width: 560px) {
+    .cv-submit-area {
+      padding: 24px 22px;
+      flex-direction: column-reverse;
+      align-items: stretch;
+      text-align: center;
     }
+  }
+
+  .cv-submit-note {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cv-submit-note i { color: var(--gold); margin-right: 5px; }
+
+  .btn-cv-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 34px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 6px 28px rgba(201,168,76,0.28);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-cv-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 36px rgba(201,168,76,0.4);
+  }
+
+  .btn-cv-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .btn-cv-submit .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(10,10,15,0.3);
+    border-top-color: #0A0A0F;
+    border-radius: 50%;
+    animation: cv-spin 0.7s linear infinite;
+  }
+
+  .btn-cv-submit.loading .spinner { display: block; }
+  .btn-cv-submit.loading .btn-label { display: none; }
+
+  @keyframes cv-spin { to { transform: rotate(360deg); } }
 </style>
 
-<section class="verify-form-section">
-    <div class="container">
-        <div class="form-card" data-aos="fade-up">
-            <div class="form-header">
-                <h2>Company Business Verification</h2>
-                <p>Register your real estate firm to start listing properties</p>
-            </div>
+<section class="cv-page">
+  <div class="cv-container">
 
-            <div class="info-tip">
-                <i class="bi bi-shield-lock-fill me-2 mt-1"></i>
-                <div>
-                    <strong>Required Documentation:</strong> You must upload a scanned copy of your CAC Registration
-                    Certificate
-                    and a recent utility bill (within the last 3 months) that matches the company's address.
-                </div>
-            </div>
-
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <div class="mb-4">
-                    <label class="form-label">CAC Registration (RC) Number</label>
-                    <input type="text" name="rc_number" class="form-control" placeholder="RC1234567" required
-                        value="{{ company.rc_number|default:'' }}">
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">CAC Certificate of Incorporation</label>
-                    <div class="upload-box" onclick="document.getElementById('cac_cert').click()">
-                        <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
-                        <p class="mb-0" id="cac-text">Click to upload CAC Certificate (PDF or Image)</p>
-                        <input type="file" id="cac_cert" name="cac_certificate" hidden accept=".pdf,image/*" required
-                            onchange="updateFileName(this, 'cac-text')">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Recent Utility Bill</label>
-                    <div class="upload-box" onclick="document.getElementById('bill').click()">
-                        <div class="upload-icon"><i class="bi bi-receipt"></i></div>
-                        <p class="mb-0" id="bill-text">Upload address proof (e.g., NEPA bill)</p>
-                        <input type="file" id="bill" name="utility_bill" hidden accept=".pdf,image/*" required
-                            onchange="updateFileName(this, 'bill-text')">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit mt-3">Submit for Verification</button>
-            </form>
-        </div>
+    <!-- Header -->
+    <div class="cv-header" data-aos="fade-down">
+      <a href="{% url 'agents:verification_dashboard' %}" class="cv-back">
+        <i class="bi bi-arrow-left"></i> Verification status
+      </a>
+      <div class="cv-eyebrow">Company Verification</div>
+      <h1 class="cv-title">Verify your business</h1>
+      <p class="cv-subtitle">
+        We verify your company against the CAC register automatically.
+        Upload your certificate and a utility bill to complete the process.
+      </p>
     </div>
+
+    <!-- Company name strip -->
+    {% if company %}
+    <div class="cv-company-strip" data-aos="fade-up" data-aos-delay="40">
+      <div class="cv-company-icon"><i class="bi bi-building"></i></div>
+      <div class="cv-company-info">
+        <div class="cv-company-label">Submitting as</div>
+        <div class="cv-company-name">{{ company.company_name }}</div>
+        <div class="cv-name-match-note">
+          The name above must match your CAC records exactly for automatic approval.
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- How it works -->
+    <div class="cv-how-it-works" data-aos="fade-up" data-aos-delay="60">
+      <div class="cv-step">
+        <div class="cv-step-num">1</div>
+        <div class="cv-step-text">
+          <strong>Submit RC number</strong>
+          We look up your business on the CAC register
+        </div>
+      </div>
+      <div class="cv-step">
+        <div class="cv-step-num">2</div>
+        <div class="cv-step-text">
+          <strong>Name matching</strong>
+          Company name is automatically compared
+        </div>
+      </div>
+      <div class="cv-step">
+        <div class="cv-step-num">3</div>
+        <div class="cv-step-text">
+          <strong>Instant decision</strong>
+          Approved, reviewed, or flagged — usually in seconds
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" id="cv-form" novalidate>
+      {% csrf_token %}
+
+      {% if error %}
+      <div class="verify-messages" style="margin-bottom: 24px;">
+          <div class="verify-alert verify-alert--error" style="background: rgba(220, 53, 69, 0.12); border: 1px solid rgba(220, 53, 69, 0.35); color: #f87171; padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;" role="alert">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              {{ error }}
+          </div>
+      </div>
+      {% endif %}
+
+      {% if messages %}
+      <div class="verify-messages" style="margin-bottom: 24px;">
+          {% for message in messages %}
+          <div class="verify-alert verify-alert--{{ message.tags }}" style="padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; {% if 'error' in message.tags %}background: rgba(220, 53, 69, 0.12); border-color: rgba(220, 53, 69, 0.35); color: #f87171;{% elif 'success' in message.tags %}background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #4ade80;{% else %}background: rgba(255,255,255,0.05); color: var(--text-primary);{% endif %}" role="alert">
+              <i class="bi {% if 'error' in message.tags %}bi-exclamation-triangle-fill{% elif 'success' in message.tags %}bi-check-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+              {{ message }}
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="cv-card" data-aos="fade-up" data-aos-delay="80">
+
+        <!-- Section 1 — CAC RC number -->
+        <div class="cv-section">
+          <div class="cv-section-label">CAC registration</div>
+
+          <div class="cv-field">
+            <label for="rc_number" class="cv-label">
+              RC number <span class="cv-required">*</span>
+            </label>
+            <span class="cv-hint">
+              Your Corporate Affairs Commission registration number — found on your certificate of incorporation.
+            </span>
+            <div class="cv-input-group">
+              <div class="cv-input-prefix">RC</div>
+              <input type="text" name="rc_number" id="rc_number"
+                     class="cv-input"
+                     placeholder="e.g. 1234567"
+                     value="{{ company.rc_number|default:'' }}"
+                     inputmode="numeric"
+                     required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 — Document uploads -->
+        <div class="cv-section">
+          <div class="cv-section-label">Supporting documents</div>
+
+          <div class="cv-upload-fields">
+
+            <!-- CAC Certificate -->
+            <div class="cv-field">
+              <label class="cv-label">
+                CAC Certificate of Incorporation
+                <span class="cv-required">*</span>
+              </label>
+              <div class="cv-upload-zone" id="zone-cac">
+                <input type="file" name="cac_certificate" id="cac_certificate"
+                       accept="image/*,.pdf" required>
+                <i class="bi bi-file-earmark-text cv-upload-icon"></i>
+                <div class="cv-upload-body">
+                  <div class="cv-upload-title">Certificate of Incorporation</div>
+                  <div class="cv-upload-sub">PDF or image · max 10 MB · must be current</div>
+                  <div class="cv-upload-chosen" id="chosen-cac"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Utility bill -->
+            <div class="cv-field">
+              <label class="cv-label">
+                Recent utility bill
+                <span class="cv-required">*</span>
+              </label>
+              <div class="cv-upload-zone" id="zone-utility">
+                <input type="file" name="utility_bill" id="utility_bill"
+                       accept="image/*,.pdf" required>
+                <i class="bi bi-receipt cv-upload-icon"></i>
+                <div class="cv-upload-body">
+                  <div class="cv-upload-title">NEPA / water / council bill</div>
+                  <div class="cv-upload-sub">
+                    PDF or image · max 10 MB · issued within the last 3 months
+                  </div>
+                  <div class="cv-upload-chosen" id="chosen-utility"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="cv-tip">
+            <i class="bi bi-lightbulb"></i>
+            <p>
+              <strong>For automatic approval:</strong> the company name on your certificate must match your
+              Nestova profile name exactly. If they differ, your submission will go to manual review.
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /cv-card -->
+
+      <!-- Submit row -->
+      <div class="cv-card" data-aos="fade-up" data-aos-delay="110">
+        <div class="cv-submit-area">
+          <p class="cv-submit-note">
+            <i class="bi bi-lock"></i>
+            Documents are encrypted in transit and stored securely.
+            Used only for identity verification — never shared with third parties.
+          </p>
+          <button type="submit" class="btn-cv-submit" id="cv-submit-btn">
+            <div class="spinner"></div>
+            <span class="btn-label">
+              <i class="bi bi-building-check"></i>
+              Verify company
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
 </section>
 
+{% block extra_scripts %}
 <script>
-    function updateFileName(input, targetId) {
-        if (input.files && input.files[0]) {
-            document.getElementById(targetId).innerText = input.files[0].name;
-            document.getElementById(targetId).parentElement.style.borderColor = '#20c997';
-        }
-    }
+(function () {
+  /* ---- Upload zone file feedback ---- */
+  function wireUploadZone(inputId, zoneId, chosenId) {
+    const input  = document.getElementById(inputId);
+    const zone   = document.getElementById(zoneId);
+    const chosen = document.getElementById(chosenId);
+    if (!input) return;
+
+    input.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        const name = this.files[0].name;
+        chosen.textContent = '✓ ' + (name.length > 35 ? name.slice(0, 32) + '…' : name);
+        zone.classList.add('has-file');
+      } else {
+        chosen.textContent = '';
+        zone.classList.remove('has-file');
+      }
+    });
+  }
+
+  wireUploadZone('cac_certificate', 'zone-cac',     'chosen-cac');
+  wireUploadZone('utility_bill',    'zone-utility',  'chosen-utility');
+
+  /* ---- RC number — strip non-numeric ---- */
+  const rcInput = document.getElementById('rc_number');
+  if (rcInput) {
+    rcInput.addEventListener('input', function () {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+  }
+
+  /* ---- Submit loading state ---- */
+  const form      = document.getElementById('cv-form');
+  const submitBtn = document.getElementById('cv-submit-btn');
+
+  form.addEventListener('submit', function () {
+    const rcNum   = (rcInput && rcInput.value.trim()) || '';
+    const cacFile = document.getElementById('cac_certificate').files.length;
+    const utilFile = document.getElementById('utility_bill').files.length;
+
+    if (!rcNum || !cacFile || !utilFile) return; // let HTML validation handle it
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+  });
+})();
 </script>
+{% endblock %}
 {% endblock %}

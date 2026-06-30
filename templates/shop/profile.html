@@ -251,6 +251,16 @@
   border: 1px solid rgba(34,197,94,0.18);
 }
 
+.verify-banner-inner.info {
+  background: rgba(59,130,246,0.06);
+  border: 1px solid rgba(59,130,246,0.18);
+}
+
+.verify-banner-inner.error {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.18);
+}
+
 .verify-icon {
   width: 50px; height: 50px;
   border-radius: 50%;
@@ -261,6 +271,8 @@
 
 .verify-icon.warn { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
 .verify-icon.ok   { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.22); }
+.verify-icon.info  { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.22); }
+.verify-icon.error { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.22); }
 
 .verify-text { flex: 1; min-width: 0; }
 .verify-text h4 {
@@ -270,8 +282,10 @@
   margin-bottom: 3px;
 }
 
-.verify-text h4.warn { color: #fbbf24; }
-.verify-text h4.ok   { color: #4ade80; }
+.verify-text h4.warn  { color: #fbbf24; }
+.verify-text h4.ok    { color: #4ade80; }
+.verify-text h4.info  { color: #60a5fa; }
+.verify-text h4.error { color: #f87171; }
 .verify-text p { font-size: 0.82rem; color: rgba(255,255,255,0.4); margin: 0; }
 
 .btn-verify {
@@ -983,33 +997,203 @@
   </section>
 
   <!-- ======================== VERIFICATION BANNERS ======================== -->
-  {% if not agent_profile and not company_profile and not user.id_verified %}
-  <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
-    <div class="container-xl">
-      <div class="verify-banner-inner warn">
-        <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
-        <div class="verify-text">
-          <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Identity Verification Required</h4>
-          <p>To post properties on our platform, you need to verify your identity. This keeps our community safe and trusted.</p>
-        </div>
-        <a href="{% url 'users:submit_user_verification' %}" class="btn-verify">
-          <i class="bi bi-shield-check"></i> Verify Now
-        </a>
-      </div>
-    </div>
-  </div>
-  {% elif not agent_profile and not company_profile and user.id_verified %}
-  <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
-    <div class="container-xl">
-      <div class="verify-banner-inner ok">
-        <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
-        <div class="verify-text">
-          <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Identity Verified</h4>
-          <p>Your account is verified. You can now post properties on Nestova.</p>
+  {% if agent_profile %}
+    {% if agent_profile.verification_status == 'in_review' %}
+    <!-- AGENT IN REVIEW -->
+    <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner info">
+          <div class="verify-icon info"><i class="bi bi-hourglass-split"></i></div>
+          <div class="verify-text">
+            <h4 class="info"><i class="bi bi-clock-history me-2"></i>Agent Verification In Progress</h4>
+            <p>Your agent identity verification is currently being reviewed. This typically takes 24–48 hours.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify" style="background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 6px 20px rgba(59,130,246,0.2);">
+            <i class="bi bi-eye"></i> View Status
+          </a>
         </div>
       </div>
     </div>
-  </div>
+
+    {% elif agent_profile.verification_status == 'rejected' %}
+    <!-- AGENT REJECTED -->
+    <div class="verify-banner" style="background:rgba(239,68,68,0.04);border-bottom:1px solid rgba(239,68,68,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner error">
+          <div class="verify-icon error"><i class="bi bi-shield-x"></i></div>
+          <div class="verify-text">
+            <h4 class="error"><i class="bi bi-x-circle-fill me-2"></i>Agent Verification Unsuccessful</h4>
+            <p>Your agent verification could not be confirmed. Please review the reason and try again.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 6px 20px rgba(239,68,68,0.2);">
+            <i class="bi bi-arrow-repeat"></i> Try Again
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif agent_profile.verification_status == 'verified' %}
+    <!-- AGENT VERIFIED -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Agent Profile Verified</h4>
+            <p>Your agent account is verified. You can now list properties and earn commissions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- AGENT PENDING -->
+    <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner warn">
+          <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
+          <div class="verify-text">
+            <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Agent Verification Required</h4>
+            <p>To post properties on Nestova, you need to verify your agent profile identity.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify">
+            <i class="bi bi-shield-check"></i> Verify Now
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  {% elif company_profile %}
+    {% if company_profile.verification_status == 'in_review' %}
+    <!-- COMPANY IN REVIEW -->
+    <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner info">
+          <div class="verify-icon info"><i class="bi bi-hourglass-split"></i></div>
+          <div class="verify-text">
+            <h4 class="info"><i class="bi bi-clock-history me-2"></i>Company Verification In Progress</h4>
+            <p>Your company CAC verification details are currently being reviewed. This typically takes 24–48 hours.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify" style="background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 6px 20px rgba(59,130,246,0.2);">
+            <i class="bi bi-eye"></i> View Status
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif company_profile.verification_status == 'rejected' %}
+    <!-- COMPANY REJECTED -->
+    <div class="verify-banner" style="background:rgba(239,68,68,0.04);border-bottom:1px solid rgba(239,68,68,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner error">
+          <div class="verify-icon error"><i class="bi bi-shield-x"></i></div>
+          <div class="verify-text">
+            <h4 class="error"><i class="bi bi-x-circle-fill me-2"></i>Company Verification Unsuccessful</h4>
+            <p>Your business verification could not be confirmed. Please check your details and try again.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 6px 20px rgba(239,68,68,0.2);">
+            <i class="bi bi-arrow-repeat"></i> Try Again
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif company_profile.verification_status == 'verified' %}
+    <!-- COMPANY VERIFIED -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Company Profile Verified</h4>
+            <p>Your company account is verified. You can now post properties as a registered business.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- COMPANY PENDING -->
+    <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner warn">
+          <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
+          <div class="verify-text">
+            <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Company Verification Required</h4>
+            <p>To post properties on Nestova, you need to verify your business using your CAC registration.</p>
+          </div>
+          <a href="{% url 'agents:verification_dashboard' %}" class="btn-verify">
+            <i class="bi bi-shield-check"></i> Verify Now
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  {% else %}
+    {% if user.verification_status == 'in_review' %}
+    <!-- IN REVIEW: Submitted and awaiting manual review -->
+    <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner info">
+          <div class="verify-icon info"><i class="bi bi-hourglass-split"></i></div>
+          <div class="verify-text">
+            <h4 class="info"><i class="bi bi-clock-history me-2"></i>Verification In Progress</h4>
+            <p>Your identity verification is being reviewed. This typically takes 24–48 hours. We'll notify you once it's complete.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% elif user.verification_status == 'rejected' %}
+    <!-- REJECTED: Verification failed, allow retry -->
+    <div class="verify-banner" style="background:rgba(239,68,68,0.04);border-bottom:1px solid rgba(239,68,68,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner error">
+          <div class="verify-icon error"><i class="bi bi-shield-x"></i></div>
+          <div class="verify-text">
+            <h4 class="error"><i class="bi bi-x-circle-fill me-2"></i>Verification Unsuccessful</h4>
+            <p>Your identity verification could not be confirmed. Please double-check your details and try again.</p>
+          </div>
+          <a href="{% url 'users:submit_user_verification' %}" class="btn-verify" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 6px 20px rgba(239,68,68,0.2);">
+            <i class="bi bi-arrow-repeat"></i> Try Again
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif user.id_verified %}
+    <!-- VERIFIED: Fully approved -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Identity Verified</h4>
+            <p>Your account is verified. You can now post properties on Nestova.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- PENDING: Not yet submitted -->
+    <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
+      <div class="container-xl">
+        <div class="verify-banner-inner warn">
+          <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
+          <div class="verify-text">
+            <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Identity Verification Required</h4>
+            <p>To post properties on our platform, you need to verify your identity. This keeps our community safe and trusted.</p>
+          </div>
+          <a href="{% url 'users:submit_user_verification' %}" class="btn-verify">
+            <i class="bi bi-shield-check"></i> Verify Now
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   {% endif %}
 
   <!-- ======================== TAB NAV ======================== -->

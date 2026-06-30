@@ -734,6 +734,9 @@ def profile(request):
     # Get agent profile if exists
     agent_profile = getattr(request.user, 'agent_profile', None)
     
+    # Get company profile if exists
+    company_profile = getattr(request.user, 'company_profile', None)
+    
     # Agent-specific data
     agent_data = {}
     if agent_profile:
@@ -775,6 +778,7 @@ def profile(request):
     context = {
         'profile': profile,
         'agent_profile': agent_profile,
+        'company_profile': company_profile,
         'agent_data': agent_data,
         'my_properties': my_properties,
         'my_bookings': my_bookings,
