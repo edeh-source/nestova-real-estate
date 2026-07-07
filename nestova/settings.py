@@ -691,6 +691,8 @@ CELERY_BROKER_USE_SSL = {
 
 
 
+APIFY_DATASET_ID = os.environ.get("APIFY_DATASET_ID")
+
 DOJAH_APP_ID  = os.environ.get("DOJAH_APP_ID")
 DOJAH_API_KEY = os.environ.get("DOJAH_API_KEY")
 DOJAH_BASE_URL = os.environ.get("DOJAH_BASE_URL")
