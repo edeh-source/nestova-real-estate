@@ -1,0 +1,1049 @@
+[{
+  "type": "finish_map",
+  "finish_name": "Textured",
+  "finish_name_it": "Materico",
+  "product_ids": [
+    "74",
+    "22",
+    "23",
+    "29",
+    "28",
+    "24",
+    "42",
+    "48",
+    "43",
+    "12",
+    "25",
+    "40",
+    "44",
+    "26",
+    "27",
+    "45",
+    "75",
+    "73",
+    "49",
+    "56",
+    "30"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Silk Effect",
+  "finish_name_it": "Effetto Seta",
+  "product_ids": [
+    "9",
+    "46"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Corten / Oxidized",
+  "finish_name_it": "Corten / Ossidato",
+  "product_ids": [
+    "41",
+    "47"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Fabric Effect",
+  "finish_name_it": "Effetto Tessuto",
+  "product_ids": [
+    "59",
+    "13",
+    "76",
+    "10",
+    "52"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Luminescent",
+  "finish_name_it": "Luminescente",
+  "product_ids": [
+    "31",
+    "83"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Pearlescent",
+  "finish_name_it": "Perlescente",
+  "product_ids": [
+    "4",
+    "83",
+    "9",
+    "46"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Cement",
+  "finish_name_it": "Cemento",
+  "product_ids": [
+    "42"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Stucco",
+  "finish_name_it": "Stucco",
+  "product_ids": [
+    "11"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Satin",
+  "finish_name_it": "Satinato",
+  "product_ids": [
+    "4",
+    "9",
+    "46"
+  ]
+},
+{
+  "type": "finish_map",
+  "finish_name": "Velvet",
+  "finish_name_it": "Vellutato",
+  "product_ids": [
+    "13",
+    "76",
+    "10",
+    "52"
+  ]
+},
+{
+  "type": "product",
+  "product_id": "74",
+  "name": "ARMONIE D'ARGILLA",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_06_pittura_effetti_colori.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_06_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_07_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_08_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_09_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_10_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_11_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_12_pittura_effetti_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARMONIE_ARGILLA/GalleriArmonieArgilla/Armonie_dArgilla_13_pittura_effetti_colori.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/armonie%2Bd%2527argilla-74/"
+},
+{
+  "type": "finish_map",
+  "finish_name": "Sand Effect",
+  "finish_name_it": "Sabbiato",
+  "product_ids": [
+    "33",
+    "4",
+    "57",
+    "5",
+    "53"
+  ]
+},
+{
+  "type": "product",
+  "product_id": "6",
+  "name": "Arteco' 1",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_06_effetti_pittura_pareti.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_06_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_07_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_08_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_09_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_10_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_11_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_12_effetti_pittura_pareti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO1/GalleryArteco1/Arteco1_01_effetti_pittura_pareti.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/arteco%2527%2B1-6/"
+},
+{
+  "type": "product",
+  "product_id": "1",
+  "name": "Klondike",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike6_pittura_murale_decorativa.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike6_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike7_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike8_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike1_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike2_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike3_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike4_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE/Foto_GalleryKlondike/Klondike5_pittura_murale_decorativa.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/klondike-1/"
+},
+{
+  "type": "product",
+  "product_id": "50",
+  "name": "Additivo Sanificante VH 2020",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_01_Pitture_decorative_interno.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_01_Pitture_decorative_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_02_Pitture_decorative_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_03_Pitture_decorative_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_04_Pitture_decorative_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ADDITIVO_SANIFICANTE_VH2020/GalleryAdditivoSanificante/additivosanificante_05_Pitture_decorative_interno.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/additivo%2Bsanificante%2Bvh%2B2020-50/"
+},
+{
+  "type": "finish_map",
+  "finish_name": "Metallic",
+  "finish_name_it": "Metallico / Metallizzato",
+  "product_ids": [
+    "32",
+    "1",
+    "41",
+    "47",
+    "2",
+    "31",
+    "13",
+    "11",
+    "4",
+    "76",
+    "83",
+    "53",
+    "10",
+    "52",
+    "9",
+    "46"
+  ]
+},
+{
+  "type": "product",
+  "product_id": "56",
+  "name": "Valpaint I-Beton Plus",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_06_stile_industrial.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_06_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_07_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_08_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_09_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_10_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_11_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_12_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON_PLUS/GalleryValpaintI-BetonPlus/ValpaintIBetonPlus_01_stile_industrial.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valpaint%2Bi-beton%2Bplus-56/"
+},
+{
+  "type": "product",
+  "product_id": "59",
+  "name": "JUTA",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta06_pittura_murale_decorativa.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta06_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta07_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta08_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta09_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta10_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta01_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta02_pittura_murale_decorativa.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/JUTA/GalleryJuta/Juta03_pittura_murale_decorativa.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/juta-59/"
+},
+{
+  "type": "product",
+  "product_id": "41",
+  "name": "Klondike Corten",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_CORTEN/GalleryKlondikeCorten/Corten_01_effetto_corten.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_CORTEN/GalleryKlondikeCorten/Corten_01_effetto_corten.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_CORTEN/GalleryKlondikeCorten/Corten_02_effetto_corten.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_CORTEN/GalleryKlondikeCorten/Corten_03_effetto_corten.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_CORTEN/GalleryKlondikeCorten/Corten_04_effetto_corten.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/klondike%2Bcorten-41/"
+},
+{
+  "type": "product",
+  "product_id": "33",
+  "name": "Mavericks",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_01_pittura_sabbiata.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_01_pittura_sabbiata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_02_pittura_sabbiata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_03_pittura_sabbiata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_04_pittura_sabbiata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAVERICKS/GalleryMavericks/Mavericks_05_pittura_sabbiata.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/mavericks-33/"
+},
+{
+  "type": "product",
+  "product_id": "2",
+  "name": "Klondike Light",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight6_effetto_metallo.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight6_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight7_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight8_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight1_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight2_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight3_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight4_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_LIGHT/FotoGallery_KlondikeLight/KlondikeLight5_effetto_metallo.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/klondike%2Blight-2/"
+},
+{
+  "type": "finish_map",
+  "finish_name": "Antiqued",
+  "finish_name_it": "Anticato",
+  "product_ids": [
+    "6",
+    "8",
+    "47",
+    "40",
+    "17"
+  ]
+},
+{
+  "type": "product",
+  "product_id": "48",
+  "name": "Meteore 10 Intonaco",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco06_pittura_esterni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco06_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco07_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco08_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco09_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco10_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco11_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco12_pittura_esterni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_INTONACO/GalleryIntonaco/Intonaco13_pittura_esterni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/meteore%2B10%2Bintonaco-48/"
+},
+{
+  "type": "product",
+  "product_id": "44",
+  "name": "Rococò Travertino",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino06_pittura_murale_per_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino06_pittura_murale_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino01_pittura_murale_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino02_pittura_murale_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino03_pittura_murale_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino04_pittura_murale_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO_TRAVERTINO/GalleryRococoTravertino/Travertino05_pittura_murale_per_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/rococ%25C3%25B2%2Btravertino-44/"
+},
+{
+  "type": "product",
+  "product_id": "4",
+  "name": "Sabulador",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador06_pareti_effetto_sabbia.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador06_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador07_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador08_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador09_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador10_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador11_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador12_pareti_effetto_sabbia.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR/FotoGallerySabulador/Sabulador13_pareti_effetto_sabbia.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/sabulador-4/"
+},
+{
+  "type": "product",
+  "product_id": "11",
+  "name": "Rococò Stucco Veneziano e Grassello di Calce",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_06_stucco_veneziano.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_06_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_07_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_08_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_09_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_10_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_11_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_12_stucco_veneziano.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ROCOCO/GalleryRococo/Rococo_13_stucco_veneziano.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/rococ%25C3%25B2%2Bstucco%2Bveneziano%2Be%2Bgrassello%2Bdi%2Bcalce-11/"
+},
+{
+  "type": "product",
+  "product_id": "57",
+  "name": "Sabulador Exterior",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_06_pittura_effetto_sabbiato_colori.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_06_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_07_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_08_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_09_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_01_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_02_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_03_pittura_effetto_sabbiato_colori.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_EXTERIOR/GallerySabuladorExterior/SabuladorExterior_04_pittura_effetto_sabbiato_colori.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/sabulador%2Bexterior-57/"
+},
+{
+  "type": "product",
+  "product_id": "40",
+  "name": "Rococò Anticando",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_06_effetto_anticato.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_06_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_07_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_08_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_09_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_01_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_02_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_03_effetto_anticato.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ANTICANDO/GalleryAnticando/Anticando_04_effetto_anticato.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/rococ%25C3%25B2%2Banticando-40/"
+},
+{
+  "type": "product",
+  "product_id": "13",
+  "name": "Polistof",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_06_pitture_per_interni_particolari.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_06_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_07_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_01_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_02_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_03_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_04_pitture_per_interni_particolari.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/POLISTOF/GalleryPolistof/Polistof_05_pitture_per_interni_particolari.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/polistof-13/"
+},
+{
+  "type": "product",
+  "product_id": "55",
+  "name": "STENCIL",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_06_pittura_decorativa_per_interno.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_06_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_07_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_01_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_02_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_03_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_04_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STENCIL/GalleryStencil/Stencil_05_pittura_decorativa_per_interno.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/stencil-55/"
+},
+{
+  "type": "product",
+  "product_id": "77",
+  "name": "V44 MATT - IDROFINITURA MONOCROMATICA TRASPIRANTE",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_01_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_01_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_02_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_03_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_04_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V44/Gallery_V44/V44_05_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/v44%2Bmatt%2B-%2Bidrofinitura%2Bmonocromatica%2Btraspirante-77/"
+},
+{
+  "type": "product",
+  "product_id": "76",
+  "name": "SETAVEL",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_06_idee_pittura_parete_soggiorno.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_06_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_07_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_08_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_10_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_01_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_02_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_03_idee_pittura_parete_soggiorno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SETAVEL/Gallery_Setavel/Setavel_04_idee_pittura_parete_soggiorno.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/setavel-76/"
+},
+{
+  "type": "product",
+  "product_id": "31",
+  "name": "Magic Light",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_12_pitture_murali.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_12_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_14_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_16_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_18_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_20_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_22_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_24_pitture_murali.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/MAGIC_LIGHT/GalleryMagicLight/MagicLight_26_pitture_murali.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/magic%2Blight-31/"
+},
+{
+  "type": "product",
+  "product_id": "54",
+  "name": "Top Coat",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_06_stile_industrial.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_06_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_07_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_08_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_09_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_11_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_12_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_01_stile_industrial.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/TOP_COAT/Gallery_Top_Coat/TopCoat_02_stile_industrial.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/top%2Bcoat-54/"
+},
+{
+  "type": "product",
+  "product_id": "79",
+  "name": "V55 Matt - Idrosmalto Decorativo",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_06_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_06_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_07_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_08_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_01_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_02_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_03_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_04_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V55/GalleryV55/V55_05_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/v55%2Bmatt%2B-%2Bidrosmalto%2Bdecorativo-79/"
+},
+{
+  "type": "product",
+  "product_id": "80",
+  "name": "V88 Satiné - Idrosmalto Decorativo",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_06_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_06_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_07_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_08_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_09_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_01_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_02_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_03_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V55-V88/Materiale_solo_V88/GalleryV88/V88_04_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/v88%2Bsatin%25C3%25A9%2B-%2Bidrosmalto%2Bdecorativo-80/"
+},
+{
+  "type": "product",
+  "product_id": "45",
+  "name": "Valpaint E-Volution",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution06_resina_per_pavimenti.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution06_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution07_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution08_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution09_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution10_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution11_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution12_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION/Foto_GalleryEvolution/Evolution13_resina_per_pavimenti.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valpaint%2Be-volution-45/"
+},
+{
+  "type": "product",
+  "product_id": "53",
+  "name": "VALMETAL",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal06_pittura_decorativa_per_interno.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal06_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal07_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal08_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal09_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal10_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal11_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal12_pittura_decorativa_per_interno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALMETAL/GalleryValmetal/Valmetal13_pittura_decorativa_per_interno.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valmetal-53/"
+},
+{
+  "type": "product",
+  "product_id": "83",
+  "name": "VALKRON",
+  "short_desc": "",
+  "description": "",
+  "use_type": "exterior",
+  "category_name": "Decorative Paints for Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALKRON/GalleryValkron/VALKRON_01_pitture_decorative_da_esterno.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALKRON/GalleryValkron/VALKRON_01_pitture_decorative_da_esterno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALKRON/GalleryValkron/VALKRON_02_pitture_decorative_da_esterno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALKRON/GalleryValkron/VALKRON_03_pitture_decorative_da_esterno.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALKRON/GalleryValkron/VALKRON_04_pitture_decorative_da_esterno.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valkron-83/"
+},
+{
+  "type": "product",
+  "product_id": "10",
+  "name": "Valrenna",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_06_vernice_lavabile.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_06_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_07_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_01_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_02_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_03_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_04_vernice_lavabile.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA/GalleryValrenna/Valrenna_05_vernice_lavabile.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valrenna-10/"
+},
+{
+  "type": "product",
+  "product_id": "78",
+  "name": "V99 EXTRA MATT - DECOFINITURA ULTRA OPACA",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_06_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_06_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_07_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_08_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_09_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_10_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_11_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_12_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/V99/GalleryV99/V99_13_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/v99%2Bextra%2Bmatt%2B-%2Bdecofinitura%2Bultra%2Bopaca-78/"
+},
+{
+  "type": "product",
+  "product_id": "9",
+  "name": "Valsetin",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_01_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_01_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_02_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_03_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_04_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN/GalleryValsetin/Valsetin_05_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valsetin-9/"
+},
+{
+  "type": "product",
+  "product_id": "49",
+  "name": "Valpaint I-Beton",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_06_rivestimenti_pareti_bagno_in_resina.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_06_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_07_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_08_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_09_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_10_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_11_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_01_rivestimenti_pareti_bagno_in_resina.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_I-BETON/GalleryValpaint_I-Beton/ValpaintI-Beton_02_rivestimenti_pareti_bagno_in_resina.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valpaint%2Bi-beton-49/"
+},
+{
+  "type": "product",
+  "product_id": "52",
+  "name": "Valrenna 2",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_06_pitture_per_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_06_pitture_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_01_pitture_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_02_pitture_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_03_pitture_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_04_pitture_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALRENNA_2/Gallery_Valrenna_2/Valrenna2_05_pitture_per_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valrenna%2B2-52/"
+},
+{
+  "type": "product",
+  "product_id": "17",
+  "name": "Velidor fine",
+  "short_desc": "",
+  "description": "",
+  "use_type": "both",
+  "category_name": "Decorative Paints for Interior & Exterior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VELIDOR_FINE/GalleryVelidorFine/VelidorFine_01_finiture_interne.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VELIDOR_FINE/GalleryVelidorFine/VelidorFine_01_finiture_interne.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VELIDOR_FINE/GalleryVelidorFine/VelidorFine_02_finiture_interne.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/velidor%2Bfine-17/"
+},
+{
+  "type": "product",
+  "product_id": "46",
+  "name": "Valsetin 2",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_06_pittura_bianco_perla.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_06_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_07_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_08_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_09_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_10_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_01_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_02_pittura_bianco_perla.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALSETIN_2/GalleryValsetin2/Valsetin2_03_pittura_bianco_perla.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valsetin%2B2-46/"
+},
+{
+  "type": "product",
+  "product_id": "75",
+  "name": "VALPAINT E-VOLUTION EASY",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_06_effetto_pietra_spaccata.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_06_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_07_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_08_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_01_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_02_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_03_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_04_effetto_pietra_spaccata.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_EASY/Gallery_Valpaint_E-Volution_Easy/Valpaint_E-Volution_Easy_05_effetto_pietra_spaccata.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valpaint%2Be-volution%2Beasy-75/"
+},
+{
+  "type": "product",
+  "product_id": "8",
+  "name": "Arteco' 7",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_06_pittura_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_06_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_07_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_08_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_09_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_10_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_01_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_02_pittura_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO7/GalleryArteco7/Arteco7_03_pittura_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/arteco%2527%2B7-8/"
+},
+{
+  "type": "product",
+  "product_id": "43",
+  "name": "Meteore 10 Marmorizzato",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_06_pittura_effetto_marmo.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_06_pittura_effetto_marmo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_01_pittura_effetto_marmo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_02_pittura_effetto_marmo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_03_pittura_effetto_marmo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_04_pittura_effetto_marmo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_MARMORIZZATO/GalleryMeteore10Marmorizzato/Marmorizzato_05_pittura_effetto_marmo.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/meteore%2B10%2Bmarmorizzato-43/"
+},
+{
+  "type": "product",
+  "product_id": "5",
+  "name": "Sabulador Soft",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft06_finiture_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft06_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft07_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft08_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft09_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft10_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft11_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft12_finiture_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/SABULADOR_SOFT/FotoGallerySabuladorSoft/SabuladorSoft13_finiture_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/sabulador%2Bsoft-5/"
+},
+{
+  "type": "finish_map",
+  "finish_name": "Glitter",
+  "finish_name_it": "Glitter",
+  "product_ids": [
+    "6",
+    "8",
+    "22",
+    "23",
+    "29",
+    "28",
+    "59",
+    "41",
+    "47",
+    "24",
+    "42",
+    "25",
+    "13",
+    "40",
+    "4",
+    "76",
+    "3",
+    "26",
+    "27",
+    "83",
+    "53",
+    "10",
+    "52",
+    "9",
+    "46",
+    "17",
+    "30"
+  ]
+},
+{
+  "type": "product",
+  "product_id": "73",
+  "name": "VALPAINT E-VOLUTION PLUS",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus01_resina_per_pavimenti.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus01_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus02_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus03_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus04_resina_per_pavimenti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/VALPAINT_E-VOLUTION_PLUS/Galley_Valpaint_E-Volution_Plus/EvolutionPlus05_resina_per_pavimenti.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/valpaint%2Be-volution%2Bplus-73/"
+},
+{
+  "type": "product",
+  "product_id": "12",
+  "name": "Meteore 8",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_8/GalleryMeteore8/Meteore8_01_tinteggiare_pareti_effetti.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_8/GalleryMeteore8/Meteore8_01_tinteggiare_pareti_effetti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_8/GalleryMeteore8/Meteore8_02_tinteggiare_pareti_effetti.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_8/GalleryMeteore8/Meteore8_03_tinteggiare_pareti_effetti.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/meteore%2B8-12/"
+},
+{
+  "type": "product",
+  "product_id": "47",
+  "name": "Klondike Ferro",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_FERRO/GalleryKlondikeFerro/Ferro_01_pittura_moderna_per_interni.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_FERRO/GalleryKlondikeFerro/Ferro_01_pittura_moderna_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_FERRO/GalleryKlondikeFerro/Ferro_02_pittura_moderna_per_interni.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/KLONDIKE_FERRO/GalleryKlondikeFerro/Ferro_03_pittura_moderna_per_interni.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/klondike%2Bferro-47/"
+},
+{
+  "type": "product",
+  "product_id": "3",
+  "name": "Star",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star6_pitture_decorative_glitter.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star6_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star7_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star8_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star9_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star1_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star2_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star3_pitture_decorative_glitter.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/STAR/Foto_Gallery/Star4_pitture_decorative_glitter.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/star-3/"
+},
+{
+  "type": "product",
+  "product_id": "32",
+  "name": "Arteco' 7 Metal",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_06_vernice_effetto_metallo.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_06_vernice_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_01_vernice_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_02_vernice_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_03_vernice_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_04_vernice_effetto_metallo.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/ARTECO_7_METAL/GalleryArteco7Metal/ArtecoI_7Metal_05_vernice_effetto_metallo.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/arteco%2527%2B7%2Bmetal-32/"
+},
+{
+  "type": "product",
+  "product_id": "42",
+  "name": "Meteore 10 Cemento",
+  "short_desc": "",
+  "description": "",
+  "use_type": "interior",
+  "category_name": "Decorative Paints for Interior Use",
+  "image_url": "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_06_rivestimento_materico.jpg",
+  "gallery_images": [
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_06_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_07_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_08_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_09_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_10_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_11_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_12_rivestimento_materico.jpg",
+    "https://www.valpaint.it/img/public/new/PRODOTTI/METEORE_10_CEMENTO/GalleryMeteore10Cemento/Meteore10Cemento_13_rivestimento_materico.jpg"
+  ],
+  "valpaint_url": "https://www.valpaint.it/en/all-products/prod/meteore%2B10%2Bcemento-42/"
+}]
