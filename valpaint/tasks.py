@@ -2,10 +2,9 @@
 valpaint/tasks.py
 Celery task: sync the stored Apify dataset into ValpaintProduct.
 
-Mirrors the propertypro tasks.py pattern exactly:
-  - ApifyClient reads the stored dataset (no new actor run needed)
-  - update_or_create per product (idempotent — safe to re-run)
-  - Downloads the first image only if the product doesn't already have one
+The Apify dataset is a mixed array of two item types:
+  - {"type": "finish_map", "finish_name": "...", "product_ids": [...]}
+  - {"type": "product",    "product_id": "...", "image_url": "...", ...}
 """
 
 import logging
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Image download helper (same pattern as propertypro)
+# Image download helper
 # ─────────────────────────────────────────────────────────────────────────────
 
 def download_image(image_url):
@@ -48,7 +47,7 @@ def download_image(image_url):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Taxonomy helpers (run once per task invocation)
+# Taxonomy helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
 _CATEGORY_DEFS = [
@@ -84,17 +83,16 @@ def _ensure_categories():
     return categories
 
 
-def _ensure_finishes(items):
+def _ensure_finishes(finish_maps):
     """
-    Collect all finish names in the dataset, get_or_create a Finish row for each.
-    Returns {display_name: Finish object}.
+    Reads finish names from finish_map items (not product items).
+    Returns {finish_name: Finish object}.
     """
     seen = {}
-    for item in items:
-        for fname in (item.get('finishes') or []):
-            fname = fname.strip()
-            if fname and fname.lower() not in seen:
-                seen[fname.lower()] = fname
+    for item in finish_maps:
+        fname = (item.get('finish_name') or '').strip()
+        if fname and fname.lower() not in seen:
+            seen[fname.lower()] = fname
 
     finishes = {}
     for i, (_, display_name) in enumerate(sorted(seen.items())):
@@ -108,13 +106,18 @@ def _ensure_finishes(items):
     return finishes
 
 
-def _get(item, *keys, default=''):
-    """Try multiple field name variants (handles snake_case and camelCase)."""
-    for key in keys:
-        val = item.get(key)
-        if val is not None:
-            return val
-    return default
+def _build_product_finish_map(finish_maps):
+    """
+    Inverts finish_map items into {product_id_str: [finish_name, ...]}.
+    """
+    result = {}
+    for item in finish_maps:
+        fname = (item.get('finish_name') or '').strip()
+        if not fname:
+            continue
+        for pid in (item.get('product_ids') or []):
+            result.setdefault(str(pid), []).append(fname)
+    return result
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -124,10 +127,10 @@ def _get(item, *keys, default=''):
 @shared_task
 def sync_valpaint_products():
     """
-    Reads the stored Apify dataset (APIFY_DATASET_ID) and syncs all
-    products into ValpaintProduct. Safe to call multiple times.
+    Reads the stored Apify dataset and syncs all products into ValpaintProduct.
+    Safe to call multiple times (idempotent).
 
-    Dev test (no Celery running needed):
+    Dev test (no Celery needed):
         from valpaint.tasks import sync_valpaint_products
         print(sync_valpaint_products())
 
@@ -137,42 +140,49 @@ def sync_valpaint_products():
     client     = ApifyClient(token=settings.APIFY_API_TOKEN)
     dataset_id = settings.APIFY_DATASET_ID
 
-    items = list(client.dataset(dataset_id).iterate_items())
-    logger.info(f'Fetched {len(items)} items from Apify dataset {dataset_id!r}')
+    all_items = list(client.dataset(dataset_id).iterate_items())
+    logger.info(f'Fetched {len(all_items)} items from Apify dataset {dataset_id!r}')
 
-    if not items:
+    if not all_items:
         logger.warning('Dataset is empty — nothing to import')
         return 'Dataset is empty.'
 
-    categories = _ensure_categories()
-    finishes   = _ensure_finishes(items)
+    # Split the mixed array by type
+    products    = [i for i in all_items if i.get('type') == 'product']
+    finish_maps = [i for i in all_items if i.get('type') == 'finish_map']
+
+    logger.info(f'{len(products)} products, {len(finish_maps)} finish maps')
+
+    categories         = _ensure_categories()
+    finishes           = _ensure_finishes(finish_maps)
+    product_finish_map = _build_product_finish_map(finish_maps)
 
     total_created = 0
     total_updated = 0
     total_images  = 0
     total_errors  = 0
 
-    for item in items:
-        name = (_get(item, 'name', 'productName') or '').strip()
+    for item in products:
+        name = (item.get('name') or '').strip()
         if not name:
             logger.warning('Skipping item with no name')
             continue
 
-        slug         = slugify(name)
-        use_raw      = (_get(item, 'use_type', 'useType') or 'interior').lower()
-        category     = categories.get(use_raw if use_raw in categories else 'interior')
-        short_desc   = _get(item, 'short_description', 'shortDescription', 'shortDesc')[:320]
-        description  = _get(item, 'description', 'fullDescription')
-        valpaint_url = _get(item, 'url', 'productUrl')
-        raw_id       = _get(item, 'product_id', 'productId', 'id')
-        sku          = str(raw_id) if raw_id else ''
-        images       = item.get('images') or []
-        first_image  = images[0] if images else None
+        slug        = slugify(name)
+        use_raw     = (item.get('use_type') or 'interior').lower()
+        category    = categories.get(use_raw if use_raw in categories else 'interior')
+        short_desc  = (item.get('short_desc') or '')[:320]
+        description = item.get('description') or ''
+        valpaint_url = item.get('valpaint_url') or ''
+        product_id  = str(item.get('product_id') or '')
+        image_url   = item.get('image_url') or ''   # ← correct field name
 
+        # Look up finishes for this product via the inverted map
+        finish_names     = product_finish_map.get(product_id, [])
         item_finish_objs = [
-            finishes[f.strip()]
-            for f in (item.get('finishes') or [])
-            if f.strip() in finishes
+            finishes[fname]
+            for fname in finish_names
+            if fname in finishes
         ]
 
         try:
@@ -184,7 +194,7 @@ def sync_valpaint_products():
                     'short_desc':   short_desc,
                     'description':  description,
                     'valpaint_url': valpaint_url,
-                    'sku':          sku,
+                    'sku':          product_id,
                     'image_alt':    name,
                     'is_active':    True,
                     'in_stock':     True,
@@ -194,8 +204,9 @@ def sync_valpaint_products():
             if item_finish_objs:
                 obj.finishes.set(item_finish_objs)
 
-            if not obj.image and first_image:
-                filename, content = download_image(first_image)
+            # Download hero image using image_url
+            if not obj.image and image_url:
+                filename, content = download_image(image_url)
                 if filename and content:
                     obj.image.save(filename, content, save=True)
                     total_images += 1
