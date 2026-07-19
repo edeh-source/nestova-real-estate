@@ -3,6 +3,7 @@ from apify_client import ApifyClient
 from django.conf import settings
 from django.core.files.base import ContentFile
 from .models import ScrapedListing
+from .image_processor import process_image_bytes
 import requests
 import uuid
 import logging
@@ -11,18 +12,32 @@ logger = logging.getLogger(__name__)
 
 
 def download_image(image_url):
-    """Fetch image from propertypro.ng, return (filename, ContentFile) or (None, None)"""
+    """
+    Fetch image from propertypro.ng, strip the PropertyPro watermark,
+    stamp Nestova, then return (filename, ContentFile) or (None, None).
+    """
     if not image_url:
         return None, None
     try:
-        resp = requests.get(image_url, timeout=10, headers={
+        resp = requests.get(image_url, timeout=15, headers={
             'User-Agent': 'Mozilla/5.0',
             'Referer': 'https://propertypro.ng/',
         })
         if resp.status_code == 200:
-            ext = image_url.split('.')[-1].split('?')[0][:4] or 'jpg'
-            filename = f"{uuid.uuid4().hex}.{ext}"
-            return filename, ContentFile(resp.content)
+            raw = resp.content
+
+            # Determine format from URL extension
+            ext = image_url.split('.')[-1].split('?')[0][:4].lower() or 'jpg'
+            fmt_map = {'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'webp': 'WEBP'}
+            fmt = fmt_map.get(ext, 'JPEG')
+            save_ext = 'jpg' if fmt == 'JPEG' else ext
+
+            # ── Strip PropertyPro watermark & stamp Nestova ──
+            processed = process_image_bytes(raw, fmt=fmt)
+
+            filename = f"{uuid.uuid4().hex}.{save_ext}"
+            return filename, ContentFile(processed)
+
     except Exception as e:
         logger.warning(f'Image download failed for {image_url}: {e}')
     return None, None
@@ -50,18 +65,18 @@ def sync_propertypro_listings():
                         'title':     item.get('title', ''),
                         'price':     item.get('price', ''),
                         'location':  item.get('location', ''),
-                        'image_url': item.get('image', ''),  # keep original URL
+                        'image_url': item.get('image', ''),  # keep original URL as backup
                         'city':      city,
                     }
                 )
 
-                # Download & store image only if we don't already have it
+                # Download & process image (removes PropertyPro watermark + adds Nestova)
                 if not obj.image_file and obj.image_url:
                     filename, content = download_image(obj.image_url)
                     if filename and content:
                         obj.image_file.save(filename, content, save=True)
                         total_images += 1
-                        logger.info(f'Saved image for: {obj.title[:50]}')
+                        logger.info(f'Saved Nestova-branded image for: {obj.title[:50]}')
 
                 if created:
                     total_saved += 1
@@ -71,4 +86,4 @@ def sync_propertypro_listings():
         except Exception as e:
             logger.error(f'Failed to sync {city}: {e}')
 
-    return f'Done. {total_saved} new listings saved, {total_images} images downloaded.'
+    return f'Done. {total_saved} new listings saved, {total_images} images downloaded.'
