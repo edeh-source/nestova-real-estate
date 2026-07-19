@@ -45,23 +45,6 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.load_default()
 
 
-def _erase_propertypro(pil_rgba: Image.Image) -> Image.Image:
-    """
-    Paints a soft, semi-transparent white rectangle over the center band
-    (38 %–62 % of image height) where the PropertyPro watermark lives.
-    This makes the old text invisible without creating smudge artefacts.
-    """
-    w, h = pil_rgba.size
-    y_top    = int(h * 0.38)
-    y_bottom = int(h * 0.62)
-
-    # Soft white veil — alpha 210 (~82%) fully erases PropertyPro text
-    # while still letting the faint image show through behind Nestova
-    veil = Image.new("RGBA", (w, y_bottom - y_top), (255, 255, 255, 210))
-    pil_rgba.paste(veil, (0, y_top), veil)
-    return pil_rgba
-
-
 def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
     """
     Draw a large, centered, semi-transparent NESTOVA watermark over the image.
@@ -74,9 +57,6 @@ def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
     """
     pil_rgba = pil_img.convert("RGBA")
     w, h = pil_rgba.size
-
-    # Step 1: Erase the PropertyPro watermark region with a soft white veil
-    pil_rgba = _erase_propertypro(pil_rgba)
 
     # Create a transparent overlay to draw on
     overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
