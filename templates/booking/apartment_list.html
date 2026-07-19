@@ -1227,8 +1227,10 @@
               <div class="col-lg-6 col-md-6 prop-card-wrap">
                 <div class="property-card">
                   <div class="property-image">
-                    {% if listing.image_url %}
-                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" loading="lazy">
+                    {% if listing.image_file %}
+                    <img src="{{ listing.image_file.url }}" alt="{{ listing.title }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';">
+                    {% elif listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';">
                     {% else %}
                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ listing.title }}" loading="lazy">
                     {% endif %}
@@ -1282,8 +1284,10 @@
               <div class="row g-0 align-items-stretch">
                 <div class="col-lg-4">
                   <div class="property-image" style="height:100%;min-height:220px;">
-                    {% if listing.image_url %}
-                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy">
+                    {% if listing.image_file %}
+                    <img src="{{ listing.image_file.url }}" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';">
+                    {% elif listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';">
                     {% else %}
                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800" alt="{{ listing.title }}" style="height:100%;min-height:220px;" loading="lazy">
                     {% endif %}
