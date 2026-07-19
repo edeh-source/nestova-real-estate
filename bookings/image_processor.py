@@ -14,6 +14,8 @@ Uses only Pillow (no OpenCV dependency needed in production).
 import io
 import os
 import logging
+import cv2
+import numpy as np
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -43,6 +45,45 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
             except Exception:
                 pass
     return ImageFont.load_default()
+
+
+def _erase_propertypro_cv2(image_bytes: bytes) -> bytes:
+    """
+    Uses OpenCV inpainting to completely erase the PropertyPro watermark.
+    """
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    if img is None:
+        return image_bytes
+
+    h, w = img.shape[:2]
+    
+    # PropertyPro watermark is roughly in the center, between 40% and 60% height
+    y_start = int(h * 0.40)
+    y_end = int(h * 0.60)
+    
+    roi = img[y_start:y_end, 0:w]
+    
+    # Create a mask for bright pixels (the white watermark)
+    lower_white = np.array([150, 150, 150], dtype=np.uint8)
+    upper_white = np.array([255, 255, 255], dtype=np.uint8)
+    mask = cv2.inRange(roi, lower_white, upper_white)
+    
+    # Dilate mask to cover edges of the text
+    kernel = np.ones((3,3), np.uint8)
+    mask = cv2.dilate(mask, kernel, iterations=1)
+    
+    # Inpaint to remove the text
+    inpainted_roi = cv2.inpaint(roi, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+    
+    img[y_start:y_end, 0:w] = inpainted_roi
+    
+    success, encoded = cv2.imencode('.jpg', img)
+    if success:
+        return encoded.tobytes()
+    return image_bytes
+
 
 
 def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
@@ -121,12 +162,13 @@ def process_image_bytes(raw_bytes: bytes, fmt: str = "JPEG") -> bytes:
         fmt = "JPEG"
 
     try:
-        pil_img = Image.open(io.BytesIO(raw_bytes))
+        # Step 1: Completely erase PropertyPro watermark using OpenCV
+        erased_bytes = _erase_propertypro_cv2(raw_bytes)
 
-        # Stamp Nestova watermark
+        # Step 2: Stamp NESTOVA using Pillow
+        pil_img = Image.open(io.BytesIO(erased_bytes))
         result = _stamp_nestova(pil_img)
 
-        # JPEG doesn't support alpha — convert to RGB
         if fmt == "JPEG":
             result = result.convert("RGB")
 
