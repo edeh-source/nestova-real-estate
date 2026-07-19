@@ -1,33 +1,41 @@
 """
 bookings/image_processor.py
 
-Removes the PropertyPro.ng watermark from a downloaded image using a modern
-frosted glassmorphism banner effect across the center, and stamps the Nestova 
-watermark inside it.
+Stamps a large, centered NESTOVA watermark over scraped PropertyPro images,
+replicating the same style PropertyPro uses for their own watermark:
+  - Large semi-transparent white text
+  - Centered on the image
+  - Subtle dark shadow for depth
+  - No background band (text directly over the photo)
 
-This completely obscures the PropertyPro watermark without the chaotic smudges
-often caused by OpenCV inpainting on large text blocks.
+Uses only Pillow (no OpenCV dependency needed in production).
 """
 
 import io
 import os
 import logging
 
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 
 logger = logging.getLogger(__name__)
 
+
+# Font search order: Windows fonts, then Linux/Production server fonts
 FONT_CANDIDATES = [
-    r"C:\Windows\Fonts\segoeui.ttf",
-    r"C:\Windows\Fonts\arial.ttf",
-    r"C:\Windows\Fonts\calibri.ttf",
-    # Linux/Production paths
+    r"C:\Windows\Fonts\seguisb.ttf",       # Segoe UI Semibold
+    r"C:\Windows\Fonts\segoeui.ttf",       # Segoe UI
+    r"C:\Windows\Fonts\arialbd.ttf",       # Arial Bold
+    r"C:\Windows\Fonts\arial.ttf",         # Arial
+    r"C:\Windows\Fonts\calibrib.ttf",      # Calibri Bold
+    # Linux / Railway / Render server paths
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+    "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
 ]
 
 
 def _load_font(size: int) -> ImageFont.FreeTypeFont:
+    """Try each candidate font path; fall back to Pillow's built-in default."""
     for path in FONT_CANDIDATES:
         if os.path.exists(path):
             try:
@@ -37,12 +45,84 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.load_default()
 
 
+def _erase_propertypro(pil_rgba: Image.Image) -> Image.Image:
+    """
+    Paints a soft, semi-transparent white rectangle over the center band
+    (38 %–62 % of image height) where the PropertyPro watermark lives.
+    This makes the old text invisible without creating smudge artefacts.
+    """
+    w, h = pil_rgba.size
+    y_top    = int(h * 0.38)
+    y_bottom = int(h * 0.62)
+
+    # Soft white veil — alpha 210 (~82%) fully erases PropertyPro text
+    # while still letting the faint image show through behind Nestova
+    veil = Image.new("RGBA", (w, y_bottom - y_top), (255, 255, 255, 210))
+    pil_rgba.paste(veil, (0, y_top), veil)
+    return pil_rgba
+
+
+def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
+    """
+    Draw a large, centered, semi-transparent NESTOVA watermark over the image.
+
+    Replicates PropertyPro's watermark style:
+      • Large white text, ~45% of image width
+      • About 65% opacity (alpha 166) — clearly visible but not harsh
+      • Subtle dark drop-shadow for depth on all backgrounds
+      • Text centered both horizontally and vertically
+    """
+    pil_rgba = pil_img.convert("RGBA")
+    w, h = pil_rgba.size
+
+    # Step 1: Erase the PropertyPro watermark region with a soft white veil
+    pil_rgba = _erase_propertypro(pil_rgba)
+
+    # Create a transparent overlay to draw on
+    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw   = ImageDraw.Draw(overlay)
+
+    # Font size: roughly 13% of image width (large and prominent)
+    font_size = max(48, int(w * 0.13))
+    font = _load_font(font_size)
+    text = "NESTOVA"
+
+    # Measure text dimensions
+    try:
+        left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
+        tw = right - left
+        th = bottom - top
+    except AttributeError:   # older Pillow fallback
+        tw, th = draw.textsize(text, font=font)
+
+    # Centre coordinates
+    x = (w - tw) // 2
+    y = (h - th) // 2
+
+    # 1. Dark shadow (offset slightly, low opacity) for readability
+    shadow_offset = max(2, font_size // 28)
+    draw.text(
+        (x + shadow_offset, y + shadow_offset),
+        text,
+        fill=(0, 0, 0, 90),   # near-black, ~35% opacity
+        font=font,
+    )
+
+    # 2. White watermark text — ~65% opacity (matches PropertyPro's style)
+    draw.text(
+        (x, y),
+        text,
+        fill=(255, 255, 255, 166),  # white, 65% opacity
+        font=font,
+    )
+
+    return Image.alpha_composite(pil_rgba, overlay)
+
+
 def process_image_bytes(raw_bytes: bytes, fmt: str = "JPEG") -> bytes:
     """
-    Given raw image bytes from a PropertyPro CDN download:
-      1. Apply a frosted glass banner across the center strip (40%-60%).
-      2. Stamp 'NESTOVA' in its place.
-      3. Return processed image as bytes in the requested format.
+    Given raw image bytes from a PropertyPro CDN download, stamp the Nestova
+    watermark and return processed image bytes.
 
     Parameters
     ----------
@@ -61,67 +141,30 @@ def process_image_bytes(raw_bytes: bytes, fmt: str = "JPEG") -> bytes:
         fmt = "JPEG"
 
     try:
-        # Load the image using Pillow directly
-        pil_img = Image.open(io.BytesIO(raw_bytes)).convert("RGBA")
-        w, h = pil_img.size
-        
-        # ── 1. Define the watermark strip ─────────────────────────────────────────
-        # PropertyPro watermark spans roughly 38% to 62% vertically
-        y_top = int(h * 0.40)
-        y_bottom = int(h * 0.60)
-        
-        # Crop just the center band
-        strip = pil_img.crop((0, y_top, w, y_bottom))
-        
-        # ── 2. Frosted Glass Blur ─────────────────────────────────────────────────
-        # Blur the strip heavily to obscure the PropertyPro logo
-        blurred_strip = strip.filter(ImageFilter.GaussianBlur(radius=25))
-        
-        # ── 3. Overlay a semi-transparent tint ────────────────────────────────────
-        tint = Image.new("RGBA", (w, y_bottom - y_top), (255, 255, 255, 60)) # White tint
-        blurred_strip = Image.alpha_composite(blurred_strip, tint)
-        
-        # Paste the frosted banner back onto the image
-        pil_img.paste(blurred_strip, (0, y_top))
-        
-        # ── 4. Draw NESTOVA Text ──────────────────────────────────────────────────
-        draw = ImageDraw.Draw(pil_img)
-        
-        # Find a nice font size based on image width
-        font_size = max(40, int(w * 0.08)) 
-        font = _load_font(font_size)
-                
-        text = "NESTOVA"
-        try:
-            left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
-            tw, th = right - left, bottom - top
-        except AttributeError:
-            tw, th = draw.textsize(text, font=font)
-            
-        x = (w - tw) // 2
-        y = y_top + ((y_bottom - y_top) - th) // 2 - (th // 4)
-        
-        # Draw text (dark with slight shadow for visibility)
-        draw.text((x+2, y+2), text, fill=(0, 0, 0, 100), font=font)
-        draw.text((x, y), text, fill=(255, 255, 255, 230), font=font)
-        
-        # ── Encode back to bytes ─────────────────────────────
+        pil_img = Image.open(io.BytesIO(raw_bytes))
+
+        # Stamp Nestova watermark
+        result = _stamp_nestova(pil_img)
+
+        # JPEG doesn't support alpha — convert to RGB
         if fmt == "JPEG":
-            pil_img = pil_img.convert("RGB")   # JPEG has no alpha
-            
+            result = result.convert("RGB")
+
         buf = io.BytesIO()
-        pil_img.save(buf, format=fmt, quality=90)
+        result.save(buf, format=fmt, quality=90)
         return buf.getvalue()
 
     except Exception as exc:
-        logger.error(f"image_processor.process_image_bytes failed: {exc}", exc_info=True)
-        return raw_bytes   # fall back: return unmodified bytes
+        logger.error(
+            "image_processor.process_image_bytes failed: %s", exc, exc_info=True
+        )
+        return raw_bytes   # fall back: return original unmodified bytes
 
 
 def reprocess_local_image(file_path: str) -> bool:
     """
-    Read an already-downloaded local image, apply glassmorphism banner,
-    stamp Nestova, save back in place. Returns True on success.
+    Read an already-downloaded local image, stamp Nestova, save back in place.
+    Returns True on success.
     """
     try:
         with open(file_path, "rb") as f:
@@ -136,8 +179,8 @@ def reprocess_local_image(file_path: str) -> bool:
         with open(file_path, "wb") as f:
             f.write(processed)
 
-        logger.info(f"reprocess_local_image OK: {file_path}")
+        logger.info("reprocess_local_image OK: %s", file_path)
         return True
     except Exception as exc:
-        logger.error(f"reprocess_local_image failed for {file_path}: {exc}")
+        logger.error("reprocess_local_image failed for %s: %s", file_path, exc)
         return False
