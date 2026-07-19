@@ -1,36 +1,49 @@
 """
 Management command: python manage.py process_watermarks
 
-For all ScrapedListings where image_url is NOT empty:
-  1. Download the real image from PropertyPro CDN
-  2. Strip PropertyPro watermark using OpenCV inpainting
-  3. Stamp Nestova watermark in its place
-  4. Save to Django storage (local filesystem in dev, Cloudinary in production)
-
-Safe to run multiple times - skips listings that already have image_file set
-unless --force flag is used.
+Re-processes ALL scraped listing images on Cloudinary by:
+  1. Downloading the current image (from image_file Cloudinary URL or image_url PropertyPro URL)
+  2. Adding the Nestova watermark via image_processor.py
+  3. Re-uploading to Cloudinary (overwriting the existing file)
 
 Usage:
-    python manage.py process_watermarks            # process only missing
-    python manage.py process_watermarks --force    # reprocess all
-    python manage.py process_watermarks --limit 10 # process first 10
+    python manage.py process_watermarks            # process all with image_file
+    python manage.py process_watermarks --limit 5  # process first 5 only (test)
 """
 
+import io
+import requests
 from django.core.management.base import BaseCommand
+from django.core.files.base import ContentFile
 from bookings.models import ScrapedListing
-from bookings.tasks import download_image
+from bookings.image_processor import process_image_bytes
+
+
+HEADERS = {'User-Agent': 'Mozilla/5.0 (compatible; Nestova/1.0)'}
+
+
+def _download(url: str) -> bytes | None:
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+        return r.content
+    except Exception as e:
+        return None
+
+
+def _ext_from_url(url: str) -> str:
+    url = url.split('?')[0].lower()
+    if url.endswith('.png'):
+        return 'png'
+    if url.endswith('.webp'):
+        return 'webp'
+    return 'jpg'
 
 
 class Command(BaseCommand):
-    help = 'Download PropertyPro images, remove their watermark, stamp Nestova'
+    help = 'Add Nestova watermark to all scraped listing images on Cloudinary'
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--force',
-            action='store_true',
-            default=False,
-            help='Re-process listings that already have image_file (overwrite)',
-        )
         parser.add_argument(
             '--limit',
             type=int,
@@ -39,49 +52,98 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        force = kwargs['force']
         limit = kwargs['limit']
 
-        qs = ScrapedListing.objects.exclude(image_url='').exclude(image_url__isnull=True)
+        # Get all listings that have an image_file already uploaded to Cloudinary
+        qs = ScrapedListing.objects.exclude(image_file='').exclude(image_file__isnull=True)
 
-        if not force:
-            qs = qs.filter(image_file='')
+        # Also include listings that only have image_url (not yet downloaded)
+        qs_url_only = ScrapedListing.objects.filter(
+            image_file=''
+        ).exclude(image_url='').exclude(image_url__isnull=True)
+
+        listings = list(qs) + list(qs_url_only)
 
         if limit:
-            qs = qs[:limit]
+            listings = listings[:limit]
 
-        total = qs.count()
-        self.stdout.write(f"Found {total} listings to process.\n")
+        total = len(listings)
+        self.stdout.write(f"\nFound {total} listings to process.\n{'='*60}")
 
         if total == 0:
             self.stdout.write(
-                "Nothing to do. All listings with image_url already have image_file set.\n"
-                "Run with --force to reprocess, or check that image_url is populated in your database."
+                "Nothing to process. No listings have image_file or image_url set."
             )
             return
 
         saved = failed = 0
 
-        for i, listing in enumerate(qs, 1):
-            self.stdout.write(f"[{i}/{total}] {listing.title[:65]}")
-            filename, content = download_image(listing.image_url)
+        for i, listing in enumerate(listings, 1):
+            title_short = (listing.title or 'Untitled')[:60]
+            self.stdout.write(f"\n[{i}/{total}] {title_short}")
 
-            if filename and content:
+            # Determine source URL
+            if listing.image_file:
+                # Build the Cloudinary URL from the image_file field
+                try:
+                    src_url = listing.image_file.url
+                except Exception:
+                    src_url = None
+            else:
+                src_url = listing.image_url or None
+
+            if not src_url:
+                self.stdout.write(self.style.WARNING("  ✗ No image URL available"))
+                failed += 1
+                continue
+
+            self.stdout.write(f"  Downloading: {src_url[:80]}...")
+            raw = _download(src_url)
+
+            if not raw:
+                self.stdout.write(self.style.WARNING("  ✗ Download failed"))
+                failed += 1
+                continue
+
+            # Detect format
+            ext = _ext_from_url(src_url)
+            fmt_map = {'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'webp': 'WEBP'}
+            fmt = fmt_map.get(ext, 'JPEG')
+
+            # Apply Nestova watermark
+            try:
+                processed = process_image_bytes(raw, fmt=fmt)
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"  ✗ Processing error: {e}"))
+                failed += 1
+                continue
+
+            # Determine filename
+            if listing.image_file and listing.image_file.name:
+                # Keep the same Cloudinary filename so it overwrites in place
+                fname = listing.image_file.name.split('/')[-1]
+                if '.' not in fname:
+                    fname = f"{fname}.{ext}"
+            else:
+                import hashlib
+                h = hashlib.md5(src_url.encode()).hexdigest()
+                fname = f"{h}.{ext}"
+
+            # Delete old Cloudinary file and re-upload with watermark
+            try:
                 if listing.image_file:
                     listing.image_file.delete(save=False)
-                listing.image_file.save(filename, content, save=True)
+                listing.image_file.save(fname, ContentFile(processed), save=True)
                 saved += 1
-                self.stdout.write(self.style.SUCCESS(f"         ✓ {filename}"))
-            else:
+                self.stdout.write(self.style.SUCCESS(f"  ✓ Saved: {fname}"))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"  ✗ Save error: {e}"))
                 failed += 1
-                self.stdout.write(self.style.WARNING(f"         ✗ Download failed"))
 
         self.stdout.write(
             self.style.SUCCESS(
                 f"\n{'='*60}\n"
-                f"Done. {saved} images processed successfully, {failed} failed.\n"
-                f"All processed images have PropertyPro watermark removed\n"
-                f"and Nestova branded watermark added.\n"
+                f"Done! {saved} images watermarked successfully, {failed} failed.\n"
                 f"{'='*60}"
             )
         )
