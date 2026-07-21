@@ -3,8 +3,8 @@ Management command: python manage.py process_watermarks
 
 Re-processes ALL scraped listing images on Cloudinary by:
   1. Downloading the current image (from image_file Cloudinary URL or image_url PropertyPro URL)
-  2. Adding the Nestova watermark via image_processor.py
-  3. Re-uploading to Cloudinary (overwriting the existing file)
+  2. Completely removing the PropertyPro watermark via seam-carving in image_processor.py
+  3. Re-uploading the clean image to Cloudinary (overwriting the existing file)
 
 Usage:
     python manage.py process_watermarks            # process all with image_file
@@ -41,7 +41,7 @@ def _ext_from_url(url: str) -> str:
 
 
 class Command(BaseCommand):
-    help = 'Add Nestova watermark to all scraped listing images on Cloudinary'
+    help = 'Remove PropertyPro watermarks from all scraped listing images on Cloudinary'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -110,9 +110,9 @@ class Command(BaseCommand):
             fmt_map = {'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'webp': 'WEBP'}
             fmt = fmt_map.get(ext, 'JPEG')
 
-            # Apply Nestova watermark
+            # Strip watermark completely
             try:
-                processed = process_image_bytes(raw, fmt=fmt)
+                processed = process_image_bytes(raw, fmt=fmt, stamp_nestova=False)
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"  ✗ Processing error: {e}"))
                 failed += 1
@@ -135,7 +135,7 @@ class Command(BaseCommand):
                     listing.image_file.delete(save=False)
                 listing.image_file.save(fname, ContentFile(processed), save=True)
                 saved += 1
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Saved: {fname}"))
+                self.stdout.write(self.style.SUCCESS(f"  ✓ Cleaned & Saved: {fname}"))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"  ✗ Save error: {e}"))
                 failed += 1
@@ -143,7 +143,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"\n{'='*60}\n"
-                f"Done! {saved} images watermarked successfully, {failed} failed.\n"
+                f"Done! {saved} images cleaned successfully, {failed} failed.\n"
                 f"{'='*60}"
             )
         )

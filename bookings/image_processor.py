@@ -47,9 +47,13 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
 
 def _erase_propertypro_cv2(image_bytes: bytes) -> bytes:
     """
-    Uses OpenCV inpainting to erase the white, centered watermark text
-    (works for both the PropertyPro watermark and the NESTOVA stamp, since
-    both are white text positioned in the central 40–60 % height band).
+    Completely removes the PropertyPro (and/or NESTOVA) watermark from the center
+    of the image. Because the watermark is semi-transparent and covers complex
+    textures, color-masking and inpainting always leaves smudges. 
+    
+    The most robust approach to achieve a completely clean image is to crop out
+    the horizontal band containing the watermark and stitch the top and bottom 
+    halves together, applying a slight blur at the seam to hide lighting changes.
     """
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -59,25 +63,28 @@ def _erase_propertypro_cv2(image_bytes: bytes) -> bytes:
 
     h, w = img.shape[:2]
 
-    # Target the central band where both PropertyPro and NESTOVA stamps live
-    y_start = int(h * 0.40)
-    y_end   = int(h * 0.60)
-    roi     = img[y_start:y_end, 0:w]
+    # Watermark band limits - slightly wider (38% to 62%) to catch all text reliably
+    y_top = int(h * 0.38)
+    y_bot = int(h * 0.62)
 
-    # Mask: bright / white pixels that make up the watermark text
-    lower_white = np.array([150, 150, 150], dtype=np.uint8)
-    upper_white = np.array([255, 255, 255], dtype=np.uint8)
-    mask = cv2.inRange(roi, lower_white, upper_white)
+    # Crop the top and bottom halves
+    top_half = img[:y_top, :]
+    bottom_half = img[y_bot:, :]
 
-    # Dilate slightly to catch anti-aliased edges
-    kernel = np.ones((3, 3), np.uint8)
-    mask   = cv2.dilate(mask, kernel, iterations=1)
+    # Stitch them together
+    result = np.vstack((top_half, bottom_half))
 
-    # Inpaint the watermark region
-    inpainted_roi              = cv2.inpaint(roi, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
-    img[y_start:y_end, 0:w]   = inpainted_roi
+    # Blend the seam line (y_top) to make it smooth
+    # Take a region of 5 pixels above and 5 pixels below the seam
+    seam_y = y_top
+    blur_radius = 5
+    if seam_y - blur_radius > 0 and seam_y + blur_radius < result.shape[0]:
+        seam_region = result[seam_y - blur_radius : seam_y + blur_radius, :]
+        # Apply vertical blur to smooth the transition
+        blurred_seam = cv2.GaussianBlur(seam_region, (1, 15), 0)
+        result[seam_y - blur_radius : seam_y + blur_radius, :] = blurred_seam
 
-    success, encoded = cv2.imencode('.jpg', img)
+    success, encoded = cv2.imencode('.jpg', result, [cv2.IMWRITE_JPEG_QUALITY, 92])
     return encoded.tobytes() if success else image_bytes
 
 
