@@ -128,6 +128,12 @@ class Command(BaseCommand):
                 import hashlib
                 h = hashlib.md5(src_url.encode()).hexdigest()
                 fname = f"{h}.{ext}"
+                
+            # Django ImageField defaults to max_length=100.
+            # Cloudinary URLs/filenames can be longer. Truncate name safely.
+            name_base, ext_str = os.path.splitext(fname)
+            if len(fname) > 85:
+                fname = f"{name_base[:75]}{ext_str}"
 
             # Delete old Cloudinary file and re-upload with watermark
             try:
