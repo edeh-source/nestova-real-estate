@@ -110,9 +110,9 @@ class Command(BaseCommand):
             fmt_map = {'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'webp': 'WEBP'}
             fmt = fmt_map.get(ext, 'JPEG')
 
-            # Blur PropertyPro band + stamp NESTOVA watermark
+            # Remove PropertyPro watermark completely (no stamp added)
             try:
-                processed = process_image_bytes(raw, fmt=fmt, stamp_nestova=True)
+                processed = process_image_bytes(raw, fmt=fmt, stamp_nestova=False)
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"  ✗ Processing error: {e}"))
                 failed += 1
