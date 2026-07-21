@@ -16,7 +16,7 @@
   {% include 'includes/seo_meta.html' %}
   {% endblock seo_meta %}
 
-  <title>{% block title %}NESTOVA GLOBAL LIMITED - Your Premier Real Estate Platform in Nigeria{% endblock %}</title>
+  <title>{% block title %}NESTOVA - Your Premier Real Estate Platform in Nigeria{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/img/favicon-32x32.png' %}">
@@ -1561,7 +1561,7 @@
 
       <!-- Logo -->
       <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto me-xl-0">
-        <h1 class="sitename">NESTOVA GLOBAL LIMITED</h1>
+        <h1 class="sitename">NESTOVA</h1>
       </a>
 
       <!-- Desktop Nav -->
@@ -1989,7 +1989,7 @@
         <div class="col-lg-4">
           <div class="footer-content">
             <a href="{% url 'home' %}" class="logo d-flex align-items-center mb-4">
-              <span class="sitename">{% if contact_info %}{{ contact_info.company_name }}{% else %}NESTOVA GLOBAL LIMITED{% endif %}</span>
+              <span class="sitename">{% if contact_info %}{{ contact_info.company_name }}{% else %}NESTOVA{% endif %}</span>
             </a>
             <p class="mb-4">
               {% if contact_info and contact_info.description %}
@@ -2117,7 +2117,7 @@
         <div class="row align-items-center">
           <div class="col-lg-6 col-md-12">
             <div class="copyright">
-              <p>© <span>Copyright</span> <strong class="sitename">{% if contact_info %}{{ contact_info.company_name}}{% else %}NESTOVA GLOBAL LIMITED{% endif %}</strong> — <span>All Rights Reserved</span></p>
+              <p>© <span>Copyright</span> <strong class="sitename">{% if contact_info %}{{ contact_info.company_name}}{% else %}NESTOVA{% endif %}</strong> — <span>All Rights Reserved</span></p>
             </div>
           </div>
           <div class="col-lg-6 col-md-12">
