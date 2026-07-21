@@ -1,13 +1,15 @@
 """
 bookings/image_processor.py
 
-Erases the PropertyPro watermark from scraped images using OpenCV inpainting,
-then optionally stamps a NESTOVA watermark (stamp_nestova=True, the old default).
+Covers the PropertyPro watermark on scraped images by:
+  1. Heavily blurring the central band (41–59% of height) to obliterate their text.
+  2. Darkening the blurred band slightly.
+  3. Stamping a crisp NESTOVA watermark over the blurred band.
 
-To produce clean images with NO watermark at all, call:
-    process_image_bytes(raw, fmt, stamp_nestova=False)
+This preserves the full original image dimensions and aspect ratio — no cropping,
+no distortion.
 
-Uses Pillow for watermark stamping; OpenCV only for erasure.
+Uses OpenCV for blurring; Pillow for watermark stamping.
 """
 
 import io
@@ -21,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 logger = logging.getLogger(__name__)
 
 
-# Font search order: Windows fonts first, then Linux/Render server paths
+# Font search order: Windows fonts first, then Linux/Railway server paths
 FONT_CANDIDATES = [
     r"C:\Windows\Fonts\seguisb.ttf",
     r"C:\Windows\Fonts\segoeui.ttf",
@@ -45,15 +47,16 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.load_default()
 
 
-def _erase_propertypro_cv2(image_bytes: bytes) -> bytes:
+def _cover_propertypro_with_nestova(image_bytes: bytes) -> bytes:
     """
-    Completely removes the PropertyPro (and/or NESTOVA) watermark from the center
-    of the image. Because the watermark is semi-transparent and covers complex
-    textures, color-masking and inpainting always leaves smudges. 
-    
-    The most robust approach to achieve a completely clean image is to crop out
-    the horizontal band containing the watermark and stitch the top and bottom 
-    halves together, applying a slight blur at the seam to hide lighting changes.
+    Covers the PropertyPro watermark band by:
+      1. Applying a heavy Gaussian blur over the 41%-59% height band to
+         completely obliterate the PropertyPro text.
+      2. Darkening the blurred band slightly to create a clean backdrop.
+      3. Stamping a crisp NESTOVA watermark over the blurred band.
+
+    This approach preserves the full original image dimensions and aspect ratio,
+    preventing any structural distortion.
     """
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
