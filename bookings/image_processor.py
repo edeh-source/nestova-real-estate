@@ -2,7 +2,7 @@
 bookings/image_processor.py
 
 Covers the PropertyPro watermark on scraped images by:
-  1. Heavily blurring the central band (41–59% of height) to obliterate their text.
+  1. Heavily blurring the central band (41-59% of height) to obliterate their text.
   2. Darkening the blurred band slightly.
   3. Stamping a crisp NESTOVA watermark over the blurred band.
 
@@ -66,45 +66,31 @@ def _cover_propertypro_with_nestova(image_bytes: bytes) -> bytes:
 
     h, w = img.shape[:2]
 
-    # Watermark band limits - slightly wider (38% to 62%) to catch all text reliably
-    y_top = int(h * 0.38)
-    y_bot = int(h * 0.62)
+    # The exact band where PropertyPro watermark sits
+    y_top = int(h * 0.41)
+    y_bot = int(h * 0.59)
+    band_height = y_bot - y_top
 
-    # Crop the top and bottom halves
-    top_half = img[:y_top, :]
-    bottom_half = img[y_bot:, :]
+    roi = img[y_top:y_bot, 0:w]
 
-    # Stitch them together
-    result = np.vstack((top_half, bottom_half))
+    # 1. Heavy blur to obliterate PropertyPro text
+    blurred_roi = cv2.GaussianBlur(roi, (75, 75), 0)
 
-    # Blend the seam line (y_top) to make it smooth
-    # Take a region of 5 pixels above and 5 pixels below the seam
-    seam_y = y_top
-    blur_radius = 5
-    if seam_y - blur_radius > 0 and seam_y + blur_radius < result.shape[0]:
-        seam_region = result[seam_y - blur_radius : seam_y + blur_radius, :]
-        # Apply vertical blur to smooth the transition
-        blurred_seam = cv2.GaussianBlur(seam_region, (1, 15), 0)
-        result[seam_y - blur_radius : seam_y + blur_radius, :] = blurred_seam
+    # 2. Darken slightly to make white NESTOVA text pop
+    darkened_roi = cv2.addWeighted(blurred_roi, 0.7, np.zeros_like(blurred_roi), 0.3, 0)
 
-    success, encoded = cv2.imencode('.jpg', result, [cv2.IMWRITE_JPEG_QUALITY, 92])
-    return encoded.tobytes() if success else image_bytes
+    img[y_top:y_bot, 0:w] = darkened_roi
 
-
-def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
-    """
-    Draw a large, centred, semi-transparent NESTOVA watermark over the image.
-    Only called when stamp_nestova=True.
-    """
-    pil_rgba = pil_img.convert("RGBA")
-    w, h     = pil_rgba.size
+    # Convert to PIL for text stamping
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    pil_img = Image.fromarray(img_rgb).convert("RGBA")
 
     overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    draw    = ImageDraw.Draw(overlay)
+    draw = ImageDraw.Draw(overlay)
 
-    font_size = max(48, int(w * 0.13))
-    font      = _load_font(font_size)
-    text      = "NESTOVA"
+    text = "NESTOVA"
+    font_size = max(32, int(band_height * 0.7))
+    font = _load_font(font_size)
 
     try:
         left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
@@ -114,35 +100,41 @@ def _stamp_nestova(pil_img: Image.Image) -> Image.Image:
         tw, th = draw.textsize(text, font=font)
 
     x = (w - tw) // 2
-    y = (h - th) // 2
+    y = y_top + (band_height - th) // 2
 
-    shadow_offset = max(2, font_size // 28)
-    draw.text((x + shadow_offset, y + shadow_offset), text, fill=(0, 0, 0, 90),       font=font)
-    draw.text((x,                  y),                 text, fill=(255, 255, 255, 166), font=font)
+    shadow_offset = max(2, font_size // 15)
+    draw.text((x + shadow_offset, y + shadow_offset), text, fill=(0, 0, 0, 150), font=font)
+    draw.text((x, y), text, fill=(255, 255, 255, 220), font=font)
 
-    return Image.alpha_composite(pil_rgba, overlay)
+    result_pil = Image.alpha_composite(pil_img, overlay)
+
+    # Convert back to BGR bytes
+    result_rgb = np.array(result_pil.convert("RGB"))
+    result_bgr = cv2.cvtColor(result_rgb, cv2.COLOR_RGB2BGR)
+
+    success, encoded = cv2.imencode('.jpg', result_bgr, [cv2.IMWRITE_JPEG_QUALITY, 92])
+    return encoded.tobytes() if success else image_bytes
 
 
 def process_image_bytes(
     raw_bytes: bytes,
     fmt: str = "JPEG",
-    stamp_nestova: bool = True,         # ← NEW: pass False to get a clean image
+    stamp_nestova: bool = True,
 ) -> bytes:
     """
     Process a raw image downloaded from a PropertyPro CDN URL.
 
     Steps
     -----
-    1. Erase white-text watermark in the central band (PropertyPro *and* NESTOVA
-       if already stamped) using OpenCV inpainting.
-    2. Optionally stamp the NESTOVA mark (stamp_nestova=True, the legacy default).
-       Pass stamp_nestova=False to return a clean, watermark-free image.
+    1. Blur the PropertyPro watermark band to completely obliterate their text.
+    2. Stamp a clean NESTOVA watermark over the blurred band.
 
     Parameters
     ----------
     raw_bytes     : Raw bytes of the source image.
     fmt           : Output format — 'JPEG', 'PNG', or 'WEBP'.
-    stamp_nestova : When False, skip the NESTOVA stamp and return a clean image.
+    stamp_nestova : When True (default), stamps NESTOVA over the blurred band.
+                    When False, only blurs the PropertyPro band (no stamp added).
 
     Returns
     -------
@@ -154,27 +146,28 @@ def process_image_bytes(
         fmt = "JPEG"
 
     try:
-        # ── Step 1: Erase watermark (PropertyPro and/or NESTOVA) ──
-        erased_bytes = _erase_propertypro_cv2(raw_bytes)
+        if stamp_nestova:
+            # Blur PropertyPro band + stamp NESTOVA on top (main path)
+            return _cover_propertypro_with_nestova(raw_bytes)
 
-        if not stamp_nestova:
-            # Return clean image — no watermark added
-            pil_img = Image.open(io.BytesIO(erased_bytes))
-            if fmt == "JPEG":
-                pil_img = pil_img.convert("RGB")
-            buf = io.BytesIO()
-            pil_img.save(buf, format=fmt, quality=90)
-            return buf.getvalue()
+        # stamp_nestova=False: just blur the PropertyPro band, no text added
+        nparr = np.frombuffer(raw_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if img is None:
+            return raw_bytes
 
-        # ── Step 2: Stamp NESTOVA (legacy / opt-in behaviour) ──
-        pil_img = Image.open(io.BytesIO(erased_bytes))
-        result  = _stamp_nestova(pil_img)
+        h, w = img.shape[:2]
+        y_top = int(h * 0.41)
+        y_bot = int(h * 0.59)
+        roi = img[y_top:y_bot, 0:w]
+        blurred_roi = cv2.GaussianBlur(roi, (75, 75), 0)
+        img[y_top:y_bot, 0:w] = blurred_roi
 
+        pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         if fmt == "JPEG":
-            result = result.convert("RGB")
-
+            pil_img = pil_img.convert("RGB")
         buf = io.BytesIO()
-        result.save(buf, format=fmt, quality=90)
+        pil_img.save(buf, format=fmt, quality=90)
         return buf.getvalue()
 
     except Exception as exc:
@@ -182,10 +175,10 @@ def process_image_bytes(
         return raw_bytes  # fall back: return original unmodified bytes
 
 
-def reprocess_local_image(file_path: str, stamp_nestova: bool = False) -> bool:
+def reprocess_local_image(file_path: str, stamp_nestova: bool = True) -> bool:
     """
-    Read an already-downloaded local image, optionally stamp Nestova, save in place.
-    Defaults to stamp_nestova=False (clean output) to match the new pipeline intent.
+    Read an already-downloaded local image, cover PropertyPro watermark with
+    NESTOVA stamp, and save in place.
     Returns True on success.
     """
     try:
@@ -193,8 +186,8 @@ def reprocess_local_image(file_path: str, stamp_nestova: bool = False) -> bool:
             raw = f.read()
 
         ext = os.path.splitext(file_path)[1].lower().lstrip(".")
-        fmt_map  = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "WEBP"}
-        fmt      = fmt_map.get(ext, "JPEG")
+        fmt_map = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "WEBP"}
+        fmt = fmt_map.get(ext, "JPEG")
         processed = process_image_bytes(raw, fmt=fmt, stamp_nestova=stamp_nestova)
 
         with open(file_path, "wb") as f:
