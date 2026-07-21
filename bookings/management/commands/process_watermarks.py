@@ -10,7 +10,7 @@ Usage:
     python manage.py process_watermarks            # process all with image_file
     python manage.py process_watermarks --limit 5  # process first 5 only (test)
 """
-
+import os
 import io
 import requests
 from django.core.management.base import BaseCommand
