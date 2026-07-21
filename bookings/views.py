@@ -76,8 +76,14 @@ def apartment_list(request):
     scr_paginator  = Paginator(scraped, 12)
     scr_page_obj   = scr_paginator.get_page(request.GET.get('scr_page'))
 
-    # Sidebar data
-    cities          = ScrapedListing.objects.values_list('city', flat=True).distinct()
+    # Sidebar data - Clean up cities to avoid case-insensitive duplicates (like "port-harcourt" vs "Port-Harcourt")
+    cities_raw = ScrapedListing.objects.exclude(city__isnull=True).exclude(city='').values_list('city', flat=True).distinct()
+    cleaned_cities = set()
+    for c in cities_raw:
+        if c:
+            cleaned_cities.add(c.strip().title())
+    cities = sorted(list(cleaned_cities))
+    
     apartmentchoice = ApartmentChoice.objects.values_list('name', flat=True).distinct()
 
     # Active tab
