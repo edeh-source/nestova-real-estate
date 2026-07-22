@@ -352,12 +352,12 @@ def _remove_watermark_inpaint_v11d(image_bytes: bytes) -> bytes:
     full_mask = np.zeros((h, w), dtype=np.uint8)
     full_mask[y_top:y_bot, :] = resized_band_mask
     
-    # Dilate mask to ensure anti-aliased text edges are completely covered
+    # Dilate mask very slightly (iterations=1) to catch text edges without creating large smudges
     kernel = np.ones((3, 3), np.uint8)
-    full_mask = cv2.dilate(full_mask, kernel, iterations=2)
+    full_mask = cv2.dilate(full_mask, kernel, iterations=1)
     
-    # Inpaint using TELEA with radius 7 (V13 Tel Dil2 approach)
-    result = cv2.inpaint(img, full_mask, inpaintRadius=7, flags=cv2.INPAINT_TELEA)
+    # Inpaint using TELEA with a tighter radius (3) to keep the room background as visible as possible
+    result = cv2.inpaint(img, full_mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
     
     success, encoded = cv2.imencode('.jpg', result, [cv2.IMWRITE_JPEG_QUALITY, 93])
     return encoded.tobytes() if success else image_bytes
