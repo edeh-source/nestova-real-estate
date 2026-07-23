@@ -24,6 +24,44 @@ def populate_agent_slugs(apps, schema_editor):
             agent.save(update_fields=['slug'])
 
 
+def add_slug_column_safe(apps, schema_editor):
+    """Add slug column if it doesn't already exist."""
+    db = schema_editor.connection
+    with db.cursor() as cursor:
+        cursor.execute("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name='agents_agent' AND column_name='slug'
+        """)
+        if not cursor.fetchone():
+            cursor.execute(
+                "ALTER TABLE agents_agent ADD COLUMN slug varchar(100) NULL"
+            )
+
+
+def add_unique_index_safe(apps, schema_editor):
+    """Add unique index on slug if it doesn't already exist."""
+    db = schema_editor.connection
+    with db.cursor() as cursor:
+        cursor.execute("""
+            SELECT indexname FROM pg_indexes
+            WHERE tablename='agents_agent' AND indexname='agents_agent_slug_key'
+        """)
+        if not cursor.fetchone():
+            cursor.execute(
+                "CREATE UNIQUE INDEX agents_agent_slug_key ON agents_agent (slug)"
+            )
+        # Also ensure the LIKE index exists (used by Django for icontains lookups)
+        cursor.execute("""
+            SELECT indexname FROM pg_indexes
+            WHERE tablename='agents_agent' AND indexname='agents_agent_slug_0135d8cf_like'
+        """)
+        if not cursor.fetchone():
+            cursor.execute(
+                "CREATE INDEX agents_agent_slug_0135d8cf_like "
+                "ON agents_agent (slug varchar_pattern_ops)"
+            )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -31,29 +69,47 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Step 1: Add slug field as nullable (no unique constraint yet)
-        migrations.AddField(
-            model_name="agent",
-            name="slug",
-            field=models.SlugField(
-                blank=True,
-                null=True,
-                help_text="URL-friendly identifier",
-                max_length=100,
-            ),
+        # Step 1: Add slug column safely (no-op if already exists)
+        migrations.RunPython(add_slug_column_safe, reverse_code=migrations.RunPython.noop),
+
+        # Step 2: Tell Django's state about the new nullable slug field
+        migrations.SeparateDatabaseAndState(
+            database_operations=[],  # already handled above
+            state_operations=[
+                migrations.AddField(
+                    model_name="agent",
+                    name="slug",
+                    field=models.SlugField(
+                        blank=True,
+                        null=True,
+                        help_text="URL-friendly identifier",
+                        max_length=100,
+                    ),
+                ),
+            ],
         ),
-        # Step 2: Populate slugs for existing agents
+
+        # Step 3: Populate slugs for existing agents
         migrations.RunPython(populate_agent_slugs, reverse_code=migrations.RunPython.noop),
-        # Step 3: Now add the unique constraint
-        migrations.AlterField(
-            model_name="agent",
-            name="slug",
-            field=models.SlugField(
-                blank=True,
-                null=True,
-                help_text="URL-friendly identifier",
-                max_length=100,
-                unique=True,
-            ),
+
+        # Step 4: Add unique constraint safely (no-op if already exists)
+        migrations.RunPython(add_unique_index_safe, reverse_code=migrations.RunPython.noop),
+
+        # Step 5: Tell Django's state about the unique constraint
+        migrations.SeparateDatabaseAndState(
+            database_operations=[],  # already handled above
+            state_operations=[
+                migrations.AlterField(
+                    model_name="agent",
+                    name="slug",
+                    field=models.SlugField(
+                        blank=True,
+                        null=True,
+                        help_text="URL-friendly identifier",
+                        max_length=100,
+                        unique=True,
+                    ),
+                ),
+            ],
         ),
     ]
