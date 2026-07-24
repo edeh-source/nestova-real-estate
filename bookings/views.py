@@ -115,10 +115,11 @@ def scraped_detail(request, pk):
 
 def apartment_detail(request, slug):
     """Display detailed information about an apartment"""
-    apartment = get_object_or_404(Apartment, slug=slug)
+    apartment_queryset = Apartment.objects.prefetch_related('images')
+    apartment = get_object_or_404(apartment_queryset, slug=slug)
     
     # Get reviews with average ratings
-    reviews = apartment.reviews.all()[:5]
+    reviews = apartment.reviews.select_related('user').all()[:5]
     avg_ratings = apartment.reviews.aggregate(
         avg_overall=Avg('overall_rating'),
         avg_cleanliness=Avg('cleanliness_rating'),

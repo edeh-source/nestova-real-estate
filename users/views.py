@@ -23,6 +23,7 @@ from django.shortcuts import redirect, render
 
 from django.views.decorators.csrf import csrf_exempt
 import json
+from .tasks import send_password_reset_email_task
 
 # Get the User model (works with custom user models too)
 
@@ -318,31 +319,9 @@ def password_reset_request(request):
             f'/password-reset-confirm/{uid}/{token}/'
         )
         
-        # Prepare email context (data to pass to the email template)
-        context = {
-            'user': user,
-            'reset_link': reset_link,
-            'site_name': 'Nestova',
-        }
-        
-        # Render the HTML email template with the context data
-        html_content = render_to_string('estate/password_reset_email.html', context)
-        
-        # Create the email message
-        # EmailMultiAlternatives allows us to send both plain text and HTML
-        subject = 'Password Reset Request - Nestova'
-        from_email = settings.DEFAULT_FROM_EMAIL  # Your email address
-        to_email = user.email
-        
-        # Create email message object
-        msg = EmailMultiAlternatives(subject, '', from_email, [to_email])
-        
-        # Attach the HTML version of the email
-        msg.attach_alternative(html_content, "text/html")
-        
-        # Send the email
+        # Send the email asynchronously via Celery
         try:
-            msg.send()
+            send_password_reset_email_task.delay(user.email, user.first_name, reset_link)
             return JsonResponse({
                 'status': 'success',
                 'message': 'Password reset link has been sent to your email.'
@@ -350,7 +329,7 @@ def password_reset_request(request):
         except Exception as e:
             return JsonResponse({
                 'status': 'error',
-                'message': 'Failed to send email. Please try again later.'
+                'message': 'Failed to dispatch email task. Please try again later.'
             })
     
     # If GET request, just show the form

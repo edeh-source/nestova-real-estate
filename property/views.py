@@ -1,6 +1,7 @@
 # views.py
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
 from .models import Property, State, City, PropertyType, PropertyApplication
 from listings.models import SavedProperty
 import logging
@@ -8,6 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@cache_page(60 * 15)
 def homepage(request):
     """Homepage with property search"""
     
@@ -153,7 +155,8 @@ def search_properties(request):
 
 
 def get_properties_details(request, slug):
-    property_detail = get_object_or_404(Property, slug=slug)
+    property_queryset = Property.objects.select_related('city', 'agent__user').prefetch_related('images')
+    property_detail = get_object_or_404(property_queryset, slug=slug)
 
     # ── Saved property check ─────────────────────────────────────────────────
     saved_property = None
@@ -270,7 +273,7 @@ def property_list(request):
     # Base Queryset
     properties_list = Property.objects.select_related(
         'state', 'city', 'property_type', 'status', 'listed_by'
-    ).filter(status__name__in=['for_sale', 'for_rent', 'pending']) # Show active listings
+    ).prefetch_related('images').filter(status__name__in=['for_sale', 'for_rent', 'pending']) # Show active listings
     
     # --- Filtering ---
     
@@ -380,7 +383,7 @@ def property_list(request):
     property_types = PropertyType.objects.all()
     
     # Sidebar Featured Properties (limit 3)
-    featured_sidebar = Property.objects.filter(is_featured=True).exclude(status__name='sold').order_by('-created_at')[:3]
+    featured_sidebar = Property.objects.filter(is_featured=True).exclude(status__name='sold').select_related('city', 'state', 'status').prefetch_related('images').order_by('-created_at')[:3]
     
     context = {
         'properties': properties,

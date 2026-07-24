@@ -1698,9 +1698,9 @@
           <div class="property-gallery">
             <div class="main-image-container image-zoom-container">
               {% if property.featured_image %}
-              <img id="main-product-image" src="{{ property.featured_image.url }}" alt="{{ property.title }}" class="main-property-image" data-zoom="{{ property.featured_image.url }}">
+              <img id="main-product-image" src="{{ property.featured_image.url }}" alt="{{ property.title }}" class="main-property-image" data-zoom="{{ property.featured_image.url }}" loading="lazy">
               {% else %}
-              <img id="main-product-image" src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="{{ property.title }}" class="main-property-image">
+              <img id="main-product-image" src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="{{ property.title }}" class="main-property-image" loading="lazy">
               {% endif %}
 
               <div class="image-nav-buttons">
@@ -1717,18 +1717,18 @@
             <div class="thumbnail-gallery thumbnail-list">
               {% if property.featured_image %}
               <div class="thumbnail-item active" data-image="{{ property.featured_image.url }}">
-                <img src="{{ property.featured_image.url }}" alt="{{ property.title }}">
+                <img src="{{ property.featured_image.url }}" alt="{{ property.title }}" loading="lazy">
               </div>
               {% endif %}
 
               {% for image in property.images.all %}
               <div class="thumbnail-item" data-image="{{ image.image.url }}">
-                <img src="{{ image.image.url }}" alt="{{ image.caption|default:property.title }}">
+                <img src="{{ image.image.url }}" alt="{{ image.caption|default:property.title }}" loading="lazy">
               </div>
               {% empty %}
               {% if not property.featured_image %}
               <div class="thumbnail-item active" data-image="{% static 'assets/img/real-estate/property-exterior-3.webp' %}">
-                <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="Property">
+                <img src="{% static 'assets/img/real-estate/property-exterior-3.webp' %}" alt="Property" loading="lazy">
               </div>
               {% endif %}
               {% endfor %}
@@ -1919,11 +1919,11 @@
                 <div class="agent-avatar">
                   {% if property.agent %}
                     <a href="{% url 'agents:agent_profile' property.agent.slug %}">
-                      <img src="{{ property.agent.user.get_users_image }}" alt="{{ property.agent.user.get_full_name }}">
+                      <img src="{{ property.agent.user.get_users_image }}" alt="{{ property.agent.user.get_full_name }}" loading="lazy">
                     </a>
                   
                   {% else %}
-                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Agent">
+                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Agent" loading="lazy">
                   {% endif %}
                 </div>
                 <div>

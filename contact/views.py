@@ -12,6 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from datetime import datetime
 from .models import ContactMessage, Newsletter, ContactInfo
+from .tasks import send_contact_emails_task, send_newsletter_welcome_task
 
 
 def get_client_ip(request):
@@ -73,80 +74,12 @@ class ContactView(TemplateView):
                 user_agent=request.META.get('HTTP_USER_AGENT', '')[:500]
             )
             
-            # Send notification email to admin
+            # Send notification and confirmation emails asynchronously via Celery
             try:
-                admin_email = getattr(settings, 'ADMIN_EMAIL', settings.DEFAULT_FROM_EMAIL)
-                contact_info = ContactInfo.get_active()
-                
-                # Prepare context for email template
-                email_context = {
-                    'name': name,
-                    'email': email,
-                    'subject': subject,
-                    'message': message_text,
-                    'submitted_at': contact_message.created_at,
-                    'ip_address': contact_message.ip_address,
-                    'site_name': contact_info.company_name if contact_info else 'Nestova',
-                    'admin_url': request.build_absolute_uri('/admin/contact/contactmessage/'),
-                    'current_year': datetime.now().year,
-                }
-                
-                # Render HTML email
-                html_message = render_to_string('emails/contact_admin_notification.html', email_context)
-                plain_message = strip_tags(html_message)
-                
-                # Send email with HTML
-                msg = EmailMultiAlternatives(
-                    subject=f"New Contact Message: {subject}",
-                    body=plain_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[admin_email]
-                )
-                msg.attach_alternative(html_message, "text/html")
-                msg.send(fail_silently=True)
-            except (BadHeaderError, Exception) as e:
-                # Log error but don't fail the submission
-                print(f"Error sending notification email: {e}")
-            
-            # Send confirmation email to user
-            try:
-                contact_info = ContactInfo.get_active()
-                
-                # Prepare context for email template
-                email_context = {
-                    'name': name,
-                    'email': email,
-                    'subject': subject,
-                    'message': message_text,
-                    'submitted_at': contact_message.created_at,
-                    'site_name': contact_info.company_name if contact_info else 'Nestova',
-                    'contact_phone': contact_info.phone if contact_info else None,
-                    'contact_email': contact_info.email if contact_info else None,
-                    'contact_address': contact_info.get_full_address() if contact_info else None,
-                    'current_year': datetime.now().year,
-                    'social_links': {
-                        'facebook': contact_info.facebook_url if contact_info else None,
-                        'twitter': contact_info.twitter_url if contact_info else None,
-                        'linkedin': contact_info.linkedin_url if contact_info else None,
-                        'instagram': contact_info.instagram_url if contact_info else None,
-                    } if contact_info else None,
-                }
-                
-                # Render HTML email
-                html_message = render_to_string('emails/contact_user_confirmation.html', email_context)
-                plain_message = strip_tags(html_message)
-                
-                # Send email with HTML
-                msg = EmailMultiAlternatives(
-                    subject="Thank you for contacting us",
-                    body=plain_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[email]
-                )
-                msg.attach_alternative(html_message, "text/html")
-                msg.send(fail_silently=True)
-            except (BadHeaderError, Exception) as e:
-                print(f"Error sending confirmation email: {e}")
+                admin_url = request.build_absolute_uri('/admin/contact/contactmessage/')
+                send_contact_emails_task.delay(contact_message.id, admin_url)
+            except Exception as e:
+                print(f"Error dispatching contact emails to Celery: {e}")
             
             messages.success(request, "Your message has been sent successfully! We'll get back to you soon.")
             return redirect('contact')
@@ -187,41 +120,13 @@ class NewsletterSubscribeView(View):
                     newsletter.save()
                     messages.success(request, "Welcome back! Your subscription has been reactivated.")
             else:
-                # Send welcome email
+                # Send welcome email asynchronously via Celery
                 try:
-                    contact_info = ContactInfo.get_active()
-                    
-                    # Prepare context for email template
-                    email_context = {
-                        'site_name': contact_info.company_name if contact_info else 'Nestova',
-                        'site_url': request.build_absolute_uri('/'),
-                        'unsubscribe_url': request.build_absolute_uri('/newsletter/unsubscribe/'),
-                        'contact_email': contact_info.email if contact_info else None,
-                        'contact_address': contact_info.get_full_address() if contact_info else None,
-                        'current_year': datetime.now().year,
-                        'social_links': {
-                            'facebook': contact_info.facebook_url if contact_info else None,
-                            'twitter': contact_info.twitter_url if contact_info else None,
-                            'linkedin': contact_info.linkedin_url if contact_info else None,
-                            'instagram': contact_info.instagram_url if contact_info else None,
-                        } if contact_info else None,
-                    }
-                    
-                    # Render HTML email
-                    html_message = render_to_string('emails/newsletter_welcome.html', email_context)
-                    plain_message = strip_tags(html_message)
-                    
-                    # Send email with HTML
-                    msg = EmailMultiAlternatives(
-                        subject="Welcome to our Newsletter",
-                        body=plain_message,
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        to=[email]
-                    )
-                    msg.attach_alternative(html_message, "text/html")
-                    msg.send(fail_silently=True)
+                    site_url = request.build_absolute_uri('/')
+                    unsubscribe_url = request.build_absolute_uri('/newsletter/unsubscribe/')
+                    send_newsletter_welcome_task.delay(email, site_url, unsubscribe_url)
                 except Exception as e:
-                    print(f"Error sending welcome email: {e}")
+                    print(f"Error dispatching welcome email to Celery: {e}")
                 
                 messages.success(request, "Thank you for subscribing! Check your email for confirmation.")
             
@@ -270,39 +175,12 @@ class ContactMessageAjaxView(View):
                 user_agent=request.META.get('HTTP_USER_AGENT', '')[:500]
             )
             
-            # Send notification email
+            # Send notification and confirmation emails asynchronously via Celery
             try:
-                admin_email = getattr(settings, 'ADMIN_EMAIL', settings.DEFAULT_FROM_EMAIL)
-                contact_info = ContactInfo.get_active()
-                
-                # Prepare context for email template
-                email_context = {
-                    'name': name,
-                    'email': email,
-                    'subject': subject,
-                    'message': message_text,
-                    'submitted_at': contact_message.created_at,
-                    'ip_address': contact_message.ip_address,
-                    'site_name': contact_info.company_name if contact_info else 'Nestova',
-                    'admin_url': request.build_absolute_uri('/admin/contact/contactmessage/'),
-                    'current_year': datetime.now().year,
-                }
-                
-                # Render HTML email
-                html_message = render_to_string('emails/contact_admin_notification.html', email_context)
-                plain_message = strip_tags(html_message)
-                
-                # Send email with HTML
-                msg = EmailMultiAlternatives(
-                    subject=f"New Contact Message: {subject}",
-                    body=plain_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[admin_email]
-                )
-                msg.attach_alternative(html_message, "text/html")
-                msg.send(fail_silently=True)
+                admin_url = request.build_absolute_uri('/admin/contact/contactmessage/')
+                send_contact_emails_task.delay(contact_message.id, admin_url)
             except Exception as e:
-                print(f"Error sending email: {e}")
+                print(f"Error dispatching ajax contact emails to Celery: {e}")
             
             return JsonResponse({
                 'success': True,

@@ -15,13 +15,13 @@ def post_lists(request):
         print(f"Post: {post.name}, Status: '{post.status}'")
     
     # Get only published posts
-    posts_list = Post.objects.filter(status='published').order_by('-publish')
+    posts_list = Post.objects.select_related('author', 'category').filter(status='published').order_by('-publish')
     print(f"Published posts count: {posts_list.count()}")
     
     # If no published posts, show all posts for now (temporary)
     if not posts_list.exists():
         print("No published posts found, showing all posts...")
-        posts_list = Post.objects.all().order_by('-publish')
+        posts_list = Post.objects.select_related('author', 'category').all().order_by('-publish')
     
     # Pagination - 6 posts per page
     paginator = Paginator(posts_list, 2)
@@ -52,8 +52,9 @@ def post_details(request, slug, year, month, day):
     """
     try:
         comment_post = None
-        post = get_object_or_404(Post, slug=slug, publish__year=year, publish__month=month, publish__day=day)
-        comment_posts = post.comments.all()
+        post_queryset = Post.objects.select_related('author', 'category')
+        post = get_object_or_404(post_queryset, slug=slug, publish__year=year, publish__month=month, publish__day=day)
+        comment_posts = post.comments.select_related('user').all()
         comment_count = comment_posts.count()
         
         if request.method == "POST":

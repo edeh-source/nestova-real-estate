@@ -4,6 +4,12 @@
 {% load humanize %}
 {% load property_extras %}
 
+{% block seo_meta %}
+{% include 'includes/seo_meta.html' %}
+{% endblock seo_meta %}
+
+{% block title %}Search Properties | Nestova{% endblock %}
+
 {% block extra_head %}
 <style>
 /* ============================================================
