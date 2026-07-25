@@ -53,7 +53,11 @@ def post_details(request, slug, year, month, day):
     try:
         comment_post = None
         post_queryset = Post.objects.select_related('author', 'category')
-        post = get_object_or_404(post_queryset, slug=slug, publish__year=year, publish__month=month, publish__day=day)
+        # Query by slug only to prevent timezone issues with __year, __month, __day lookups
+        post = post_queryset.filter(slug=slug).first()
+        if not post:
+            from django.http import Http404
+            raise Http404('No Post matches the given query.')
         comment_posts = post.comments.select_related('user').all()
         comment_count = comment_posts.count()
         
@@ -90,6 +94,7 @@ def post_details(request, slug, year, month, day):
     except Exception as e:
         logger.error(f"Error in post_details view: {str(e)}", exc_info=True)
         raise
+
 
 
 
