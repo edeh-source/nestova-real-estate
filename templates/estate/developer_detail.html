@@ -5,7 +5,7 @@
 {% block title %}{{ developer.name }} — Real Estate Developer | Nestova{% endblock %}
 
 {% block seo_meta %}
-<meta name="description" content="{% if developer.tagline %}{{ developer.tagline }}{% else %}Explore {{ developer.name }}\'s property portfolio on Nestova.{% endif %}">
+<meta name="description" content="{% if developer.tagline %}{{ developer.tagline }}{% else %}Explore {{ developer.name }}'s property portfolio on Nestova.{% endif %}">
 <meta property="og:title" content="{{ developer.name }} | Nestova">
 {% if developer.banner_image %}
 <meta property="og:image" content="{{ developer.banner_image.url }}">
@@ -14,15 +14,23 @@
 
 {% block extra_head %}
 <style>
-  /* ── Developer Detail Page ──────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════════
+     DEVELOPER DETAIL — Nestova Luxury v2
+     All colours reference custom properties from base.html
+     Zero inline styles — every rule lives here.
+  ══════════════════════════════════════════════════════════════ */
+
+  /* ─────────────────────────────────────────────────────────────
+     HERO
+  ───────────────────────────────────────────────────────────── */
   .dev-detail-hero {
     position: relative;
-    min-height: 420px;
+    min-height: 540px;
     display: flex;
     align-items: flex-end;
-    padding-bottom: 3rem;
     overflow: hidden;
   }
+
   .dev-detail-hero-bg {
     position: absolute;
     inset: 0;
@@ -30,164 +38,703 @@
     background-position: center;
     z-index: 0;
   }
+
+  /* Cinematic fade — heavy at bottom for text legibility */
   .dev-detail-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgba(6,11,26,.95) 0%, rgba(6,11,26,.55) 60%, rgba(6,11,26,.25) 100%);
+    background: linear-gradient(
+      0deg,
+      rgba(6,11,26,1)   0%,
+      rgba(6,11,26,.88) 30%,
+      rgba(6,11,26,.5)  65%,
+      rgba(6,11,26,.18) 100%
+    );
     z-index: 1;
   }
-  .dev-detail-hero .container { position: relative; z-index: 2; }
+
+  .dev-detail-hero .container {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 0;
+    width: 100%;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     BREADCRUMB
+  ───────────────────────────────────────────────────────────── */
+  .dev-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    padding: 2.5rem 0 2.5rem;
+    font-size: .74rem;
+    color: rgba(255,255,255,.3);
+  }
+
+  .dev-breadcrumb a {
+    color: rgba(255,255,255,.38);
+    text-decoration: none;
+    transition: color .2s;
+  }
+
+  .dev-breadcrumb a:hover { color: var(--gold-light); }
+
+  .dev-breadcrumb .bc-sep {
+    color: rgba(255,255,255,.18);
+    font-size: .62rem;
+  }
+
+  .dev-breadcrumb .bc-current { color: rgba(255,255,255,.58); }
+
+  /* ─────────────────────────────────────────────────────────────
+     IDENTITY ROW
+  ───────────────────────────────────────────────────────────── */
+  .dev-identity-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
   .dev-detail-logo {
-    width: 88px;
-    height: 88px;
+    width: 92px;
+    height: 92px;
     border-radius: 16px;
-    border: 3px solid #C9A84C;
-    background: #12121a;
+    border: 2.5px solid var(--gold);
+    background: rgba(12,12,18,.96);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    box-shadow: 0 8px 32px rgba(0,0,0,.6);
+    box-shadow: 0 8px 36px rgba(0,0,0,.6), 0 0 0 1px rgba(201,168,76,.12);
   }
-  .dev-detail-logo img { width: 100%; height: 100%; object-fit: contain; }
-  .dev-detail-logo-placeholder { font-size: 2.2rem; color: #C9A84C; }
+
+  .dev-detail-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .dev-detail-logo-placeholder {
+    font-size: 2.2rem;
+    color: var(--gold);
+  }
+
+  .dev-identity-text { flex: 1; min-width: 0; }
+
   .dev-detail-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4.5vw, 3.2rem);
     font-weight: 700;
     color: #fff;
-    margin-bottom: .4rem;
-    line-height: 1.1;
+    margin-bottom: .38rem;
+    line-height: 1.07;
   }
+
   .dev-detail-tagline {
-    color: rgba(255,255,255,.65);
-    font-size: 1rem;
-    margin-bottom: .75rem;
+    color: rgba(255,255,255,.58);
+    font-size: .95rem;
+    margin-bottom: .6rem;
+    line-height: 1.55;
   }
+
+  .dev-detail-hq {
+    display: inline-flex;
+    align-items: center;
+    gap: .32rem;
+    color: var(--gold);
+    font-size: .82rem;
+    font-weight: 500;
+  }
+
+  /* Featured pill inline with name */
+  .dev-detail-featured-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    background: var(--gold);
+    color: var(--obsidian);
+    font-size: .6rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .22rem .65rem;
+    border-radius: 50px;
+    margin-left: .6rem;
+    vertical-align: middle;
+    box-shadow: 0 2px 12px rgba(201,168,76,.4);
+    position: relative;
+    top: -2px;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     STAT STRIP  (attached to bottom of hero, flush)
+  ───────────────────────────────────────────────────────────── */
   .dev-stat-strip {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem 2rem;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 14px;
-    padding: 1.25rem 1.75rem;
-    backdrop-filter: blur(12px);
-    margin-top: 2rem;
+    align-items: stretch;
+    background: rgba(12,12,20,.84);
+    border: 1px solid rgba(255,255,255,.08);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    overflow: hidden;
+    margin-top: .5rem;
   }
-  .dev-stat { text-align: center; }
+
+  .dev-stat {
+    flex: 1;
+    text-align: center;
+    padding: 1.2rem 1rem;
+    position: relative;
+  }
+
+  /* Vertical dividers */
+  .dev-stat + .dev-stat::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: rgba(255,255,255,.07);
+  }
+
   .dev-stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem;
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.85rem;
     font-weight: 700;
-    color: #C9A84C;
+    color: var(--gold);
     line-height: 1;
+    margin-bottom: .28rem;
   }
+
   .dev-stat-label {
-    font-size: .75rem;
-    color: rgba(255,255,255,.5);
+    display: block;
+    font-size: .66rem;
+    color: rgba(255,255,255,.4);
     text-transform: uppercase;
-    letter-spacing: .07em;
-    margin-top: .25rem;
+    letter-spacing: .08em;
+    font-weight: 500;
   }
-  /* Tabs */
-  .dev-tabs { border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 2rem; }
+
+  /* ─────────────────────────────────────────────────────────────
+     MAIN BODY
+  ───────────────────────────────────────────────────────────── */
+  .dev-body {
+    background: var(--obsidian);
+    padding: 4rem 0 6.5rem;
+  }
+
+  /* Stat strip "cap" — continues the strip into the body section */
+  .dev-body-stat-cap {
+    background: rgba(12,12,20,.84);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    height: 12px;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     DESCRIPTION BLOCK
+  ───────────────────────────────────────────────────────────── */
+  .dev-description-wrapper {
+    background: rgba(14,14,22,.65);
+    border: 1px solid rgba(255,255,255,.07);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 14px 14px 0;
+    padding: 1.6rem 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .dev-description-label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .85rem;
+  }
+
+  .dev-description {
+    color: rgba(255,255,255,.7);
+    font-size: .93rem;
+    line-height: 1.88;
+  }
+
+  .dev-description h1,
+  .dev-description h2,
+  .dev-description h3 {
+    font-family: var(--font-display);
+    color: #fff;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     TABS
+  ───────────────────────────────────────────────────────────── */
+  .dev-tabs-wrapper {
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 72px;
+    background: var(--obsidian);
+    z-index: 20;
+    padding-top: .25rem;
+  }
+
+  .dev-tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: .2rem;
+  }
+
+  .dev-tabs::-webkit-scrollbar { display: none; }
+
   .dev-tab-link {
     display: inline-flex;
     align-items: center;
     gap: .4rem;
-    padding: .75rem 1.25rem;
-    font-size: .88rem;
+    padding: .8rem 1.2rem;
+    font-size: .85rem;
     font-weight: 600;
-    color: rgba(255,255,255,.5);
+    color: rgba(255,255,255,.42);
     text-decoration: none;
     border-bottom: 2px solid transparent;
-    transition: color .2s, border-color .2s;
+    transition: color .22s, border-color .22s;
+    white-space: nowrap;
+    position: relative;
+    bottom: -1px;
   }
-  .dev-tab-link:hover { color: rgba(255,255,255,.8); }
-  .dev-tab-link.active { color: #C9A84C; border-bottom-color: #C9A84C; }
+
+  .dev-tab-link:hover {
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+  }
+
+  .dev-tab-link.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
   .dev-tab-count {
-    background: rgba(201,168,76,.15);
-    color: #C9A84C;
-    font-size: .72rem;
+    background: rgba(201,168,76,.13);
+    color: var(--gold);
+    font-size: .67rem;
     border-radius: 50px;
-    padding: .1rem .5rem;
+    padding: .08rem .46rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PROPERTY CARDS
+  ───────────────────────────────────────────────────────────── */
+  .prop-card {
+    background: rgba(13,13,21,.92);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 16px;
+    overflow: hidden;
+    display: block;
+    text-decoration: none;
+    transition:
+      transform .3s cubic-bezier(.4,0,.2,1),
+      box-shadow .3s,
+      border-color .3s;
+  }
+
+  .prop-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 56px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.2);
+    border-color: rgba(201,168,76,.28);
+    text-decoration: none;
+  }
+
+  /* Image */
+  .prop-card-img-wrap {
+    position: relative;
+    height: 198px;
+    overflow: hidden;
+  }
+
+  .prop-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .42s cubic-bezier(.4,0,.2,1);
+  }
+
+  .prop-card:hover .prop-card-img { transform: scale(1.06); }
+
+  .prop-card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 48%, rgba(6,11,26,.62) 100%);
+    pointer-events: none;
+  }
+
+  .prop-card-status-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(201,168,76,.92);
+    color: var(--obsidian);
+    font-size: .63rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .19rem .58rem;
+    border-radius: 50px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* Info block */
+  .prop-card-info {
+    padding: 1rem 1.1rem 1.15rem;
+  }
+
+  .prop-card-title {
+    font-family: var(--font-display);
+    font-size: 1.01rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 .3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color .22s;
+  }
+
+  .prop-card:hover .prop-card-title { color: var(--gold-light); }
+
+  .prop-card-location {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .77rem;
+    color: rgba(255,255,255,.42);
+    margin-bottom: .7rem;
+  }
+
+  .prop-card-location i {
+    color: var(--gold);
+    font-size: .7rem;
+  }
+
+  .prop-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prop-card-price {
+    font-family: var(--font-display);
+    font-size: .98rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .prop-card-specs {
+    font-size: .74rem;
+    color: rgba(255,255,255,.36);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     EMPTY / NO PROPERTIES
+  ───────────────────────────────────────────────────────────── */
+  .dev-no-props {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,.36);
+  }
+
+  .dev-no-props i {
+    font-size: 2.8rem;
+    color: var(--gold);
+    opacity: .55;
+    display: block;
+    margin-bottom: .9rem;
+  }
+
+  .dev-no-props a { color: var(--gold); text-decoration: none; }
+  .dev-no-props a:hover { color: var(--gold-light); text-decoration: underline; }
+
+  /* ─────────────────────────────────────────────────────────────
+     PAGINATION
+  ───────────────────────────────────────────────────────────── */
+  .dev-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .dev-page-link {
+    min-width: 44px;
+    height: 44px;
+    padding: 0 .7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,.09);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.52);
+    font-size: .85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .dev-page-link:hover {
+    background: rgba(201,168,76,.1);
+    border-color: rgba(201,168,76,.28);
+    color: var(--gold-light);
+    text-decoration: none;
+  }
+
+  .dev-page-link.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--obsidian);
     font-weight: 700;
   }
-  /* Sidebar */
+
+  /* ─────────────────────────────────────────────────────────────
+     SIDEBAR CARDS
+  ───────────────────────────────────────────────────────────── */
   .dev-sidebar-card {
-    background: rgba(18,18,26,.85);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 14px;
+    background: rgba(14,14,22,.88);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
     padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
-  .dev-sidebar-card h5 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.05rem;
-    color: #C9A84C;
-    margin-bottom: 1rem;
-    padding-bottom: .5rem;
-    border-bottom: 1px solid rgba(201,168,76,.2);
+
+  .dev-sidebar-card:last-child { margin-bottom: 0; }
+
+  .dev-sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.1rem;
+    padding-bottom: .65rem;
+    border-bottom: 1px solid rgba(201,168,76,.16);
   }
+
+  /* Contact rows */
   .dev-contact-row {
     display: flex;
     align-items: flex-start;
-    gap: .75rem;
-    margin-bottom: .9rem;
+    gap: .7rem;
+    margin-bottom: .85rem;
   }
+
+  .dev-contact-row:last-of-type { margin-bottom: 0; }
+
   .dev-contact-icon {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
-    background: rgba(201,168,76,.12);
+    background: rgba(201,168,76,.09);
+    border: 1px solid rgba(201,168,76,.14);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #C9A84C;
+    color: var(--gold);
     flex-shrink: 0;
+    font-size: .88rem;
   }
+
+  .dev-contact-label {
+    font-size: .63rem;
+    color: rgba(255,255,255,.32);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .15rem;
+  }
+
   .dev-contact-val {
-    font-size: .85rem;
-    color: rgba(255,255,255,.75);
+    font-size: .83rem;
+    color: rgba(255,255,255,.7);
     word-break: break-all;
+    text-decoration: none;
+    transition: color .2s;
+    display: block;
   }
-  .dev-social-links { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .5rem; }
+
+  .dev-contact-val:hover { color: var(--gold-light); }
+  .dev-contact-val--gold { color: var(--gold-light); }
+
+  /* Social icons */
+  .dev-social-section {
+    margin-top: 1rem;
+    padding-top: .8rem;
+    border-top: 1px solid rgba(255,255,255,.07);
+  }
+
+  .dev-social-label {
+    display: block;
+    font-size: .63rem;
+    color: rgba(255,255,255,.32);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .55rem;
+  }
+
+  .dev-social-links {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+
   .dev-social-link {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255,255,255,.6);
-    font-size: 1rem;
+    color: rgba(255,255,255,.52);
+    font-size: .92rem;
     text-decoration: none;
     transition: background .2s, color .2s, border-color .2s;
   }
-  .dev-social-link:hover { background: #C9A84C; color: #0a0a0f; border-color: #C9A84C; }
-  .dev-description {
-    color: rgba(255,255,255,.75);
-    font-size: .95rem;
-    line-height: 1.8;
-  }
-  .dev-description h1,.dev-description h2,.dev-description h3 {
-    font-family: 'Cormorant Garamond', serif;
-    color: #fff;
-  }
-  /* Reuse prop-card from site */
-  .dev-body { background: var(--obsidian); padding: 4rem 0 6rem; }
 
-  /* Empty state */
-  .dev-no-props { text-align:center; padding:4rem 2rem; color:rgba(255,255,255,.4); }
-  .dev-no-props i { font-size:3rem; color:#C9A84C; display:block; margin-bottom:1rem; }
+  .dev-social-link:hover {
+    background: var(--gold);
+    color: var(--obsidian);
+    border-color: var(--gold);
+  }
+
+  /* Stat tiles grid */
+  .dev-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .7rem;
+  }
+
+  .dev-stat-tile {
+    text-align: center;
+    padding: .85rem .5rem;
+    background: rgba(201,168,76,.05);
+    border-radius: 10px;
+    border: 1px solid rgba(201,168,76,.1);
+  }
+
+  .dev-stat-tile-num {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: .2rem;
+  }
+
+  .dev-stat-tile-label {
+    font-size: .62rem;
+    color: rgba(255,255,255,.38);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 500;
+  }
+
+  /* Founder card */
+  .dev-founder-card { text-align: center; }
+
+  .dev-founder-avatar {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.12);
+    margin: 0 auto 1rem;
+  }
+
+  .dev-founder-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .dev-founder-eyebrow {
+    display: block;
+    font-size: .63rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .3rem;
+  }
+
+  .dev-founder-desc {
+    font-size: .8rem;
+    color: rgba(255,255,255,.48);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     RESPONSIVE
+  ───────────────────────────────────────────────────────────── */
+  @media (max-width: 992px) {
+    .dev-detail-hero { min-height: 460px; }
+  }
+
+  @media (max-width: 768px) {
+    .dev-detail-hero { min-height: 400px; }
+    .dev-detail-name { font-size: 2rem; }
+    .dev-stat-strip { overflow-x: auto; }
+    .dev-stat { min-width: 80px; padding: 1rem .75rem; }
+    .dev-body { padding: 3rem 0 5rem; }
+    .dev-description-wrapper { padding: 1.3rem 1.3rem; }
+    .dev-tabs-wrapper { top: 66px; }
+  }
+
+  @media (max-width: 576px) {
+    .dev-detail-logo { width: 74px; height: 74px; }
+    .dev-identity-row { gap: 1rem; }
+    .dev-detail-name { font-size: 1.75rem; }
+    .dev-stat { min-width: calc(50% - .5rem); }
+    .prop-card-img-wrap { height: 178px; }
+    .dev-body-stat-cap { margin-bottom: 2rem; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Hero -->
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
 <section class="dev-detail-hero">
   <div class="dev-detail-hero-bg"
     style="background-image:url('{% if developer.banner_image %}{{ developer.banner_image.url }}{% else %}{% static "assets/img/real-estate/property-exterior-7.webp" %}{% endif %}')">
@@ -195,16 +742,19 @@
   <div class="dev-detail-hero-overlay"></div>
 
   <div class="container">
+
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" style="margin-bottom:1.5rem;">
-      <ol class="breadcrumb" style="background:transparent;padding:0;margin:0;">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}" style="color:rgba(255,255,255,.5);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'developers_list' %}" style="color:rgba(255,255,255,.5);">Developers</a></li>
-        <li class="breadcrumb-item active" style="color:rgba(255,255,255,.8);">{{ developer.name }}</li>
-      </ol>
+    <nav class="dev-breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <i class="bi bi-chevron-right bc-sep"></i>
+      <a href="{% url 'developers_list' %}">Developers</a>
+      <i class="bi bi-chevron-right bc-sep"></i>
+      <span class="bc-current">{{ developer.name }}</span>
     </nav>
 
-    <div class="d-flex align-items-center gap-4 flex-wrap">
+    <!-- Identity row -->
+    <div class="dev-identity-row">
+
       <!-- Logo -->
       <div class="dev-detail-logo">
         {% if developer.logo %}
@@ -213,111 +763,128 @@
         <div class="dev-detail-logo-placeholder"><i class="bi bi-building"></i></div>
         {% endif %}
       </div>
-      <div>
-        <h1 class="dev-detail-name">{{ developer.name }}</h1>
+
+      <!-- Text -->
+      <div class="dev-identity-text">
+        <h1 class="dev-detail-name">
+          {{ developer.name }}
+          {% if developer.is_featured %}
+          <span class="dev-detail-featured-badge"><i class="bi bi-star-fill"></i> Featured</span>
+          {% endif %}
+        </h1>
         {% if developer.tagline %}
         <p class="dev-detail-tagline">{{ developer.tagline }}</p>
         {% endif %}
         {% if developer.headquarters %}
-        <span style="color:#C9A84C;font-size:.85rem;"><i class="bi bi-geo-alt me-1"></i>{{ developer.headquarters }}</span>
+        <span class="dev-detail-hq"><i class="bi bi-geo-alt"></i> {{ developer.headquarters }}</span>
         {% endif %}
       </div>
+
     </div>
 
-    <!-- Stats -->
+    <!-- Stats strip (bottom-flush, half inside body) -->
     <div class="dev-stat-strip">
       <div class="dev-stat">
-        <div class="dev-stat-num">{{ tab_counts.all }}</div>
-        <div class="dev-stat-label">Properties</div>
+        <span class="dev-stat-num">{{ tab_counts.all }}</span>
+        <span class="dev-stat-label">Properties</span>
       </div>
       {% if developer.total_units_delivered %}
       <div class="dev-stat">
-        <div class="dev-stat-num">{{ developer.total_units_delivered|intcomma }}</div>
-        <div class="dev-stat-label">Units Delivered</div>
+        <span class="dev-stat-num">{{ developer.total_units_delivered|intcomma }}</span>
+        <span class="dev-stat-label">Units Delivered</span>
       </div>
       {% endif %}
       {% if developer.years_active %}
       <div class="dev-stat">
-        <div class="dev-stat-num">{{ developer.years_active }}</div>
-        <div class="dev-stat-label">Years Active</div>
+        <span class="dev-stat-num">{{ developer.years_active }}+</span>
+        <span class="dev-stat-label">Years Active</span>
       </div>
       {% endif %}
       {% if developer.founded_year %}
       <div class="dev-stat">
-        <div class="dev-stat-num">{{ developer.founded_year }}</div>
-        <div class="dev-stat-label">Founded</div>
+        <span class="dev-stat-num">{{ developer.founded_year }}</span>
+        <span class="dev-stat-label">Founded</span>
       </div>
       {% endif %}
     </div>
+
   </div>
 </section>
 
-<!-- Main body -->
+
+<!-- ══════════════════════════════════════════════
+     MAIN BODY
+══════════════════════════════════════════════ -->
 <section class="dev-body">
   <div class="container">
+
+    <!-- Stat strip "cap" — visual continuity from hero -->
+    <div class="dev-body-stat-cap"></div>
+
     <div class="row g-5">
 
-      <!-- Properties Column -->
+      <!-- ── LEFT COLUMN: description + listings ── -->
       <div class="col-lg-8">
 
-        <!-- Description -->
+        <!-- About -->
         {% if developer.description %}
-        <div class="dev-description mb-4">
-          {{ developer.description|safe }}
+        <div class="dev-description-wrapper" data-aos="fade-up">
+          <div class="dev-description-label">
+            <i class="bi bi-info-circle"></i> About {{ developer.name }}
+          </div>
+          <div class="dev-description">
+            {{ developer.description|safe }}
+          </div>
         </div>
         {% endif %}
 
-        <!-- Tabs -->
-        <div class="dev-tabs">
-          <a href="?type=all" class="dev-tab-link {% if listing_type == 'all' %}active{% endif %}">
-            All Properties <span class="dev-tab-count">{{ tab_counts.all }}</span>
-          </a>
-          <a href="?type=sale" class="dev-tab-link {% if listing_type == 'sale' %}active{% endif %}">
-            For Sale <span class="dev-tab-count">{{ tab_counts.sale }}</span>
-          </a>
-          <a href="?type=rent" class="dev-tab-link {% if listing_type == 'rent' %}active{% endif %}">
-            For Rent <span class="dev-tab-count">{{ tab_counts.rent }}</span>
-          </a>
+        <!-- Sticky tab bar -->
+        <div class="dev-tabs-wrapper" data-aos="fade-up">
+          <div class="dev-tabs">
+            <a href="?type=all" class="dev-tab-link {% if listing_type == 'all' %}active{% endif %}">
+              All Properties <span class="dev-tab-count">{{ tab_counts.all }}</span>
+            </a>
+            <a href="?type=sale" class="dev-tab-link {% if listing_type == 'sale' %}active{% endif %}">
+              For Sale <span class="dev-tab-count">{{ tab_counts.sale }}</span>
+            </a>
+            <a href="?type=rent" class="dev-tab-link {% if listing_type == 'rent' %}active{% endif %}">
+              For Rent <span class="dev-tab-count">{{ tab_counts.rent }}</span>
+            </a>
+          </div>
         </div>
 
-        <!-- Property Grid -->
+        <!-- Property grid -->
         {% if properties %}
         <div class="row g-4">
           {% for prop in properties %}
           <div class="col-md-6">
-            <a href="{{ prop.get_absolute_url }}" class="prop-card d-block text-decoration-none"
-              style="background:rgba(18,18,26,.85);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s;">
+            <a href="{{ prop.get_absolute_url }}" class="prop-card">
+
               <!-- Image -->
-              <div style="position:relative;height:200px;overflow:hidden;">
+              <div class="prop-card-img-wrap">
                 {% if prop.featured_image %}
-                <img src="{{ prop.featured_image.url }}" alt="{{ prop.title }}"
-                  style="width:100%;height:100%;object-fit:cover;transition:transform .4s;">
+                <img src="{{ prop.featured_image.url }}" alt="{{ prop.title }}" class="prop-card-img" loading="lazy">
                 {% else %}
-                <img src="{% static 'assets/img/real-estate/property-exterior-7.webp' %}" alt="{{ prop.title }}"
-                  style="width:100%;height:100%;object-fit:cover;transition:transform .4s;">
+                <img src="{% static 'assets/img/real-estate/property-exterior-7.webp' %}" alt="{{ prop.title }}" class="prop-card-img" loading="lazy">
                 {% endif %}
-                <div style="position:absolute;top:10px;left:10px;">
-                  <span style="background:rgba(201,168,76,.9);color:#0a0a0f;font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:50px;">
-                    {{ prop.status }}
-                  </span>
-                </div>
+                <div class="prop-card-img-overlay"></div>
+                <span class="prop-card-status-badge">{{ prop.status }}</span>
               </div>
+
               <!-- Info -->
-              <div style="padding:1.1rem;">
-                <h3 style="font-family:\'Cormorant Garamond\',serif;font-size:1rem;font-weight:600;color:#fff;margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                  {{ prop.title }}
-                </h3>
-                <p style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:.6rem;">
-                  <i class="bi bi-geo-alt me-1" style="color:#C9A84C;"></i>{{ prop.city }}, {{ prop.state }}
+              <div class="prop-card-info">
+                <h3 class="prop-card-title">{{ prop.title }}</h3>
+                <p class="prop-card-location">
+                  <i class="bi bi-geo-alt"></i>{{ prop.city }}, {{ prop.state }}
                 </p>
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                  <span style="font-size:1rem;font-weight:700;color:#C9A84C;">{{ prop.formatted_price }}</span>
-                  <span style="font-size:.78rem;color:rgba(255,255,255,.4);">
-                    {% if prop.bedrooms %}{{ prop.bedrooms }}bd&nbsp;{% endif %}
-                    {% if prop.bathrooms %}{{ prop.bathrooms }}ba{% endif %}
+                <div class="prop-card-footer">
+                  <span class="prop-card-price">{{ prop.formatted_price }}</span>
+                  <span class="prop-card-specs">
+                    {% if prop.bedrooms %}{{ prop.bedrooms }}bd&nbsp;{% endif %}{% if prop.bathrooms %}{{ prop.bathrooms }}ba{% endif %}
                   </span>
                 </div>
               </div>
+
             </a>
           </div>
           {% endfor %}
@@ -325,66 +892,67 @@
 
         <!-- Pagination -->
         {% if page_obj.has_other_pages %}
-        <nav class="d-flex justify-content-center mt-5" aria-label="Property pagination">
-          <ul class="pagination gap-2">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a class="page-link" href="?type={{ listing_type }}&page={{ page_obj.previous_page_number }}">
-                <i class="bi bi-chevron-left"></i>
-              </a>
-            </li>
-            {% endif %}
-            {% for num in page_obj.paginator.page_range %}
-            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-              <a class="page-link" href="?type={{ listing_type }}&page={{ num }}">{{ num }}</a>
-            </li>
-            {% endfor %}
-            {% if page_obj.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="?type={{ listing_type }}&page={{ page_obj.next_page_number }}">
-                <i class="bi bi-chevron-right"></i>
-              </a>
-            </li>
-            {% endif %}
-          </ul>
+        <nav class="dev-pagination" aria-label="Property pagination">
+          {% if page_obj.has_previous %}
+          <a class="dev-page-link" href="?type={{ listing_type }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+          <a class="dev-page-link {% if page_obj.number == num %}active{% endif %}"
+             href="?type={{ listing_type }}&page={{ num }}"
+             aria-label="Page {{ num }}"
+             {% if page_obj.number == num %}aria-current="page"{% endif %}>{{ num }}</a>
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <a class="dev-page-link" href="?type={{ listing_type }}&page={{ page_obj.next_page_number }}" aria-label="Next">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+          {% endif %}
         </nav>
         {% endif %}
 
         {% else %}
+        <!-- No properties -->
         <div class="dev-no-props">
           <i class="bi bi-houses"></i>
-          <p>No properties in this category yet. <a href="?type=all" style="color:#C9A84C;">View all listings</a></p>
+          <p>No properties in this category yet.<br>
+            <a href="?type=all">View all listings</a>
+          </p>
         </div>
         {% endif %}
 
-      </div><!-- /col -->
+      </div><!-- /col-lg-8 -->
 
-      <!-- Sidebar -->
+
+      <!-- ── RIGHT COLUMN: sidebar ── -->
       <div class="col-lg-4">
-        <div class="sticky-top" style="top:100px;">
+        <div class="sticky-top" style="top:90px;">
 
-          <!-- Leadership / Face Behind the Brand -->
+          <!-- Founder / face card -->
           {% if developer.founder_image %}
-          <div class="dev-sidebar-card mb-4 text-center">
-            <div style="width:120px;height:120px;margin:0 auto 1rem;border-radius:50%;overflow:hidden;border:3px solid #C9A84C;box-shadow:0 8px 24px rgba(0,0,0,.5);">
-              <img src="{{ developer.founder_image.url }}" alt="Founder of {{ developer.name }}" style="width:100%;height:100%;object-fit:cover;">
+          <div class="dev-sidebar-card dev-founder-card">
+            <div class="dev-founder-avatar">
+              <img src="{{ developer.founder_image.url }}" alt="Founder of {{ developer.name }}">
             </div>
-            <h5 style="font-family:'Cormorant Garamond',serif;color:#C9A84C;border-bottom:none;margin-bottom:0.25rem;padding-bottom:0;">The Visionary</h5>
-            <p style="font-size:0.85rem;color:rgba(255,255,255,.6);margin-bottom:0;line-height:1.4;">Meet the face behind {{ developer.name }}.</p>
+            <span class="dev-founder-eyebrow">The Visionary</span>
+            <p class="dev-founder-desc">Meet the face behind {{ developer.name }}.</p>
           </div>
           {% endif %}
 
-          <!-- Contact Card -->
+          <!-- Contact card -->
           {% if developer.email or developer.phone or developer.website or developer.headquarters %}
-          <div class="dev-sidebar-card mb-4">
-            <h5><i class="bi bi-person-lines-fill me-2"></i>Contact Developer</h5>
+          <div class="dev-sidebar-card">
+            <div class="dev-sidebar-title">
+              <i class="bi bi-person-lines-fill"></i> Contact Developer
+            </div>
 
             {% if developer.headquarters %}
             <div class="dev-contact-row">
               <div class="dev-contact-icon"><i class="bi bi-geo-alt"></i></div>
               <div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">HQ</div>
-                <div class="dev-contact-val">{{ developer.headquarters }}</div>
+                <div class="dev-contact-label">Headquarters</div>
+                <span class="dev-contact-val">{{ developer.headquarters }}</span>
               </div>
             </div>
             {% endif %}
@@ -393,10 +961,8 @@
             <div class="dev-contact-row">
               <div class="dev-contact-icon"><i class="bi bi-telephone"></i></div>
               <div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">Phone</div>
-                <a href="tel:{{ developer.phone }}" class="dev-contact-val" style="text-decoration:none;color:inherit;">
-                  {{ developer.phone }}
-                </a>
+                <div class="dev-contact-label">Phone</div>
+                <a href="tel:{{ developer.phone }}" class="dev-contact-val">{{ developer.phone }}</a>
               </div>
             </div>
             {% endif %}
@@ -405,10 +971,8 @@
             <div class="dev-contact-row">
               <div class="dev-contact-icon"><i class="bi bi-envelope"></i></div>
               <div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">Email</div>
-                <a href="mailto:{{ developer.email }}" class="dev-contact-val" style="text-decoration:none;color:inherit;">
-                  {{ developer.email }}
-                </a>
+                <div class="dev-contact-label">Email</div>
+                <a href="mailto:{{ developer.email }}" class="dev-contact-val">{{ developer.email }}</a>
               </div>
             </div>
             {% endif %}
@@ -417,19 +981,19 @@
             <div class="dev-contact-row">
               <div class="dev-contact-icon"><i class="bi bi-globe"></i></div>
               <div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">Website</div>
+                <div class="dev-contact-label">Website</div>
                 <a href="{{ developer.website }}" target="_blank" rel="noopener noreferrer"
-                  class="dev-contact-val" style="text-decoration:none;color:#C9A84C;">
+                   class="dev-contact-val dev-contact-val--gold">
                   {{ developer.website|truncatechars:30 }}
                 </a>
               </div>
             </div>
             {% endif %}
 
-            <!-- Social -->
+            <!-- Social links -->
             {% if developer.facebook_page or developer.instagram_page or developer.linkedin_page or developer.x_page %}
-            <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.08);">
-              <div style="font-size:.72rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Follow</div>
+            <div class="dev-social-section">
+              <span class="dev-social-label">Follow</span>
               <div class="dev-social-links">
                 {% if developer.facebook_page %}
                 <a href="{{ developer.facebook_page }}" target="_blank" rel="noopener" class="dev-social-link" aria-label="Facebook">
@@ -454,38 +1018,41 @@
               </div>
             </div>
             {% endif %}
+
           </div>
           {% endif %}
 
-          <!-- Quick Stats -->
+          <!-- Stats tile card -->
           <div class="dev-sidebar-card">
-            <h5><i class="bi bi-bar-chart me-2"></i>Developer Stats</h5>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-              <div style="text-align:center;padding:.75rem;background:rgba(201,168,76,.06);border-radius:10px;border:1px solid rgba(201,168,76,.12);">
-                <div style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;font-weight:700;color:#C9A84C;">{{ tab_counts.all }}</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;">Properties</div>
+            <div class="dev-sidebar-title">
+              <i class="bi bi-bar-chart-line"></i> Developer Stats
+            </div>
+            <div class="dev-stats-grid">
+              <div class="dev-stat-tile">
+                <span class="dev-stat-tile-num">{{ tab_counts.all }}</span>
+                <span class="dev-stat-tile-label">Properties</span>
               </div>
-              <div style="text-align:center;padding:.75rem;background:rgba(201,168,76,.06);border-radius:10px;border:1px solid rgba(201,168,76,.12);">
-                <div style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;font-weight:700;color:#C9A84C;">{{ developer.total_units_delivered|intcomma }}</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;">Units Delivered</div>
+              <div class="dev-stat-tile">
+                <span class="dev-stat-tile-num">{{ developer.total_units_delivered|intcomma }}</span>
+                <span class="dev-stat-tile-label">Delivered</span>
               </div>
               {% if developer.founded_year %}
-              <div style="text-align:center;padding:.75rem;background:rgba(201,168,76,.06);border-radius:10px;border:1px solid rgba(201,168,76,.12);">
-                <div style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;font-weight:700;color:#C9A84C;">{{ developer.founded_year }}</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;">Est.</div>
+              <div class="dev-stat-tile">
+                <span class="dev-stat-tile-num">{{ developer.founded_year }}</span>
+                <span class="dev-stat-tile-label">Est.</span>
               </div>
               {% endif %}
               {% if developer.years_active %}
-              <div style="text-align:center;padding:.75rem;background:rgba(201,168,76,.06);border-radius:10px;border:1px solid rgba(201,168,76,.12);">
-                <div style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;font-weight:700;color:#C9A84C;">{{ developer.years_active }}+</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;">Yrs Active</div>
+              <div class="dev-stat-tile">
+                <span class="dev-stat-tile-num">{{ developer.years_active }}+</span>
+                <span class="dev-stat-tile-label">Yrs Active</span>
               </div>
               {% endif %}
             </div>
           </div>
 
         </div><!-- /sticky -->
-      </div><!-- /sidebar -->
+      </div><!-- /col-lg-4 -->
 
     </div><!-- /row -->
   </div><!-- /container -->

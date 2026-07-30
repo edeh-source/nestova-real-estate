@@ -5,242 +5,777 @@
 {% block title %}Real Estate Developers in Nigeria | Nestova{% endblock %}
 
 {% block seo_meta %}
-<meta name="description" content="Browse Nigeria\'s top real estate developers on Nestova. Discover property portfolios from trusted brands like Zenytal Properties, Cubana Millennium Estate and more.">
+<meta name="description" content="Browse Nigeria's top real estate developers on Nestova. Discover property portfolios from trusted brands like Zenytal Properties, Cubana Millennium Estate and more.">
 <meta property="og:title" content="Real Estate Developers | Nestova">
-<meta property="og:description" content="Browse Nigeria\'s top real estate developers on Nestova.">
+<meta property="og:description" content="Browse Nigeria's top real estate developers on Nestova.">
 {% endblock %}
 
 {% block extra_head %}
 <style>
-  /* ── Developers List Page ───────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════════
+     DEVELOPERS LIST — Nestova Luxury v2
+     All colours reference custom properties from base.html
+  ══════════════════════════════════════════════════════════════ */
+
+  /* ─────────────────────────────────────────────────────────────
+     HERO
+  ───────────────────────────────────────────────────────────── */
   .dev-hero {
-    min-height: 340px;
-    background: linear-gradient(135deg, var(--midnight) 0%, var(--deep-blue) 60%, var(--obsidian) 100%);
+    position: relative;
+    min-height: 600px;
+    background: linear-gradient(160deg, var(--midnight) 0%, #0d1428 50%, #080c1c 100%);
     display: flex;
     align-items: flex-end;
-    padding: 4rem 0 3rem;
-    position: relative;
+    padding: 6rem 0 4.5rem;
     overflow: hidden;
   }
+
+  /* Architectural grid pattern */
   .dev-hero::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 60% 50%, rgba(201,168,76,.12) 0%, transparent 70%);
+    background-image: url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(201%2C168%2C76%2C0.048)' stroke-width='0.6'%3E%3Crect x='1' y='1' width='70' height='70' rx='2'/%3E%3Cline x1='18' y1='1' x2='18' y2='71'/%3E%3Cline x1='36' y1='1' x2='36' y2='71'/%3E%3Cline x1='54' y1='1' x2='54' y2='71'/%3E%3Cline x1='1' y1='18' x2='71' y2='18'/%3E%3Cline x1='1' y1='36' x2='71' y2='36'/%3E%3Cline x1='1' y1='54' x2='71' y2='54'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 72px 72px;
+    z-index: 0;
   }
+
+  /* Gold radial bloom + deep-blue corner */
+  .dev-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 55% at 75% 35%, rgba(201,168,76,.1) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 50% at 10% 70%, rgba(13,27,62,.7) 0%, transparent 70%);
+    z-index: 1;
+  }
+
+  .dev-hero .container { position: relative; z-index: 2; }
+
+  /* Breadcrumb */
+  .dev-hero-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin-bottom: 2rem;
+    font-size: .74rem;
+    color: rgba(255,255,255,.3);
+  }
+  .dev-hero-breadcrumb a {
+    color: rgba(255,255,255,.38);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .dev-hero-breadcrumb a:hover { color: var(--gold-light); }
+  .dev-hero-breadcrumb .bc-sep { color: rgba(255,255,255,.18); font-size: .65rem; }
+  .dev-hero-breadcrumb .bc-current { color: var(--gold); }
+
   .dev-hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: .5rem;
-    background: rgba(201,168,76,.12);
-    border: 1px solid rgba(201,168,76,.3);
+    gap: .42rem;
+    background: rgba(201,168,76,.08);
+    border: 1px solid rgba(201,168,76,.22);
     border-radius: 50px;
-    padding: .35rem 1rem;
-    font-size: .78rem;
-    font-weight: 600;
-    letter-spacing: .08em;
+    padding: .28rem .88rem;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .1em;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
   }
+
   .dev-hero h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
     font-weight: 600;
     color: #fff;
-    margin-bottom: .75rem;
-    line-height: 1.15;
+    margin-bottom: 1rem;
+    line-height: 1.04;
+    letter-spacing: -0.5px;
   }
-  .dev-hero p {
-    color: rgba(255,255,255,.6);
-    font-size: 1.05rem;
-    max-width: 560px;
+
+  .dev-hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+    font-weight: 300;
   }
+
+  .dev-hero-sub {
+    color: rgba(255,255,255,.5);
+    font-size: 1rem;
+    max-width: 540px;
+    line-height: 1.78;
+    margin-bottom: 2.25rem;
+  }
+
+  /* Bottom row: count badge + search */
+  .dev-hero-bottom {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
   .dev-count-badge {
-    background: var(--glass-white);
-    border: 1px solid var(--glass-border);
+    display: inline-flex;
+    align-items: center;
+    gap: .58rem;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
     border-radius: 50px;
-    padding: .4rem 1.2rem;
-    font-size: .82rem;
-    color: rgba(255,255,255,.7);
-    backdrop-filter: blur(8px);
+    padding: .5rem 1.2rem;
+    font-size: .8rem;
+    color: rgba(255,255,255,.58);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
+
+  .dev-count-badge .count-num {
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  /* Inline search */
+  .dev-hero-search {
+    flex: 1;
+    max-width: 390px;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .dev-hero-search-input {
+    width: 100%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 50px;
+    padding: .62rem 3rem .62rem 1.15rem;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: .85rem;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s, background .25s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dev-hero-search-input::placeholder { color: rgba(255,255,255,.32); }
+
+  .dev-hero-search-input:focus {
+    border-color: rgba(201,168,76,.45);
+    box-shadow: 0 0 0 3px rgba(201,168,76,.08);
+    background: rgba(255,255,255,.1);
+  }
+
+  .dev-hero-search-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--gold);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--obsidian);
+    font-size: .82rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .dev-hero-search-btn:hover {
+    background: var(--gold-light);
+    box-shadow: 0 4px 16px rgba(201,168,76,.35);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PAGE BODY
+  ───────────────────────────────────────────────────────────── */
   .developers-page-body {
     background: var(--obsidian);
-    padding: 4rem 0 6rem;
+    padding: 5rem 0 7.5rem;
   }
-  /* reuse dev-card styles from inline in index.html but define standalone here */
+
+  /* Section heading */
+  .dev-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dev-section-eyebrow {
+    display: block;
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .35rem;
+  }
+
+  .dev-section-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dev-section-head h2 span { color: var(--gold); }
+
+  .dev-listing-count {
+    font-size: .76rem;
+    color: rgba(255,255,255,.28);
+    letter-spacing: .04em;
+    padding-bottom: .1rem;
+  }
+
+  /* Gold thread divider — signature element */
+  .gold-thread {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 3rem;
+  }
+
+  .gold-thread::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,.42));
+  }
+
+  .gold-thread::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(270deg, transparent, rgba(201,168,76,.42));
+  }
+
+  .gold-thread-diamond {
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(201,168,76,.55);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     DEVELOPER GRID  —  3-col desktop, 2-col tablet, 1-col mobile
+  ───────────────────────────────────────────────────────────── */
+  .developers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     DEVELOPER CARD
+  ───────────────────────────────────────────────────────────── */
   .dev-card {
-    background: rgba(18,18,26,.85);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 16px;
+    background: rgba(13,13,20,.94);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 20px;
     overflow: hidden;
     text-decoration: none;
     display: flex;
     flex-direction: column;
-    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    position: relative;
+    transition:
+      transform .38s cubic-bezier(.4,0,.2,1),
+      box-shadow .38s cubic-bezier(.4,0,.2,1),
+      border-color .38s;
     will-change: transform;
   }
-  .dev-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 24px 60px rgba(0,0,0,.5);
-    border-color: #C9A84C;
+
+  /* Gold shimmer on hover */
+  .dev-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(
+      135deg,
+      rgba(201,168,76,.045) 0%,
+      transparent 45%,
+      rgba(201,168,76,.045) 100%
+    );
+    opacity: 0;
+    transition: opacity .38s;
+    pointer-events: none;
+    z-index: 4;
   }
+
+  .dev-card:hover {
+    transform: translateY(-9px);
+    box-shadow: 0 28px 72px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.22);
+    border-color: rgba(201,168,76,.35);
+    text-decoration: none;
+  }
+
+  .dev-card:hover::after { opacity: 1; }
+
+  /* Banner */
   .dev-card-banner {
     position: relative;
-    height: 180px;
-    background-size: cover;
-    background-position: center;
+    height: 188px;
+    overflow: hidden;
     flex-shrink: 0;
   }
+
+  .dev-card-banner-img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform .52s cubic-bezier(.4,0,.2,1);
+    z-index: 0;
+  }
+
+  .dev-card:hover .dev-card-banner-img { transform: scale(1.07); }
+
   .dev-card-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10,10,15,.3) 0%, rgba(10,10,15,.75) 100%);
+    background: linear-gradient(180deg, rgba(6,11,26,.12) 0%, rgba(6,11,26,.76) 100%);
+    z-index: 1;
+    transition: background .38s;
   }
+
+  .dev-card:hover .dev-card-overlay {
+    background: linear-gradient(180deg, rgba(6,11,26,.22) 0%, rgba(6,11,26,.86) 100%);
+  }
+
+  /* Logo medallion */
   .dev-card-logo-wrap {
     position: absolute;
-    bottom: -28px;
+    bottom: -30px;
     left: 20px;
-    width: 58px;
-    height: 58px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid #C9A84C;
+    width: 60px;
+    height: 60px;
+    border-radius: 13px;
+    border: 2px solid var(--gold);
     background: #12121a;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    box-shadow: 0 4px 20px rgba(0,0,0,.65), 0 0 0 1px rgba(201,168,76,.1);
+    z-index: 3;
+    transition: box-shadow .38s, border-color .38s;
+    overflow: visible;
   }
+
+  .dev-card-logo-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 11px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dev-card:hover .dev-card-logo-wrap {
+    box-shadow:
+      0 8px 32px rgba(0,0,0,.75),
+      0 0 0 1px rgba(201,168,76,.28),
+      0 0 18px rgba(201,168,76,.16);
+  }
+
   .dev-card-logo { width: 100%; height: 100%; object-fit: contain; }
-  .dev-card-logo-placeholder { font-size: 1.8rem; color: #C9A84C; }
+  .dev-card-logo-placeholder { font-size: 1.5rem; color: var(--gold); }
+
+  /* Featured badge */
+  .dev-featured-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    background: var(--gold);
+    color: var(--obsidian);
+    font-size: .61rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: .24rem .68rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 12px rgba(201,168,76,.5);
+  }
+
+  /* Card body */
   .dev-card-body {
-    padding: 2.5rem 1.25rem 1.5rem;
+    padding: 3rem 1.3rem 1.5rem;
     display: flex;
     flex-direction: column;
     flex: 1;
   }
+
   .dev-card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
+    font-family: var(--font-display);
+    font-size: 1.18rem;
     font-weight: 600;
     color: #fff;
-    margin-bottom: .3rem;
+    margin-bottom: .28rem;
+    transition: color .25s;
+    line-height: 1.2;
   }
+
+  .dev-card:hover .dev-card-name { color: var(--gold-light); }
+
   .dev-card-tagline {
-    font-size: .82rem;
-    color: rgba(255,255,255,.55);
-    margin-bottom: .75rem;
-    line-height: 1.4;
+    font-size: .77rem;
+    color: rgba(255,255,255,.38);
+    margin-bottom: 1rem;
+    line-height: 1.55;
   }
+
+  /* Meta chips */
   .dev-card-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem .9rem;
-    margin-bottom: 1rem;
+    gap: .32rem;
+    margin-bottom: 1.3rem;
   }
-  .dev-meta-item {
-    font-size: .78rem;
-    color: #E8C96E;
-    display: flex;
+
+  .dev-meta-chip {
+    display: inline-flex;
     align-items: center;
-    gap: .3rem;
+    gap: .26rem;
+    font-size: .7rem;
+    color: rgba(201,168,76,.85);
+    background: rgba(201,168,76,.07);
+    border: 1px solid rgba(201,168,76,.14);
+    border-radius: 50px;
+    padding: .19rem .58rem;
+    white-space: nowrap;
   }
+
+  .dev-meta-chip i { font-size: .63rem; }
+
+  /* CTA row */
   .dev-card-cta {
     margin-top: auto;
-    font-size: .82rem;
-    font-weight: 600;
-    color: #C9A84C;
+    padding-top: .9rem;
+    border-top: 1px solid rgba(255,255,255,.05);
     display: flex;
     align-items: center;
-    gap: .4rem;
-    transition: gap .2s;
+    justify-content: space-between;
   }
-  .dev-card:hover .dev-card-cta { gap: .7rem; }
-  .developers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.75rem;
+
+  .dev-card-cta-text {
+    font-size: .77rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: .02em;
   }
-  .empty-state {
+
+  .dev-card-cta-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    color: var(--gold);
+    transition: background .25s, border-color .25s, transform .25s;
+    flex-shrink: 0;
+  }
+
+  .dev-card:hover .dev-card-cta-circle {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--obsidian);
+    transform: translateX(4px);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PAGINATION
+  ───────────────────────────────────────────────────────────── */
+  .dev-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    margin-top: 4.5rem;
+    flex-wrap: wrap;
+  }
+
+  .dev-page-link {
+    min-width: 44px;
+    height: 44px;
+    padding: 0 .7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,.09);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.52);
+    font-size: .85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .dev-page-link:hover {
+    background: rgba(201,168,76,.1);
+    border-color: rgba(201,168,76,.28);
+    color: var(--gold-light);
+    text-decoration: none;
+  }
+
+  .dev-page-link.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--obsidian);
+    font-weight: 700;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     EMPTY STATE
+  ───────────────────────────────────────────────────────────── */
+  .dev-empty {
     text-align: center;
-    padding: 5rem 2rem;
-    color: rgba(255,255,255,.4);
+    padding: 6rem 2rem;
   }
-  .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #C9A84C; }
-  @media (max-width: 576px) { .developers-grid { grid-template-columns: 1fr; } }
+
+  .dev-empty-icon-wrap {
+    width: 76px;
+    height: 76px;
+    border-radius: 18px;
+    background: rgba(201,168,76,.07);
+    border: 1px solid rgba(201,168,76,.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.9rem;
+    color: var(--gold);
+  }
+
+  .dev-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: rgba(255,255,255,.48);
+    margin-bottom: .5rem;
+  }
+
+  .dev-empty p {
+    color: rgba(255,255,255,.26);
+    font-size: .87rem;
+    max-width: 340px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     RESPONSIVE
+  ───────────────────────────────────────────────────────────── */
+  @media (max-width: 1200px) {
+    .developers-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 992px) {
+    .dev-hero { min-height: 500px; }
+  }
+
+  @media (max-width: 768px) {
+    .dev-hero { padding: 4.5rem 0 3.5rem; min-height: 440px; }
+    .dev-hero h1 { font-size: 2.6rem; }
+    .dev-hero-bottom { flex-direction: column; align-items: flex-start; gap: .75rem; }
+    .dev-hero-search { max-width: 100%; min-width: 100%; }
+    .dev-section-head { flex-direction: column; align-items: flex-start; }
+    .developers-grid { gap: 1.25rem; }
+    .dev-card-banner { height: 172px; }
+  }
+
+  @media (max-width: 576px) {
+    .dev-hero { padding: 3.5rem 0 3rem; }
+    .dev-hero h1 { font-size: 2.15rem; }
+    .dev-hero-sub { font-size: .92rem; }
+    .developers-grid { grid-template-columns: 1fr; gap: 1.1rem; }
+    .developers-page-body { padding: 3.5rem 0 5rem; }
+    .dev-card-banner { height: 175px; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Hero -->
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
 <section class="dev-hero">
-  <div class="container position-relative z-1">
-    <span class="dev-hero-eyebrow"><i class="bi bi-buildings"></i> Developers</span>
-    <h1>Trusted Real Estate <span style="color:#C9A84C">Developers</span></h1>
-    <p>Nigeria\'s most reputable property developers — from luxury gated estates to affordable residentials.</p>
-    <div class="mt-3">
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="dev-hero-breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <i class="bi bi-chevron-right bc-sep"></i>
+      <span class="bc-current">Developers</span>
+    </nav>
+
+    <span class="dev-hero-eyebrow" data-aos="fade-up" data-aos-delay="50">
+      <i class="bi bi-buildings"></i>&nbsp; Developer Directory
+    </span>
+
+    <h1 data-aos="fade-up" data-aos-delay="100">
+      Trusted <em>Real Estate</em><br>Developers
+    </h1>
+
+    <p class="dev-hero-sub" data-aos="fade-up" data-aos-delay="150">
+      Nigeria's most reputable property developers — luxury gated estates to affordable residentials
+      across Lagos, Abuja, and beyond.
+    </p>
+
+    <div class="dev-hero-bottom" data-aos="fade-up" data-aos-delay="200">
+
+      <!-- Live count -->
       <span class="dev-count-badge">
-        <i class="bi bi-grid-3x3-gap me-1"></i>
-        {{ total_count }} Developer{{ total_count|pluralize }} Listed
+        <i class="bi bi-grid-3x3-gap" style="color:var(--gold);"></i>
+        <span class="count-num">
+          <span class="purecounter"
+            data-purecounter-start="0"
+            data-purecounter-end="{{ total_count }}"
+            data-purecounter-duration="1">{{ total_count }}</span>
+        </span>
+        Developer{{ total_count|pluralize }} Listed
       </span>
+
+      <!-- Hero search -->
+      <div class="dev-hero-search">
+        <form method="get" action="">
+          <input
+            type="text"
+            name="q"
+            value="{{ request.GET.q }}"
+            class="dev-hero-search-input"
+            placeholder="Search developers…"
+            aria-label="Search developers"
+            autocomplete="off"
+          >
+          <button type="submit" class="dev-hero-search-btn" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- Developer Grid -->
+
+<!-- ══════════════════════════════════════════════
+     DEVELOPER GRID
+══════════════════════════════════════════════ -->
 <section class="developers-page-body">
   <div class="container">
 
+    <!-- Section heading -->
+    <div class="dev-section-head" data-aos="fade-up">
+      <div>
+        <span class="dev-section-eyebrow">Directory</span>
+        <h2>Browse <span>All Developers</span></h2>
+      </div>
+      {% if total_count %}
+      <span class="dev-listing-count">{{ total_count }} developer{{ total_count|pluralize }} on Nestova</span>
+      {% endif %}
+    </div>
+
+    <!-- Gold thread ornament -->
+    <div class="gold-thread" aria-hidden="true">
+      <div class="gold-thread-diamond"></div>
+    </div>
+
     {% if developers %}
-    <div class="developers-grid mb-5">
+
+    <!-- Grid -->
+    <div class="developers-grid">
       {% for dev in developers %}
-      <a href="{{ dev.get_absolute_url }}" class="dev-card" id="dev-card-{{ dev.slug }}">
-        <div class="dev-card-banner"
-          style="background-image:url('{% if dev.banner_image %}{{ dev.banner_image.url }}{% else %}{% static "assets/img/real-estate/property-exterior-7.webp" %}{% endif %}')">
+      <a href="{{ dev.get_absolute_url }}"
+         class="dev-card"
+         id="dev-card-{{ dev.slug }}"
+         data-aos="fade-up"
+         data-aos-delay="{% cycle '0' '75' '150' %}"
+         data-aos-once="true">
+
+        <!-- Banner -->
+        <div class="dev-card-banner">
+          <div class="dev-card-banner-img"
+            style="background-image:url('{% if dev.banner_image %}{{ dev.banner_image.url }}{% else %}{% static "assets/img/real-estate/property-exterior-7.webp" %}{% endif %}');"></div>
           <div class="dev-card-overlay"></div>
+
+          <!-- Logo medallion -->
           <div class="dev-card-logo-wrap">
-            {% if dev.logo %}
-            <img src="{{ dev.logo.url }}" alt="{{ dev.name }} logo" class="dev-card-logo" loading="lazy">
-            {% else %}
-            <div class="dev-card-logo-placeholder"><i class="bi bi-building"></i></div>
-            {% endif %}
+            <div class="dev-card-logo-inner">
+              {% if dev.logo %}
+              <img src="{{ dev.logo.url }}" alt="{{ dev.name }} logo" class="dev-card-logo" loading="lazy">
+              {% else %}
+              <div class="dev-card-logo-placeholder"><i class="bi bi-building"></i></div>
+              {% endif %}
+            </div>
           </div>
+
           {% if dev.is_featured %}
-          <span style="position:absolute;top:12px;right:12px;background:rgba(201,168,76,.9);color:#0a0a0f;font-size:.7rem;font-weight:700;padding:.25rem .65rem;border-radius:50px;letter-spacing:.05em;">
-            FEATURED
-          </span>
+          <span class="dev-featured-badge">★ Featured</span>
           {% endif %}
         </div>
+
+        <!-- Body -->
         <div class="dev-card-body">
+
           <h2 class="dev-card-name">{{ dev.name }}</h2>
+
           {% if dev.tagline %}
           <p class="dev-card-tagline">{{ dev.tagline }}</p>
           {% endif %}
+
+          <!-- Meta chips -->
           <div class="dev-card-meta">
-            <span class="dev-meta-item">
+            <span class="dev-meta-chip">
               <i class="bi bi-houses"></i>
               {{ dev.property_count }} Propert{{ dev.property_count|pluralize:"y,ies" }}
             </span>
             {% if dev.headquarters %}
-            <span class="dev-meta-item">
+            <span class="dev-meta-chip">
               <i class="bi bi-geo-alt"></i> {{ dev.headquarters }}
             </span>
             {% endif %}
             {% if dev.founded_year %}
-            <span class="dev-meta-item">
+            <span class="dev-meta-chip">
               <i class="bi bi-calendar3"></i> Est. {{ dev.founded_year }}
             </span>
             {% endif %}
             {% if dev.total_units_delivered %}
-            <span class="dev-meta-item">
-              <i class="bi bi-check2-circle"></i> {{ dev.total_units_delivered|intcomma }} Units Delivered
+            <span class="dev-meta-chip">
+              <i class="bi bi-check2-circle"></i> {{ dev.total_units_delivered|intcomma }} Delivered
             </span>
             {% endif %}
           </div>
-          <div class="dev-card-cta">View Portfolio <i class="bi bi-arrow-right"></i></div>
+
+          <!-- CTA -->
+          <div class="dev-card-cta">
+            <span class="dev-card-cta-text">View Portfolio</span>
+            <span class="dev-card-cta-circle"><i class="bi bi-arrow-right"></i></span>
+          </div>
+
         </div>
       </a>
       {% endfor %}
@@ -248,37 +783,51 @@
 
     <!-- Pagination -->
     {% if page_obj.has_other_pages %}
-    <nav aria-label="Developer pagination" class="d-flex justify-content-center">
-      <ul class="pagination pagination-dark gap-2">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-            <i class="bi bi-chevron-left"></i>
-          </a>
-        </li>
-        {% endif %}
-        {% for num in page_obj.paginator.page_range %}
-        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-        </li>
-        {% endfor %}
-        {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-            <i class="bi bi-chevron-right"></i>
-          </a>
-        </li>
-        {% endif %}
-      </ul>
+    <nav class="dev-pagination" aria-label="Developer pagination">
+
+      {% if page_obj.has_previous %}
+      <a class="dev-page-link"
+         href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}"
+         aria-label="Previous page">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+      <a class="dev-page-link {% if page_obj.number == num %}active{% endif %}"
+         href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}"
+         aria-label="Page {{ num }}"
+         {% if page_obj.number == num %}aria-current="page"{% endif %}>{{ num }}</a>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <a class="dev-page-link"
+         href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}"
+         aria-label="Next page">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      {% endif %}
+
     </nav>
     {% endif %}
 
     {% else %}
-    <div class="empty-state">
-      <i class="bi bi-buildings"></i>
-      <h3 style="color:rgba(255,255,255,.6);font-family:\'Cormorant Garamond\',serif;">No Developers Listed Yet</h3>
-      <p>Check back soon — we\'re onboarding Nigeria\'s finest real estate developers.</p>
+
+    <!-- Empty state -->
+    <div class="dev-empty" data-aos="fade-up">
+      <div class="dev-empty-icon-wrap">
+        <i class="bi bi-buildings"></i>
+      </div>
+      <h3>No Developers Found</h3>
+      <p>
+        {% if request.GET.q %}
+          No results for "{{ request.GET.q }}". Try a different search term.
+        {% else %}
+          We're onboarding Nigeria's finest real estate developers. Check back soon.
+        {% endif %}
+      </p>
     </div>
+
     {% endif %}
 
   </div>
