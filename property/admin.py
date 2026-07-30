@@ -1,10 +1,100 @@
 # admin.py
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import (
-    State, City, PropertyType, PropertyStatus, Property, 
+    State, City, PropertyType, PropertyStatus, Property,
     PropertyImage, PropertyAmenity, PropertyAmenityLink,
-    
+    Developer,
 )
+
+# ── Developer ────────────────────────────────────────────────────────────
+
+class DeveloperPropertyInline(admin.TabularInline):
+    model = Property
+    fk_name = 'developer'
+    extra = 0
+    fields = ['title', 'status', 'price', 'is_active']
+    readonly_fields = ['title', 'status', 'price']
+    show_change_link = True
+    verbose_name = "Linked Property"
+    verbose_name_plural = "Linked Properties"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Developer)
+class DeveloperAdmin(admin.ModelAdmin):
+    list_display = [
+        'name', 'headquarters', 'founded_year', 'property_count_display',
+        'is_featured', 'is_active', 'created_at'
+    ]
+    list_filter = ['is_featured', 'is_active', 'created_at']
+    search_fields = ['name', 'tagline', 'headquarters', 'email']
+    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ['created_at', 'updated_at', 'logo_preview', 'banner_preview', 'founder_preview']
+
+    fieldsets = (
+        ('Identity', {
+            'fields': ('name', 'slug', 'tagline', 'description')
+        }),
+        ('Media', {
+            'fields': ('logo', 'logo_preview', 'banner_image', 'banner_preview', 'founder_image', 'founder_preview')
+        }),
+        ('Contact & Location', {
+            'fields': ('headquarters', 'email', 'phone', 'website')
+        }),
+        ('Social Media', {
+            'fields': ('facebook_page', 'instagram_page', 'linkedin_page', 'x_page'),
+            'classes': ('collapse',)
+        }),
+        ('Stats', {
+            'fields': ('founded_year', 'total_units_delivered')
+        }),
+        ('Visibility', {
+            'fields': ('is_featured', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    inlines = [DeveloperPropertyInline]
+
+    def property_count_display(self, obj):
+        count = obj.property_count
+        return format_html(
+            '<span style="font-weight:bold;color:#2e7d32">{}</span>', count
+        )
+    property_count_display.short_description = 'Active Properties'
+
+    def logo_preview(self, obj):
+        if obj.logo:
+            return format_html(
+                '<img src="{}" style="max-height:80px;border-radius:6px;" />', obj.logo.url
+            )
+        return "No logo uploaded"
+    logo_preview.short_description = 'Logo Preview'
+
+    def banner_preview(self, obj):
+        if obj.banner_image:
+            return format_html(
+                '<img src="{}" style="max-height:120px;border-radius:6px;" />', obj.banner_image.url
+            )
+        return "No banner uploaded"
+    banner_preview.short_description = 'Banner Preview'
+
+    def founder_preview(self, obj):
+        if obj.founder_image:
+            return format_html(
+                '<img src="{}" style="max-height:100px;border-radius:50%;border:2px solid #C9A84C;" />', obj.founder_image.url
+            )
+        return "No image uploaded"
+    founder_preview.short_description = 'Founder Preview'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 @admin.register(State)
 class StateAdmin(admin.ModelAdmin):
@@ -52,12 +142,12 @@ class PropertyAmenityLinkInline(admin.TabularInline):
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     list_display = [
-        'title', 'state', 'city', 'property_type', 'status', 
-        'price', 'bedrooms', 'bathrooms', 'is_featured', 
+        'title', 'developer', 'state', 'city', 'property_type', 'status',
+        'price', 'bedrooms', 'bathrooms', 'is_featured',
         'views_count', 'created_at'
     ]
     list_filter = [
-        'property_type', 'status', 'state', 'is_featured', 
+        'developer', 'property_type', 'status', 'state', 'is_featured',
         'is_premium', 'is_hot', 'created_at'
     ]
     search_fields = ['title', 'description', 'address', 'city__name', 'state__name']
@@ -66,7 +156,7 @@ class PropertyAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'slug', 'description', 'listed_by', 'agent')
+            'fields': ('title', 'slug', 'description', 'listed_by', 'agent', 'developer')
         }),
         ('Location', {
             'fields': ('state', 'city', 'address', 'zip_code')

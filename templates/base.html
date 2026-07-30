@@ -1570,6 +1570,7 @@
           <li><a href="{% url 'home' %}" class="active">Home</a></li>
           <li><a href="{% url 'about' %}">About</a></li>
           <li><a href="{% url 'properties' %}">Properties</a></li>
+          <li><a href="{% url 'developers_list' %}">Developers</a></li>
           <li><a href="{% url 'services:all_services' %}">Services</a></li>
           <li><a href="{% url 'shop:product_list' %}">Shop</a></li>
           {% if request.user.is_authenticated %}
@@ -1581,7 +1582,7 @@
           <li><a href="{% url 'post_list' %}">Blog</a></li>
           <li><a href="{% url 'apartment_list' %}">Our ShortLets</a></li>
           <li><a href="{% url 'contact' %}">Contact</a></li>
-          <li><a href="{% url 'faq' %}">FAQ</a></li>
+          
           
           
         

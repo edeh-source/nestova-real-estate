@@ -13,5 +13,8 @@ urlpatterns = [
     
     # Property search
     path('properties/search/', views.search_properties, name='search_properties'),
-    
+
+    # Developer URLs
+    path('developers/', views.developers_list, name='developers_list'),
+    path('developers/<slug:slug>/', views.developer_detail, name='developer_detail'),
 ]

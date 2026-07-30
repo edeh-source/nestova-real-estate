@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
-from .models import Property, State, City, PropertyType, PropertyApplication
+from .models import Property, State, City, PropertyType, PropertyApplication, Developer
 from listings.models import SavedProperty
 import logging
 
@@ -52,6 +52,12 @@ def homepage(request):
             verification_status='verified'
         ).select_related('user')[:6]
 
+        # Get featured developers for homepage
+        featured_developers = Developer.objects.filter(
+            is_featured=True,
+            is_active=True
+        ).order_by('-created_at')[:6]
+
         context = {
             'states': states,
             'property_types': property_types,
@@ -62,6 +68,7 @@ def homepage(request):
             'recent_blog_posts': recent_blog_posts,
             'latest_posts': recent_blog_posts,  # alias for index.html template
             'featured_agents': featured_agents,
+            'featured_developers': featured_developers,
         }
 
         return render(request, 'estate/index.html', context)
@@ -77,6 +84,7 @@ def homepage(request):
             'pricing_packages': [],
             'recent_blog_posts': [],
             'latest_posts': [],
+            'featured_developers': [],
             'error_message': 'Some content may not be available at the moment.',
         })
 
@@ -393,3 +401,57 @@ def property_list(request):
     }
     
     return render(request, 'estate/properties.html', context)
+
+# ==================== DEVELOPER VIEWS ====================
+
+def developers_list(request):
+    """Public listing of all active developers"""
+    from django.core.paginator import Paginator
+
+    developers = Developer.objects.filter(is_active=True).order_by('-is_featured', 'name')
+    paginator = Paginator(developers, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'estate/developers.html', {
+        'page_obj': page_obj,
+        'developers': page_obj,
+        'total_count': developers.count(),
+    })
+
+
+def developer_detail(request, slug):
+    """Developer profile page with tabbed properties"""
+    from django.core.paginator import Paginator
+
+    developer = get_object_or_404(Developer, slug=slug, is_active=True)
+    all_props = developer.properties.filter(is_active=True).select_related(
+        'state', 'city', 'property_type', 'status'
+    )
+
+    # Tab filtering
+    listing_type = request.GET.get('type', 'all')
+    if listing_type == 'sale':
+        props = all_props.filter(status__name='for_sale')
+    elif listing_type == 'rent':
+        props = all_props.filter(status__name='for_rent')
+    else:
+        props = all_props
+
+    paginator = Paginator(props, 9)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    # Property counts for tabs
+    tab_counts = {
+        'all': all_props.count(),
+        'sale': all_props.filter(status__name='for_sale').count(),
+        'rent': all_props.filter(status__name='for_rent').count(),
+    }
+
+    return render(request, 'estate/developer_detail.html', {
+        'developer': developer,
+        'page_obj': page_obj,
+        'properties': page_obj,
+        'listing_type': listing_type,
+        'tab_counts': tab_counts,
+    })

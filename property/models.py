@@ -41,6 +41,93 @@ class City(models.Model):
 
 # ==================== PROPERTY MODELS ====================
 
+# ==================== DEVELOPER MODEL ====================
+
+class Developer(models.Model):
+    """
+    Real Estate Developer / Brand
+    e.g. Zenytal Properties, Cubana Millennium Estate.
+    A developer owns/builds multiple properties listed on Nestova.
+    """
+    name = models.CharField(max_length=300, unique=True)
+    slug = models.SlugField(max_length=320, unique=True, blank=True)
+    tagline = models.CharField(max_length=300, blank=True, help_text="Short slogan shown on cards")
+    description = RichTextField(blank=True, help_text="Full developer profile / about")
+
+    # Media
+    logo = models.ImageField(upload_to='developers/logos/', blank=True, null=True)
+    banner_image = models.ImageField(
+        upload_to='developers/banners/', blank=True, null=True,
+        help_text="Hero banner shown on the developer detail page"
+    )
+    founder_image = models.ImageField(
+        upload_to='developers/founders/', blank=True, null=True,
+        help_text="Picture of the founder, CEO, or key representative"
+    )
+
+    # Contact & Location
+    headquarters = models.CharField(max_length=200, blank=True, help_text="e.g. Lekki, Lagos")
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=30, blank=True)
+    website = models.URLField(blank=True, null=True)
+
+    # Social media
+    facebook_page = models.URLField(blank=True, null=True)
+    instagram_page = models.URLField(blank=True, null=True)
+    linkedin_page = models.URLField(blank=True, null=True)
+    x_page = models.URLField(blank=True, null=True)
+
+    # Stats (can be set manually or left at 0)
+    founded_year = models.PositiveIntegerField(blank=True, null=True, help_text="Year founded")
+    total_units_delivered = models.PositiveIntegerField(
+        default=0, help_text="Total housing units delivered"
+    )
+
+    # Visibility
+    is_featured = models.BooleanField(
+        default=False, help_text="Show on the homepage developers section"
+    )
+    is_active = models.BooleanField(default=True)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-is_featured', 'name']
+        verbose_name = 'Developer'
+        verbose_name_plural = 'Developers'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Developer.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('developer_detail', kwargs={'slug': self.slug})
+
+    @property
+    def property_count(self):
+        return self.properties.filter(is_active=True).count()
+
+    @property
+    def years_active(self):
+        if self.founded_year:
+            from django.utils import timezone
+            return timezone.now().year - self.founded_year
+        return None
+
+
 # models.py
 class PropertyType(models.Model):
     """Types of properties - Nigerian context"""
@@ -193,7 +280,17 @@ class Property(models.Model):
     
     
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True, related_name='properties')
-    
+
+    # Developer / Brand that built / owns this property
+    developer = models.ForeignKey(
+        'Developer',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='properties',
+        help_text="Real estate developer/brand that built or owns this property"
+    )
+
     # Owner (Admin who listed)
     listed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='listed_properties')
     
