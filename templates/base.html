@@ -940,16 +940,22 @@
         display: none;
       }
 
-      /* Mobile dropdowns */
+      /* Mobile dropdowns — use max-height instead of display:none so
+         open/close is instant and reliable on touch devices. */
       .navmenu .dropdown ul {
         position: static;
-        display: none !important;
+        /* Override desktop display:none with a block that we then
+           collapse via max-height. display:flex is kept for the
+           flex-direction:column layout but visibility is controlled
+           by max-height + overflow instead. */
+        display: flex !important;
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
         opacity: 1;
         visibility: visible;
-        transform: none;
-        /* Kill the desktop fade/slide transitions — on mobile the
-           submenu should snap open instantly inside the drawer. */
-        transition: none !important;
+        transform: none !important;
+        transition: max-height 0.25s ease !important;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
         box-shadow: none;
@@ -959,12 +965,14 @@
         padding: 0 0 0 16px;
         margin: 0;
         width: 100%;
+        pointer-events: none;
       }
 
       .navmenu .dropdown.open ul {
-        display: flex !important;
-        transform: none !important;
-        transition: none !important;
+        /* Generous max-height — large enough for any submenu */
+        max-height: 600px !important;
+        transition: max-height 0.3s ease !important;
+        pointer-events: auto;
       }
 
       .navmenu .dropdown ul li {
@@ -2149,16 +2157,34 @@
       });
 
       // Mobile dropdown toggles
+      // Uses a touch-dedupe flag to prevent touchstart + click both firing
+      // on mobile, which caused the dropdown to open then immediately close.
       document.querySelectorAll('.navmenu .dropdown > a').forEach(link => {
-        link.addEventListener('click', e => {
-          if (window.innerWidth <= 1199) {
-            e.preventDefault();
-            const parent = link.closest('.dropdown');
-            const wasOpen = parent.classList.contains('open');
-            document.querySelectorAll('.navmenu .dropdown').forEach(d => d.classList.remove('open'));
-            if (!wasOpen) parent.classList.add('open');
-          }
-        });
+        let lastTouch = 0;
+
+        function handleToggle(e) {
+          if (window.innerWidth > 1199) return;
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Deduplicate: if a touchstart already handled this within 400ms,
+          // ignore the synthetic click that follows on iOS/Android.
+          const now = Date.now();
+          if (e.type === 'click' && now - lastTouch < 400) return;
+          if (e.type === 'touchstart') lastTouch = now;
+
+          const parent = link.closest('.dropdown');
+          const isCurrentlyOpen = parent.classList.contains('open');
+
+          // Collapse all dropdowns first
+          document.querySelectorAll('.navmenu .dropdown').forEach(d => d.classList.remove('open'));
+
+          // If it was closed, open it; if it was already open, leave collapsed
+          if (!isCurrentlyOpen) parent.classList.add('open');
+        }
+
+        link.addEventListener('touchstart', handleToggle, { passive: false });
+        link.addEventListener('click', handleToggle);
       });
 
       // Close mobile nav when a non-dropdown link is clicked
