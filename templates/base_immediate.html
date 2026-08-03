@@ -121,8 +121,7 @@
 
     html {
       scroll-behavior: smooth;
-      /* overflow-x: hidden removed — it clips position:fixed elements (nav drawer) on iOS Safari.
-         Body-level overflow handles horizontal scroll prevention instead. */
+      overflow-x: hidden; /* prevent any element from causing horizontal scroll */
     }
 
     body {
@@ -199,10 +198,6 @@
       margin: 0 auto;
       padding: 0 40px;
       height: 100%;
-      min-width: 0;
-      /* min-width: 0 lets this flex row actually shrink its children
-         instead of overflowing and getting silently clipped by
-         body { overflow-x: hidden } on small screens. */
     }
 
     /* ---- LOGO ---- */
@@ -211,13 +206,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      /* Was flex-shrink: 0, which forced the logo to always render at
-         full/near-full width and pushed the action icons + hamburger
-         off the right edge on narrow screens. Letting it flex + shrink
-         (with min-width: 0) means it truncates gracefully instead. */
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow: hidden;
+      flex-shrink: 0;
     }
 
     .sitename {
@@ -251,12 +240,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      /* max-width: 100% + min-width: 0 lets this shrink to whatever
-         room .logo actually has (see .logo flex fix above), rather
-         than a fixed vw value that could still be wider than the
-         space left after the header icons/hamburger on small phones. */
-      max-width: 100%;
-      min-width: 0;
+      max-width: min(60vw, 340px);
     }
 
     /* ---- NAV MENU ---- */
@@ -851,17 +835,8 @@
       font-family: var(--font-body);
     }
 
-    /* Mobile hamburger
-       NOTE: intentionally named .nav-toggle-btn instead of the more
-       "obvious" .mobile-nav-toggle. The vendor main.js shipped with
-       this template also looks for an element with the class
-       .mobile-nav-toggle and attaches its own click handler that
-       toggles bi-list/bi-x on it directly. Since our custom script
-       below (#mobileNavToggle) already implements the full open/close
-       behavior, having both handlers fire on the same click was
-       causing a second "x" icon to render on top of ours. Renaming
-       the class removes the collision without touching main.js. */
-    .nav-toggle-btn {
+    /* Mobile hamburger */
+    .mobile-nav-toggle {
       display: none;
       font-size: 1.6rem;
       cursor: pointer;
@@ -872,7 +847,7 @@
       line-height: 1;
     }
 
-    .nav-toggle-btn:hover {
+    .mobile-nav-toggle:hover {
       color: #fff;
       background: rgba(255, 255, 255, 0.07);
     }
@@ -881,7 +856,7 @@
        MOBILE NAV DRAWER
        ============================================================ */
     @media (max-width: 1199px) {
-      .nav-toggle-btn {
+      .mobile-nav-toggle {
         display: flex;
         align-items: center;
       }
@@ -947,11 +922,6 @@
         opacity: 1;
         visibility: visible;
         transform: none;
-        /* Kill the desktop fade/slide transitions — on mobile the
-           submenu should snap open instantly inside the drawer. */
-        transition: none !important;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
         box-shadow: none;
         border: none;
         border-radius: 0;
@@ -963,8 +933,6 @@
 
       .navmenu .dropdown.open ul {
         display: flex !important;
-        transform: none !important;
-        transition: none !important;
       }
 
       .navmenu .dropdown ul li {
@@ -1020,31 +988,6 @@
 
       .sitename {
         font-size: 1.55rem;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .header-actions {
-        gap: 6px;
-      }
-
-      .btn-agent-search-mobile {
-        width: 34px;
-        height: 34px;
-        font-size: 1rem;
-      }
-
-      .cart-link {
-        padding: 6px;
-      }
-
-      .cart-icon-wrapper i {
-        font-size: 1.25rem;
-      }
-
-      .nav-toggle-btn {
-        padding: 6px;
-        font-size: 1.4rem;
       }
     }
 
@@ -1598,95 +1541,6 @@
     [data-aos] {
       will-change: transform;
     }
-
-    /* ---- LIST PROPERTY BUTTON ---- */
-    .btn-list-property {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 20px;
-      background: transparent;
-      border: 1.5px solid rgba(201, 168, 76, 0.45);
-      color: var(--gold-light) !important;
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      border-radius: 50px;
-      text-decoration: none !important;
-      transition: var(--transition);
-      white-space: nowrap;
-    }
-    .btn-list-property:hover {
-      background: rgba(201, 168, 76, 0.1);
-      border-color: var(--gold);
-      color: var(--gold) !important;
-      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.15);
-    }
-    .btn-list-property i { font-size: 0.9rem; }
-
-    /* ---- DROPDOWN DIVIDER ---- */
-    .navmenu .dropdown .dropdown-divider-item {
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
-      margin-top: 4px;
-      padding-top: 4px;
-    }
-
-    /* ---- DROPDOWN ICONS ---- */
-    .navmenu .dropdown ul li a i.dropdown-icon {
-      font-size: 0.82rem;
-      color: var(--gold);
-      opacity: 0.75;
-      flex-shrink: 0;
-      width: 14px;
-      text-align: center;
-    }
-    .navmenu .dropdown ul li a:hover i.dropdown-icon {
-      opacity: 1;
-      color: var(--gold-light);
-    }
-
-    /* ---- FOOTER COLUMN TITLE ---- */
-    .footer-col-title {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 700;
-      margin-bottom: 18px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(201, 168, 76, 0.18);
-    }
-
-    /* ---- APP BADGE LINK ---- */
-    .app-badge-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: var(--radius-md);
-      text-decoration: none;
-      color: var(--text-primary);
-      transition: var(--transition);
-    }
-    .app-badge-link:hover {
-      background: rgba(201, 168, 76, 0.08);
-      border-color: rgba(201, 168, 76, 0.25);
-      color: var(--gold-light);
-    }
-    .app-badge-link i { font-size: 1.5rem; color: var(--gold); }
-    .app-badge-sub { display: block; font-size: 0.68rem; color: var(--text-muted); line-height: 1; }
-    .app-badge-name { display: block; font-size: 0.88rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; }
-
-    @media (max-width: 1199px) {
-      .btn-list-property { display: none !important; }
-    }
-    @media (max-width: 767px) {
-      .footer-col-title { margin-bottom: 14px; }
-    }
   </style>
 
   {% block extra_head %}{% endblock %}
@@ -1710,86 +1564,33 @@
         <h1 class="sitename">NESTOVA</h1>
       </a>
 
-      <!-- ── Desktop / Mobile Nav ───────────────────────────────── -->
+      <!-- Desktop Nav -->
       <nav id="navmenu" class="navmenu">
         <ul>
-
-          <!-- BUY -->
-          <li class="dropdown">
-            <a href="{% url 'properties' %}?listing_type=sale">Buy <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
-            <ul>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=flat"><i class="bi bi-building dropdown-icon"></i>Flats &amp; Apartments for Sale</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=house"><i class="bi bi-house-door dropdown-icon"></i>Houses for Sale</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=land"><i class="bi bi-geo dropdown-icon"></i>Land for Sale</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=commercial"><i class="bi bi-shop dropdown-icon"></i>Commercial Properties</a></li>
-              <li class="dropdown-divider-item"><a href="{% url 'properties' %}?listing_type=sale"><i class="bi bi-grid dropdown-icon"></i>All Properties for Sale</a></li>
-            </ul>
-          </li>
-
-          <!-- RENT -->
-          <li class="dropdown">
-            <a href="{% url 'properties' %}?listing_type=rent">Rent <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
-            <ul>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=flat"><i class="bi bi-building dropdown-icon"></i>Flats &amp; Apartments for Rent</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=house"><i class="bi bi-house-door dropdown-icon"></i>Houses for Rent</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=commercial"><i class="bi bi-briefcase dropdown-icon"></i>Office Spaces</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=land"><i class="bi bi-geo dropdown-icon"></i>Land Lease</a></li>
-              <li class="dropdown-divider-item"><a href="{% url 'properties' %}?listing_type=rent"><i class="bi bi-grid dropdown-icon"></i>All Properties for Rent</a></li>
-            </ul>
-          </li>
-
-          <!-- SHORTLETS -->
-          <li class="dropdown">
-            <a href="{% url 'apartment_list' %}">ShortLets <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
-            <ul>
-              <li><a href="{% url 'apartment_list' %}?location=lagos"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Lagos</a></li>
-              <li><a href="{% url 'apartment_list' %}?location=abuja"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Abuja</a></li>
-              <li><a href="{% url 'apartment_list' %}?location=portharcourt"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Port Harcourt</a></li>
-              <li class="dropdown-divider-item"><a href="{% url 'apartment_list' %}"><i class="bi bi-grid dropdown-icon"></i>All Short Lets</a></li>
-            </ul>
-          </li>
-
-          <!-- DEVELOPERS -->
+          <li><a href="{% url 'home' %}" class="active">Home</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'properties' %}">Properties</a></li>
           <li><a href="{% url 'developers_list' %}">Developers</a></li>
-
-          <!-- SERVICES -->
-          <li class="dropdown">
-            <a href="{% url 'services:all_services' %}">Services <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
-            <ul>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-grid dropdown-icon"></i>All Services</a></li>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-building-gear dropdown-icon"></i>Property Management</a></li>
-              <li><a href="{% url 'contact' %}"><i class="bi bi-chat-dots dropdown-icon"></i>Consultation</a></li>
-              <li><a href="{% url 'shop:product_list' %}"><i class="bi bi-bag dropdown-icon"></i>Shop</a></li>
-            </ul>
-          </li>
-
-          <!-- AGENTS / AGENTS-SEARCH is triggered from header-actions -->
-
-          <!-- BLOG -->
-          <li><a href="{% url 'post_list' %}">Blog</a></li>
-
-          <!-- CONTACT -->
-          <li><a href="{% url 'contact' %}">Contact</a></li>
-
-          <!-- AUTH (mobile-only context) -->
+          <li><a href="{% url 'services:all_services' %}">Services</a></li>
+          <li><a href="{% url 'shop:product_list' %}">Shop</a></li>
           {% if request.user.is_authenticated %}
           <li><a href="{% url 'shop:profile' %}">Dashboard</a></li>
           {% else %}
           <li><a href="{% url 'users:login' %}">Login</a></li>
           {% endif %}
-
+         
+          <li><a href="{% url 'post_list' %}">Blog</a></li>
+          <li><a href="{% url 'apartment_list' %}">Our ShortLets</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+          
+          
+          
+        
         </ul>
       </nav>
 
-      <!-- ── Header Actions ─────────────────────────────────────── -->
+      <!-- Action Buttons -->
       <div class="header-actions">
-
-        <!-- List Property — outline CTA (desktop only) -->
-        <a class="btn-list-property d-none d-xl-inline-flex" href="{% url 'contact' %}">
-          <i class="bi bi-plus-circle"></i>List Property
-        </a>
-
-        <!-- Get Started — gold CTA -->
         <a class="btn-getstarted" href="{% url 'properties' %}">Get Started</a>
 
         <!-- Realtor Search — desktop label button -->
@@ -1799,13 +1600,12 @@
           Find a Realtor
         </button>
 
-        <!-- Realtor Search — mobile icon (alongside hamburger) -->
+        <!-- Realtor Search — mobile icon button (shown alongside hamburger) -->
         <button class="btn-agent-search-mobile d-xl-none" id="agentSearchTriggerMobile"
           aria-label="Search Realtors" type="button">
           <i class="bi bi-search"></i>
         </button>
 
-        <!-- Cart -->
         <a class="cart-link" href="{% url 'shop:cart' %}" aria-label="View Shopping Cart">
           <div class="cart-icon-wrapper">
             <i class="bi bi-bag" aria-hidden="true"></i>
@@ -1814,7 +1614,7 @@
         </a>
 
         <!-- Hamburger -->
-        <div class="nav-toggle-btn d-xl-none" id="mobileNavToggle" role="button" tabindex="0"
+        <div class="mobile-nav-toggle d-xl-none" id="mobileNavToggle" role="button" tabindex="0"
           aria-label="Toggle Navigation Menu" aria-expanded="false">
           <i class="bi bi-list" id="hamburgerIcon"></i>
         </div>
@@ -1822,7 +1622,6 @@
 
     </div>
   </header>
-
 
   <!-- ============================================================
        AGENT SEARCH OVERLAY
@@ -2124,28 +1923,14 @@
         icon.className = 'bi bi-list';
         toggle.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
-        // Collapse any expanded dropdown so the drawer always starts
-        // fresh next time it is opened.
-        document.querySelectorAll('.navmenu .dropdown').forEach(d => d.classList.remove('open'));
       }
 
-      toggle.addEventListener('click', e => {
-        // stopImmediatePropagation guards against any other script on the
-        // page (e.g. a vendor/template script) also being bound to this
-        // element and independently toggling its own icon classes, which
-        // is what produced a duplicate close (x) icon.
-        e.stopImmediatePropagation();
-        isOpen ? close() : open();
-      });
+      toggle.addEventListener('click', () => isOpen ? close() : open());
       overlay.addEventListener('click', close);
 
       // Keyboard
       toggle.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          isOpen ? close() : open();
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isOpen ? close() : open(); }
       });
 
       // Mobile dropdown toggles
@@ -2195,14 +1980,14 @@
   {% block content %}{% endblock content %}
 
   <!-- ============================================================
-       FOOTER — PropertyPro-style multi-column layout
+       FOOTER
        ============================================================ -->
   <footer id="footer" class="footer position-relative">
     <div class="container">
       <div class="row gy-5">
 
-        <!-- ── Brand · Newsletter · Socials ── -->
-        <div class="col-lg-3">
+        <!-- Brand & Newsletter -->
+        <div class="col-lg-4">
           <div class="footer-content">
             <a href="{% url 'home' %}" class="logo d-flex align-items-center mb-4">
               <span class="sitename">{% if contact_info %}{{ contact_info.company_name }}{% else %}NESTOVA{% endif %}</span>
@@ -2215,6 +2000,7 @@
               ensuring a seamless experience from start to finish.
               {% endif %}
             </p>
+
             <div class="newsletter-form">
               <h4>Stay Updated</h4>
               <form method="post" action="{% url 'newsletter_subscribe' %}">
@@ -2228,85 +2014,47 @@
                 </div>
                 <div class="loading"
                   style="display:none; color: var(--text-muted); font-size: 0.82rem; margin-top: 8px;">Sending…</div>
-                <div class="error-message" style="display:none; color: #ff6b6b; font-size: 0.82rem; margin-top: 8px;"></div>
+                <div class="error-message" style="display:none; color: #ff6b6b; font-size: 0.82rem; margin-top: 8px;">
+                </div>
                 <div class="sent-message"
-                  style="display:none; color: var(--gold-light); font-size: 0.82rem; margin-top: 8px;">✓ Thank you for subscribing!</div>
+                  style="display:none; color: var(--gold-light); font-size: 0.82rem; margin-top: 8px;">✓ Thank you for
+                  subscribing!</div>
               </form>
             </div>
-            <!-- Social Links -->
-            <div class="social-links mt-4">
-              {% if contact_info %}
-              {% if contact_info.facebook_url %}<a href="{{ contact_info.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
-              {% if contact_info.twitter_url %}<a href="{{ contact_info.twitter_url }}" target="_blank" rel="noopener" aria-label="Twitter / X"><i class="bi bi-twitter-x"></i></a>{% endif %}
-              {% if contact_info.linkedin_url %}<a href="{{ contact_info.linkedin_url }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
-              {% if contact_info.youtube_url %}<a href="{{ contact_info.youtube_url }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="bi bi-youtube"></i></a>{% endif %}
-              {% if contact_info.instagram_url %}<a href="{{ contact_info.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
-              {% if contact_info.github_url %}<a href="{{ contact_info.github_url }}" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>{% endif %}
-              {% else %}
-              <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-              <a href="#" aria-label="Twitter / X"><i class="bi bi-twitter-x"></i></a>
-              <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-              <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-              <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-              {% endif %}
-            </div>
           </div>
         </div>
 
-        <!-- ── Properties For Sale ── -->
+        <!-- Company Links -->
         <div class="col-lg-2 col-6">
           <div class="footer-links">
-            <h4 class="footer-col-title">Properties For Sale</h4>
+            <h4>Company</h4>
             <ul>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=flat"><i class="bi bi-chevron-right"></i>Flats &amp; Apartments</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=house"><i class="bi bi-chevron-right"></i>Houses for Sale</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=land"><i class="bi bi-chevron-right"></i>Land for Sale</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&type=commercial"><i class="bi bi-chevron-right"></i>Commercial Properties</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&is_premium=true"><i class="bi bi-chevron-right"></i>Luxury Properties</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale&is_new=true"><i class="bi bi-chevron-right"></i>Newly Built</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=sale"><i class="bi bi-chevron-right"></i>All for Sale</a></li>
+              <li><a href="{% url 'about' %}"><i class="bi bi-chevron-right"></i>About</a></li>
+              <li><a href="{% url 'post_list' %}"><i class="bi bi-chevron-right"></i>Blog</a></li>
+              <li><a href="{% url 'contact' %}"><i class="bi bi-chevron-right"></i>Contact</a></li>
             </ul>
           </div>
         </div>
 
-        <!-- ── Properties For Rent ── -->
+        <!-- Solutions Links -->
         <div class="col-lg-2 col-6">
           <div class="footer-links">
-            <h4 class="footer-col-title">Properties For Rent</h4>
+            <h4>Solutions</h4>
             <ul>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=flat"><i class="bi bi-chevron-right"></i>Flats &amp; Apartments</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=house"><i class="bi bi-chevron-right"></i>Houses for Rent</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=commercial"><i class="bi bi-chevron-right"></i>Office Spaces</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&type=land"><i class="bi bi-chevron-right"></i>Land Lease</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent&is_serviced=true"><i class="bi bi-chevron-right"></i>Serviced Properties</a></li>
-              <li><a href="{% url 'apartment_list' %}"><i class="bi bi-chevron-right"></i>Short Let Apartments</a></li>
-              <li><a href="{% url 'properties' %}?listing_type=rent"><i class="bi bi-chevron-right"></i>All for Rent</a></li>
+              <li><a href="{% url 'properties' %}"><i class="bi bi-chevron-right"></i>Buy Property</a></li>
+              <li><a href="{% url 'properties' %}"><i class="bi bi-chevron-right"></i>Sell Property</a></li>
+              <li><a href="{% url 'properties' %}"><i class="bi bi-chevron-right"></i>Rent Property</a></li>
+              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-chevron-right"></i>Property Management</a>
+              </li>
+              <li><a href="{% url 'contact' %}"><i class="bi bi-chevron-right"></i>Consultation</a></li>
             </ul>
           </div>
         </div>
 
-        <!-- ── Explore ── -->
-        <div class="col-lg-2 col-6">
-          <div class="footer-links">
-            <h4 class="footer-col-title">Explore</h4>
-            <ul>
-              <li><a href="{% url 'apartment_list' %}"><i class="bi bi-chevron-right"></i>All Short Lets</a></li>
-              <li><a href="{% url 'developers_list' %}"><i class="bi bi-chevron-right"></i>New Developments</a></li>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-chevron-right"></i>All Services</a></li>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-chevron-right"></i>Property Management</a></li>
-              <li><a href="{% url 'shop:product_list' %}"><i class="bi bi-chevron-right"></i>Shop</a></li>
-              <li><a href="{% url 'post_list' %}"><i class="bi bi-chevron-right"></i>Blog &amp; Insights</a></li>
-              <li><a href="{% url 'about' %}"><i class="bi bi-chevron-right"></i>About Nestova</a></li>
-              <li><a href="{% url 'contact' %}"><i class="bi bi-chevron-right"></i>Contact Us</a></li>
-              <li><a href="{% url 'privacy_policy' %}"><i class="bi bi-chevron-right"></i>Privacy Policy</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- ── Contact Info ── -->
-        <div class="col-lg-3">
+        <!-- Contact Info -->
+        <div class="col-lg-4">
           <div class="footer-contact">
-            <h4 class="footer-col-title">Get in Touch</h4>
+            <h4>Get in Touch</h4>
 
             <div class="contact-item">
               <div class="contact-icon"><i class="bi bi-geo-alt"></i></div>
@@ -2333,18 +2081,31 @@
               </div>
             </div>
 
-            <!-- App Download Badge -->
-            <div class="mt-4">
-              <p class="footer-col-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 12px;">Download Our App</p>
-              <a href="#" class="app-badge-link">
-                <i class="bi bi-phone"></i>
-                <div>
-                  <span class="app-badge-sub">Available on</span>
-                  <span class="app-badge-name">iOS &amp; Android</span>
-                </div>
-              </a>
+            <!-- Social Links -->
+            <div class="social-links">
+              {% if contact_info %}
+              {% if contact_info.facebook_url %}<a href="{{ contact_info.facebook_url }}" target="_blank" rel="noopener"
+                aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+              {% if contact_info.twitter_url %}<a href="{{ contact_info.twitter_url }}" target="_blank" rel="noopener"
+                aria-label="Twitter / X"><i class="bi bi-twitter-x"></i></a>{% endif %}
+              {% if contact_info.linkedin_url %}<a href="{{ contact_info.linkedin_url }}" target="_blank" rel="noopener"
+                aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+              {% if contact_info.youtube_url %}<a href="{{ contact_info.youtube_url }}" target="_blank" rel="noopener"
+                aria-label="YouTube"><i class="bi bi-youtube"></i></a>{% endif %}
+              {% if contact_info.github_url %}<a href="{{ contact_info.github_url }}" target="_blank" rel="noopener"
+                aria-label="GitHub"><i class="bi bi-github"></i></a>{% endif %}
+                {% if contact_info.instagram_url %}<a href="{{ contact_info.instagram_url }}" target="_blank" rel="noopener"
+                aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+              {% if contact_info.github_url %}<a href="{{ contact_info.github_url }}" target="_blank" rel="noopener"
+                aria-label="GitHub"><i class="bi bi-github"></i></a>{% endif %}  
+              {% else %}
+              <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" aria-label="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+              {% endif %}
             </div>
-
           </div>
         </div>
 
@@ -2371,8 +2132,6 @@
       </div>
     </div>
   </footer>
-
-
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top" aria-label="Scroll to top">
