@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nestova Brokerage — Trusted Real Estate Solutions | Nigeria{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   BROKERAGE DETAIL PAGE
+   Accent: Gold (#C9A84C) / Deep Navy (#0D1B3E)
+   ============================================================ */
+:root { --brok-accent: #C9A84C; --brok-accent-dark: #9A7A2E; --brok-accent-light: #E8C96E; }
+
+.brok-hero {
+  position: relative; margin-top: 80px;
+  padding: 100px 0 80px; overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #0D1B3E 55%, #060B1A 100%);
+}
+.brok-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.5), transparent);
+}
+.brok-hero-orb {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%);
+  top: -250px; right: -150px; pointer-events: none;
+}
+.brok-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 20px; border-radius: 50px;
+  background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.35);
+  color: var(--brok-accent); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 20px;
+}
+.brok-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300; color: #fff; margin-bottom: 16px; line-height: 1.1;
+}
+.brok-hero h1 em { font-style: italic; color: var(--brok-accent-light); }
+.brok-hero p { color: rgba(255,255,255,0.52); font-size: 1rem; max-width: 600px; }
+.brok-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+
+/* Breadcrumb */
+.breadcrumbs-glass {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; border-radius: 50px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+}
+.breadcrumbs-glass a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.breadcrumbs-glass a:hover { color: var(--brok-accent); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.25); }
+.breadcrumbs-glass .current { color: var(--brok-accent); }
+
+/* ---- SERVICES GRID ---- */
+.brok-services { padding: 90px 0; background: var(--obsidian); }
+.brok-section-head { margin-bottom: 56px; }
+.brok-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--brok-accent); margin-bottom: 12px;
+}
+.brok-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--brok-accent); }
+.brok-services-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+}
+@media(max-width:992px){ .brok-services-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:576px){ .brok-services-grid { grid-template-columns: 1fr; } }
+
+.brok-svc-card {
+  background: rgba(18,18,26,0.85); border-radius: 18px;
+  border: 1px solid rgba(201,168,76,0.10);
+  padding: 32px 26px; transition: all .32s ease;
+  position: relative; overflow: hidden;
+}
+.brok-svc-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--brok-accent), transparent);
+  opacity: 0; transition: opacity .3s ease;
+}
+.brok-svc-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.brok-svc-card:hover::before { opacity: 1; }
+.brok-svc-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.16), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--brok-accent); margin-bottom: 20px;
+}
+.brok-svc-card h4 { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
+.brok-svc-card p { font-size: 0.84rem; color: rgba(255,255,255,0.48); line-height: 1.7; margin-bottom: 18px; }
+.brok-svc-features { list-style: none; padding: 0; margin: 0 0 20px; }
+.brok-svc-features li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.8rem; color: rgba(255,255,255,0.55);
+  padding: 4px 0;
+}
+.brok-svc-features li i { color: var(--brok-accent); font-size: 0.7rem; margin-top: 3px; flex-shrink: 0; }
+.brok-svc-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--brok-accent); text-decoration: none;
+  transition: gap .2s ease;
+}
+.brok-svc-link:hover { color: var(--brok-accent-light); gap: 12px; }
+
+/* ---- SHORTLET HIGHLIGHT BANNER ---- */
+.shortlet-banner {
+  background: linear-gradient(135deg, #0D1B3E 0%, #152850 50%, #0D1B3E 100%);
+  border: 1px solid rgba(201,168,76,0.2); border-radius: 20px;
+  padding: 48px 40px; margin: 60px 0;
+  display: flex; gap: 40px; align-items: center; flex-wrap: wrap;
+}
+.shortlet-banner-icon {
+  width: 80px; height: 80px; border-radius: 22px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.06));
+  border: 1px solid rgba(201,168,76,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--brok-accent);
+}
+.shortlet-banner-text h3 {
+  font-family: var(--font-display); font-size: 1.5rem;
+  font-weight: 500; color: #fff; margin-bottom: 8px;
+}
+.shortlet-banner-text p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 0; }
+.shortlet-banner-cities {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
+}
+.shortlet-city-pill {
+  padding: 4px 14px; border-radius: 50px; font-size: 0.72rem; font-weight: 600;
+  background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); color: var(--brok-accent);
+}
+.shortlet-banner-actions { margin-left: auto; display: flex; flex-direction: column; gap: 12px; }
+@media(max-width:768px){ .shortlet-banner-actions { margin-left: 0; flex-direction: row; flex-wrap: wrap; } }
+
+/* ---- WHY CHOOSE ---- */
+.brok-why {
+  background: linear-gradient(135deg, #0D1B3E, #060B1A);
+  padding: 72px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+.brok-why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; }
+@media(max-width:900px){ .brok-why-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:540px){ .brok-why-grid { grid-template-columns: 1fr; } }
+.brok-why-item { text-align: center; }
+.brok-why-icon {
+  width: 58px; height: 58px; border-radius: 18px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.14), rgba(201,168,76,0.04));
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--brok-accent); margin: 0 auto 14px;
+}
+.brok-why-item h5 { font-size: 0.92rem; font-weight: 600; color: #fff; margin-bottom: 7px; }
+.brok-why-item p { font-size: 0.8rem; color: rgba(255,255,255,0.42); line-height: 1.6; }
+
+/* ---- INQUIRY FORM SECTION ---- */
+.brok-form-section {
+  padding: 90px 0; background: var(--obsidian);
+}
+.brok-form-card {
+  background: rgba(18,18,26,0.92); border-radius: 24px;
+  border: 1px solid rgba(201,168,76,0.15); padding: 52px 48px;
+}
+@media(max-width:576px){ .brok-form-card { padding: 32px 20px; } }
+.brok-form-card h3 {
+  font-family: var(--font-display); font-size: 1.8rem;
+  font-weight: 400; color: #fff; margin-bottom: 6px;
+}
+.brok-form-card p { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 36px; }
+.brok-form-card .form-control,
+.brok-form-card .form-select {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: #fff !important; border-radius: 10px; padding: 12px 16px;
+  font-size: 0.88rem; transition: border-color .25s;
+}
+.brok-form-card .form-control:focus,
+.brok-form-card .form-select:focus {
+  border-color: rgba(201,168,76,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.12) !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+.brok-form-card .form-control::placeholder { color: rgba(255,255,255,0.28); }
+.brok-form-card label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.brok-form-card .form-select option { background: #12121A; color: #fff; }
+.btn-brok-submit {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--brok-accent), var(--brok-accent-dark));
+  color: #000; font-weight: 700; font-size: 0.9rem;
+  padding: 14px 36px; border-radius: 12px; border: none;
+  letter-spacing: 0.05em; cursor: pointer; width: 100%;
+  justify-content: center; transition: all .28s ease;
+}
+.btn-brok-submit:hover { box-shadow: 0 12px 32px rgba(201,168,76,0.38); transform: translateY(-2px); }
+
+/* ── Hero buttons ── */
+.btn-brok-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--brok-accent), var(--brok-accent-dark));
+  color: #000; font-weight: 700; font-size: 0.88rem;
+  padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: all .28s ease;
+}
+.btn-brok-primary:hover { color: #000; box-shadow: 0 10px 28px rgba(201,168,76,0.38); transform: translateY(-2px); }
+.btn-brok-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06); color: #fff; font-weight: 600;
+  font-size: 0.88rem; padding: 13px 28px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12); text-decoration: none; transition: all .28s ease;
+}
+.btn-brok-ghost:hover { color: #fff; background: rgba(255,255,255,0.10); }
+
+/* Alert override */
+.brok-alert-success {
+  background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3);
+  color: #2ECC71; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+}
+.brok-alert-error {
+  background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3);
+  color: #E74C3C; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
+  <section class="brok-hero">
+    <div class="brok-hero-orb"></div>
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7" data-aos="fade-right">
+          <div class="breadcrumbs-glass mb-4">
+            <a href="{% url 'home' %}">Home</a>
+            <span class="sep">›</span>
+            <a href="{% url 'services:all_services' %}">Ecosystem</a>
+            <span class="sep">›</span>
+            <span class="current">Brokerage</span>
+          </div>
+          <div class="brok-badge"><i class="bi bi-patch-check-fill"></i> Ecosystem 01 · Trusted Real Estate</div>
+          <h1>Nestova <em>Brokerage</em></h1>
+          <p>
+            Your trusted gateway to Nigeria's property market. We help individuals, families, and businesses
+            buy, sell, rent, manage, and invest in properties — with full transparency, verified listings,
+            and professional support every step of the way.
+          </p>
+          <div class="brok-hero-actions">
+            <a href="#inquiry-form" class="btn-brok-primary"><i class="bi bi-chat-dots"></i> Make an Inquiry</a>
+            <a href="{% url 'properties' %}" class="btn-brok-ghost">Browse Properties <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+          <div style="background:linear-gradient(135deg,#0D1B3E,#1A2E5E,#0A0A0F);border-radius:22px;border:1px solid rgba(201,168,76,0.18);padding:36px;text-align:center;">
+            <i class="bi bi-buildings" style="font-size:5rem;color:rgba(201,168,76,0.35);display:block;margin-bottom:20px;"></i>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left;">
+              <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold);">500+</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Properties Sold</div>
+              </div>
+              <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold);">5</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">States Active</div>
+              </div>
+              <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold);">6-8</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Weeks to Sale</div>
+              </div>
+              <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold);">98%</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Client Satisfaction</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ OUR SERVICES GRID ════════════════════════════════════ -->
+  <section class="brok-services">
+    <div class="container">
+      <div class="brok-section-head" data-aos="fade-up">
+        <div class="brok-eyebrow"><span class="dot"></span> What We Offer</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:300;color:#fff;">
+          Our <em style="font-style:italic;color:var(--brok-accent-light);">Full Suite</em> of Services
+        </h2>
+        <p style="color:rgba(255,255,255,0.45);max-width:520px;font-size:0.9rem;margin-top:10px;">
+          From finding your dream home to protecting it with smart security — we cover every aspect of your property journey.
+        </p>
+      </div>
+
+      <div class="brok-services-grid">
+
+        <!-- Property Sales -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="60">
+          <div class="brok-svc-icon"><i class="bi bi-house-door"></i></div>
+          <h4>Property Sales & Leasing</h4>
+          <p>Buy, sell, or lease verified properties — terrace duplexes, semi-detached, fully detached homes, and premium land across Nigeria's major cities.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> Verified developers & properties</li>
+            <li><i class="bi bi-check2-circle"></i> Full documentation support</li>
+            <li><i class="bi bi-check2-circle"></i> Investor advisory services</li>
+            <li><i class="bi bi-check2-circle"></i> Transparent & secure transactions</li>
+          </ul>
+          <a href="#inquiry-form" class="brok-svc-link">Inquire Now <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <!-- Shortlet Apartments -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="brok-svc-icon"><i class="bi bi-building"></i></div>
+          <h4>Shortlet Apartments</h4>
+          <p>Book premium short stays or list your property. Available across Lagos, Abuja, Port Harcourt, Enugu, and Owerri. Residential and commercial.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> Book a shortlet via our platform</li>
+            <li><i class="bi bi-check2-circle"></i> List your apartment for income</li>
+            <li><i class="bi bi-check2-circle"></i> Verified & well-managed properties</li>
+            <li><i class="bi bi-check2-circle"></i> Lagos · Abuja · PH · Enugu · Owerri</li>
+          </ul>
+          <a href="{% url 'apartment_list' %}" class="brok-svc-link">Browse Shortlets <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <!-- Interior Design -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="140">
+          <div class="brok-svc-icon"><i class="bi bi-palette"></i></div>
+          <h4>Interior Design</h4>
+          <p>Certified designers handling interior & exterior design, property finishing, and staging. We transform spaces into modern, functional, aesthetically stunning environments.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> Residential & commercial design</li>
+            <li><i class="bi bi-check2-circle"></i> Space planning & 3D visualization</li>
+            <li><i class="bi bi-check2-circle"></i> Property staging for sale</li>
+            <li><i class="bi bi-check2-circle"></i> Renovation & remodeling</li>
+          </ul>
+          <a href="{% url 'services:interior_design_request' %}" class="brok-svc-link">Start a Project <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <!-- SmartShield -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="180">
+          <div class="brok-svc-icon"><i class="bi bi-shield-check"></i></div>
+          <h4>SmartShield Security</h4>
+          <p>Protecting homes, offices, and properties with modern security technologies tailored for Nigerian residential and commercial environments.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> CCTV installation & monitoring</li>
+            <li><i class="bi bi-check2-circle"></i> Smart door locks & access control</li>
+            <li><i class="bi bi-check2-circle"></i> Home automation systems</li>
+            <li><i class="bi bi-check2-circle"></i> Solar panel installation</li>
+          </ul>
+          <a href="#inquiry-form" class="brok-svc-link">Get Installation <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <!-- Industrial Cleaning -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="220">
+          <div class="brok-svc-icon"><i class="bi bi-stars"></i></div>
+          <h4>Industrial Cleaning</h4>
+          <p>Professional cleaning for every stage of your property journey — before, during, and after construction and renovation projects.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> Pre & post-construction deep cleaning</li>
+            <li><i class="bi bi-check2-circle"></i> Fumigation & sanitation</li>
+            <li><i class="bi bi-check2-circle"></i> Pre & post-painting surface prep</li>
+            <li><i class="bi bi-check2-circle"></i> Commercial & residential</li>
+          </ul>
+          <a href="#inquiry-form" class="brok-svc-link">Book a Clean <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <!-- Realtor Hub -->
+        <div class="brok-svc-card" data-aos="fade-up" data-aos-delay="260">
+          <div class="brok-svc-icon"><i class="bi bi-people"></i></div>
+          <h4>Realtor & Developer Hub</h4>
+          <p>A digital marketplace for realtors, developers, and property owners seeking global visibility. Verify with Nestova, list your properties, and connect with thousands of buyers.</p>
+          <ul class="brok-svc-features">
+            <li><i class="bi bi-check2-circle"></i> Realtor verification & certification</li>
+            <li><i class="bi bi-check2-circle"></i> Showcase listings on our network</li>
+            <li><i class="bi bi-check2-circle"></i> Sales guaranteed in 6–8 weeks</li>
+            <li><i class="bi bi-check2-circle"></i> Connect with clients across Nigeria</li>
+          </ul>
+          <a href="{% url 'listings:pricing' %}" class="brok-svc-link">Join the Hub <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+      </div>
+
+      <!-- Shortlet Highlight Banner -->
+      <div class="shortlet-banner" data-aos="fade-up" data-aos-delay="60">
+        <div class="shortlet-banner-icon"><i class="bi bi-building-check"></i></div>
+        <div class="shortlet-banner-text" style="flex:1;">
+          <h3>List or Book a Shortlet — Right Now</h3>
+          <p>Are you in Lagos, Abuja, Port Harcourt, Enugu or Owerri? Book a premium short stay or list your shortlet apartment on Nigeria's fastest-growing property platform.</p>
+          <div class="shortlet-banner-cities">
+            <span class="shortlet-city-pill">Lagos</span>
+            <span class="shortlet-city-pill">Abuja</span>
+            <span class="shortlet-city-pill">Port Harcourt</span>
+            <span class="shortlet-city-pill">Enugu</span>
+            <span class="shortlet-city-pill">Owerri</span>
+          </div>
+          <p style="margin-top:12px;font-size:0.8rem;color:rgba(255,255,255,0.4);">
+            <strong style="color:rgba(255,255,255,0.6);">How to access:</strong>
+            Go to menu icon → Select "Our Shortlets" → Make your choice → Send us a DM.
+          </p>
+        </div>
+        <div class="shortlet-banner-actions">
+          <a href="{% url 'apartment_list' %}" class="btn-brok-primary"><i class="bi bi-search"></i> Browse Shortlets</a>
+          <a href="{% url 'contact' %}" class="btn-brok-ghost">List My Property</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ WHY CHOOSE US ════════════════════════════════════════ -->
+  <section class="brok-why">
+    <div class="container">
+      <div class="text-center mb-5" data-aos="fade-up">
+        <div class="brok-eyebrow" style="justify-content:center;"><span class="dot"></span> Why Nestova Brokerage</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:300;color:#fff;">
+          Built on <em style="font-style:italic;color:var(--brok-accent-light);">Trust & Transparency</em>
+        </h2>
+      </div>
+      <div class="brok-why-grid">
+        <div class="brok-why-item" data-aos="fade-up" data-aos-delay="60">
+          <div class="brok-why-icon"><i class="bi bi-patch-check-fill"></i></div>
+          <h5>Verified Properties</h5>
+          <p>Every property and developer on our platform goes through thorough verification before listing.</p>
+        </div>
+        <div class="brok-why-item" data-aos="fade-up" data-aos-delay="120">
+          <div class="brok-why-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <h5>Client Protection</h5>
+          <p>We ensure your transactions are secure, well-documented, and legally sound.</p>
+        </div>
+        <div class="brok-why-item" data-aos="fade-up" data-aos-delay="180">
+          <div class="brok-why-icon"><i class="bi bi-people-fill"></i></div>
+          <h5>Professional Network</h5>
+          <p>A trusted network of certified realtors, developers, and property professionals at your service.</p>
+        </div>
+        <div class="brok-why-item" data-aos="fade-up" data-aos-delay="240">
+          <div class="brok-why-icon"><i class="bi bi-headset"></i></div>
+          <h5>Reliable Support</h5>
+          <p>Our dedicated support team is available to guide you from first inquiry to completed transaction.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ INQUIRY FORM ══════════════════════════════════════════ -->
+  <section class="brok-form-section" id="inquiry-form">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="brok-form-card" data-aos="fade-up">
+            <div class="brok-eyebrow mb-3"><span class="dot"></span> Contact Brokerage Team</div>
+            <h3>Make a Service Inquiry</h3>
+            <p>Tell us what you need and our team will reach out within 24 hours with tailored solutions.</p>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}brok-alert-success{% else %}brok-alert-error{% endif %}">
+                  <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'services:brokerage' %}#inquiry-form" novalidate>
+              {% csrf_token %}
+              <div class="row gy-4">
+                <div class="col-md-6">
+                  <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                  {{ form.full_name }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                  {{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                  {{ form.phone }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.service_requested.id_for_label }}">{{ form.service_requested.label }}</label>
+                  {{ form.service_requested }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+                  {{ form.location }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.timeline.id_for_label }}">{{ form.timeline.label }}</label>
+                  {{ form.timeline }}
+                </div>
+                <div class="col-12">
+                  <label for="{{ form.budget.id_for_label }}">{{ form.budget.label }}</label>
+                  {{ form.budget }}
+                </div>
+                <div class="col-12">
+                  <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                  {{ form.message }}
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn-brok-submit">
+                    <i class="bi bi-send-fill"></i> Submit Inquiry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock content %}

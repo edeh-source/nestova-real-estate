@@ -1760,14 +1760,19 @@
           <!-- DEVELOPERS -->
           <li><a href="{% url 'developers_list' %}">Developers</a></li>
 
-          <!-- SERVICES -->
+          <!-- SERVICES / ECOSYSTEM -->
           <li class="dropdown">
-            <a href="{% url 'services:all_services' %}">Services <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
+            <a href="{% url 'services:all_services' %}">Ecosystem <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
             <ul>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-grid dropdown-icon"></i>All Services</a></li>
-              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-building-gear dropdown-icon"></i>Property Management</a></li>
-              <li><a href="{% url 'contact' %}"><i class="bi bi-chat-dots dropdown-icon"></i>Consultation</a></li>
-              <li><a href="{% url 'shop:product_list' %}"><i class="bi bi-bag dropdown-icon"></i>Shop</a></li>
+              <li><a href="{% url 'services:all_services' %}"><i class="bi bi-grid dropdown-icon"></i>Ecosystem Hub</a></li>
+              <li class="dropdown-divider-item" style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0;"></li>
+              <li><a href="{% url 'services:brokerage' %}"><i class="bi bi-buildings dropdown-icon"></i>Nestova Brokerage</a></li>
+              <li><a href="{% url 'services:businesses' %}"><i class="bi bi-briefcase dropdown-icon"></i>Nestova Businesses</a></li>
+              <li><a href="{% url 'services:academy' %}"><i class="bi bi-mortarboard dropdown-icon"></i>Nestova Academy</a></li>
+              <li><a href="{% url 'services:tourism' %}"><i class="bi bi-airplane dropdown-icon"></i>Nestova Tourism</a></li>
+              <li class="dropdown-divider-item" style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0;"></li>
+              <li><a href="{% url 'valpaint_home' %}"><i class="bi bi-palette dropdown-icon"></i>Valpaint</a></li>
+              <li><a href="{% url 'shop:product_list' %}"><i class="bi bi-shop dropdown-icon"></i>Our Shop</a></li>
             </ul>
           </li>
 

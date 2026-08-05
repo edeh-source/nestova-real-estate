@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nestova Businesses — Lifestyle, Innovation & Smart Living{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   BUSINESSES DETAIL PAGE
+   Accent: Emerald (#2ECC71) / Charcoal (#12121A)
+   ============================================================ */
+:root { --biz-accent: #2ECC71; --biz-accent-dark: #1A7A4A; --biz-accent-light: #5DDEA0; }
+
+.biz-hero {
+  position: relative; margin-top: 80px;
+  padding: 100px 0 80px; overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #061A0F 55%, #060B1A 100%);
+}
+.biz-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(46,204,113,0.5), transparent);
+}
+.biz-hero-orb {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(46,204,113,0.10), transparent 70%);
+  top: -250px; right: -150px; pointer-events: none;
+}
+.biz-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 20px; border-radius: 50px;
+  background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.35);
+  color: var(--biz-accent); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 20px;
+}
+.biz-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300; color: #fff; margin-bottom: 16px; line-height: 1.1;
+}
+.biz-hero h1 em { font-style: italic; color: var(--biz-accent-light); }
+.biz-hero p { color: rgba(255,255,255,0.52); font-size: 1rem; max-width: 580px; }
+
+/* Breadcrumb */
+.breadcrumbs-glass {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; border-radius: 50px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+}
+.breadcrumbs-glass a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.breadcrumbs-glass a:hover { color: var(--biz-accent); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.25); }
+.breadcrumbs-glass .current { color: var(--biz-accent); }
+
+.biz-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+.btn-biz-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, #1A7A4A, #145E38);
+  color: #fff; font-weight: 700; font-size: 0.88rem;
+  padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: all .28s ease;
+}
+.btn-biz-primary:hover { color: #fff; background: linear-gradient(135deg, #2ECC71, #1A9A55); box-shadow: 0 10px 28px rgba(46,204,113,0.3); transform: translateY(-2px); }
+.btn-biz-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06); color: #fff; font-weight: 600;
+  font-size: 0.88rem; padding: 13px 28px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12); text-decoration: none; transition: all .28s ease;
+}
+.btn-biz-ghost:hover { color: #fff; background: rgba(255,255,255,0.10); }
+
+/* ---- DIVISIONS SECTION ---- */
+.biz-divisions { padding: 90px 0; background: var(--obsidian); }
+.biz-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--biz-accent); margin-bottom: 12px;
+}
+.biz-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--biz-accent); }
+
+/* ---- DIVISION BLOCK (alternating) ---- */
+.biz-division-block {
+  background: rgba(18,18,26,0.85); border-radius: 22px;
+  border: 1px solid rgba(46,204,113,0.10); margin-bottom: 32px;
+  overflow: hidden; transition: border-color .3s;
+}
+.biz-division-block:hover { border-color: rgba(46,204,113,0.28); }
+.biz-division-inner { display: flex; flex-wrap: wrap; }
+.biz-division-visual {
+  flex: 0 0 340px; min-height: 300px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+@media(max-width:900px){ .biz-division-visual { flex: 0 0 100%; min-height: 200px; } }
+.biz-division-content { flex: 1; padding: 40px 40px 40px 40px; min-width: 280px; }
+@media(max-width:576px){ .biz-division-content { padding: 28px 20px; } }
+.biz-div-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 4px 14px; border-radius: 50px; font-size: 0.67rem;
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.25);
+  color: var(--biz-accent); margin-bottom: 16px;
+}
+.biz-division-content h3 {
+  font-family: var(--font-display); font-size: 1.6rem;
+  font-weight: 500; color: #fff; margin-bottom: 10px;
+}
+.biz-division-content p { font-size: 0.87rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 20px; }
+.biz-div-features { list-style: none; padding: 0; margin: 0 0 24px; }
+.biz-div-features li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.82rem; color: rgba(255,255,255,0.55); padding: 4px 0;
+}
+.biz-div-features li i { color: var(--biz-accent); font-size: 0.72rem; margin-top: 3px; flex-shrink: 0; }
+.biz-div-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--biz-accent); text-decoration: none;
+  transition: gap .2s;
+}
+.biz-div-link:hover { color: var(--biz-accent-light); gap: 13px; }
+
+/* Valpaint special */
+.biz-valpaint-visual {
+  background: linear-gradient(135deg, #06100A, #0D2018, #060B1A);
+}
+.biz-comms-visual { background: linear-gradient(135deg, #06080F, #0A1022, #060B1A); }
+.biz-essentials-visual { background: linear-gradient(135deg, #100A06, #221508, #0A0A0F); }
+.biz-smartshield-visual { background: linear-gradient(135deg, #070B10, #0A1520, #060B1A); }
+
+/* ---- PARTNERSHIP FORM ---- */
+.biz-form-section { padding: 90px 0; background: var(--obsidian); }
+.biz-form-card {
+  background: rgba(18,18,26,0.92); border-radius: 24px;
+  border: 1px solid rgba(46,204,113,0.15); padding: 52px 48px;
+}
+@media(max-width:576px){ .biz-form-card { padding: 32px 20px; } }
+.biz-form-card h3 {
+  font-family: var(--font-display); font-size: 1.8rem;
+  font-weight: 400; color: #fff; margin-bottom: 6px;
+}
+.biz-form-card p { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 36px; }
+.biz-form-card .form-control, .biz-form-card .form-select {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: #fff !important; border-radius: 10px; padding: 12px 16px; font-size: 0.88rem;
+  transition: border-color .25s;
+}
+.biz-form-card .form-control:focus, .biz-form-card .form-select:focus {
+  border-color: rgba(46,204,113,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(46,204,113,0.12) !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+.biz-form-card .form-control::placeholder { color: rgba(255,255,255,0.28); }
+.biz-form-card label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.biz-form-card .form-select option { background: #12121A; color: #fff; }
+.btn-biz-submit {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--biz-accent-dark), #0E4D30);
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  padding: 14px 36px; border-radius: 12px; border: none;
+  letter-spacing: 0.05em; cursor: pointer; width: 100%;
+  justify-content: center; transition: all .28s ease;
+}
+.btn-biz-submit:hover { background: linear-gradient(135deg, #2ECC71, #1A9A55); box-shadow: 0 12px 32px rgba(46,204,113,0.3); transform: translateY(-2px); }
+.biz-alert-success {
+  background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3);
+  color: #2ECC71; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+}
+.biz-alert-error {
+  background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3);
+  color: #E74C3C; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
+  <section class="biz-hero">
+    <div class="biz-hero-orb"></div>
+    <div class="container">
+      <div class="text-center" data-aos="fade-up">
+        <div class="breadcrumbs-glass mb-4" style="justify-content:center;display:inline-flex;">
+          <a href="{% url 'home' %}">Home</a>
+          <span class="sep">›</span>
+          <a href="{% url 'services:all_services' %}">Ecosystem</a>
+          <span class="sep">›</span>
+          <span class="current">Businesses</span>
+        </div>
+        <br>
+        <div class="biz-badge mt-3"><i class="bi bi-lightning-charge-fill"></i> Ecosystem 02 · Lifestyle & Innovation</div>
+        <h1>Nestova <em>Businesses</em></h1>
+        <p style="margin:0 auto 36px;">
+          A portfolio of lifestyle, technology, and innovation brands — bringing global quality to Nigerian homes, offices, and smart environments. One ecosystem. Limitless possibilities.
+        </p>
+        <div class="biz-hero-actions" style="justify-content:center;">
+          <a href="#partnership-form" class="btn-biz-primary"><i class="bi bi-handshake"></i> Become a Partner</a>
+          <a href="{% url 'shop:product_list' %}" class="btn-biz-ghost">Visit Our Shop <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DIVISIONS ════════════════════════════════════════════ -->
+  <section class="biz-divisions">
+    <div class="container">
+
+      <div class="mb-5" data-aos="fade-up">
+        <div class="biz-eyebrow"><span class="dot"></span> Our Business Divisions</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:300;color:#fff;">
+          Four Brands. <em style="font-style:italic;color:var(--biz-accent-light);">One Vision.</em>
+        </h2>
+        <p style="color:rgba(255,255,255,0.45);max-width:520px;font-size:0.9rem;margin-top:10px;">
+          Each division is a distinct brand serving a specific lifestyle or innovation need — united under the Nestova umbrella.
+        </p>
+      </div>
+
+      <!-- 1. VALPAINT -->
+      <div class="biz-division-block" data-aos="fade-up" data-aos-delay="60">
+        <div class="biz-division-inner">
+          <div class="biz-division-visual biz-valpaint-visual">
+            <div style="text-align:center;padding:20px;">
+              <div style="font-size:3.5rem;color:rgba(46,204,113,0.35);margin-bottom:16px;">🇮🇹</div>
+              <div style="font-family:var(--font-display);font-size:1.8rem;color:rgba(255,255,255,0.7);">Nestova</div>
+              <div style="font-size:1.2rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;">× VALPAINT</div>
+            </div>
+          </div>
+          <div class="biz-division-content">
+            <div class="biz-div-badge"><i class="bi bi-gem"></i> Official Partner — Nigeria 🇳🇬</div>
+            <h3>Nestova × Valpaint</h3>
+            <p>
+              We are the official Valpaint partner in Nigeria, bringing Italy's most innovative decorative paint brand directly to you. Luxury has a new standard in Nigeria — from metallic and satin finishes to Venetian stucco and cement effects.
+            </p>
+            <ul class="biz-div-features">
+              <li><i class="bi bi-check2-circle"></i> 40+ premium Italian decorative products</li>
+              <li><i class="bi bi-check2-circle"></i> Metallic, satin, cement, glitter, velvet & more</li>
+              <li><i class="bi bi-check2-circle"></i> Interior & exterior application</li>
+              <li><i class="bi bi-check2-circle"></i> Colour consultancy & technical support</li>
+              <li><i class="bi bi-check2-circle"></i> Nigeria-wide delivery</li>
+            </ul>
+            <a href="{% url 'valpaint_home' %}" class="biz-div-link">Explore Valpaint <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. COMMUNICATIONS -->
+      <div class="biz-division-block" data-aos="fade-up" data-aos-delay="80">
+        <div class="biz-division-inner" style="flex-direction:row-reverse;">
+          <div class="biz-division-visual biz-comms-visual">
+            <div style="text-align:center;padding:20px;">
+              <i class="bi bi-cpu" style="font-size:4rem;color:rgba(46,204,113,0.35);display:block;margin-bottom:16px;"></i>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;text-transform:uppercase;">Global Tech Sourcing</div>
+            </div>
+          </div>
+          <div class="biz-division-content">
+            <div class="biz-div-badge"><i class="bi bi-phone"></i> Global Tech Sourcing</div>
+            <h3>Nestova Communications</h3>
+            <p>
+              Global sourcing and importation of smart gadgets — brand new and certified fairly-used devices. We supply laptops, iPhones, Samsung devices, gaming consoles, and mobile accessories sourced directly from trusted international suppliers.
+            </p>
+            <ul class="biz-div-features">
+              <li><i class="bi bi-check2-circle"></i> iPhones, Samsung & all flagship devices</li>
+              <li><i class="bi bi-check2-circle"></i> Laptops & computing accessories</li>
+              <li><i class="bi bi-check2-circle"></i> Gaming consoles & peripherals</li>
+              <li><i class="bi bi-check2-circle"></i> Certified quality, competitive pricing</li>
+              <li><i class="bi bi-check2-circle"></i> Sourced from trusted international suppliers</li>
+            </ul>
+            <a href="{% url 'shop:product_list' %}" class="biz-div-link">Shop Now <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. ESSENTIALS -->
+      <div class="biz-division-block" data-aos="fade-up" data-aos-delay="100">
+        <div class="biz-division-inner">
+          <div class="biz-division-visual biz-essentials-visual">
+            <div style="text-align:center;padding:20px;">
+              <i class="bi bi-house-heart" style="font-size:4rem;color:rgba(243,156,18,0.35);display:block;margin-bottom:16px;"></i>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;text-transform:uppercase;">Premium Curated Collection</div>
+            </div>
+          </div>
+          <div class="biz-division-content">
+            <div class="biz-div-badge" style="background:rgba(243,156,18,0.1);border-color:rgba(243,156,18,0.25);color:#F39C12;"><i class="bi bi-stars"></i> Premium Home & Lifestyle</div>
+            <h3>Nestova Essentials</h3>
+            <p>
+              A premium collection of home and lifestyle products designed to bring comfort, elegance, and functionality into everyday living. From kitchenware to home accessories — every piece is carefully selected for quality, durability, and modern living standards.
+            </p>
+            <ul class="biz-div-features">
+              <li><i class="bi bi-check2-circle"></i> Premium kitchenware & cookware</li>
+              <li><i class="bi bi-check2-circle"></i> Elegant home décor & accessories</li>
+              <li><i class="bi bi-check2-circle"></i> Comfort & lifestyle products</li>
+              <li><i class="bi bi-check2-circle"></i> Carefully curated for modern living</li>
+              <li><i class="bi bi-check2-circle"></i> Quality & durability guaranteed</li>
+            </ul>
+            <a href="{% url 'shop:product_list' %}" class="biz-div-link">Shop Essentials <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. SMARTSHIELD -->
+      <div class="biz-division-block" data-aos="fade-up" data-aos-delay="120">
+        <div class="biz-division-inner" style="flex-direction:row-reverse;">
+          <div class="biz-division-visual biz-smartshield-visual">
+            <div style="text-align:center;padding:20px;">
+              <i class="bi bi-shield-shaded" style="font-size:4rem;color:rgba(26,188,156,0.35);display:block;margin-bottom:16px;"></i>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;text-transform:uppercase;">Smart Security Ecosystem</div>
+            </div>
+          </div>
+          <div class="biz-division-content">
+            <div class="biz-div-badge" style="background:rgba(26,188,156,0.1);border-color:rgba(26,188,156,0.25);color:#1ABC9C;"><i class="bi bi-shield-check"></i> Manufacturing Vision</div>
+            <h3>Nestova SmartShield</h3>
+            <p>
+              We are not only installing smart security systems — we are working towards manufacturing our own line of Nestova smart products designed specifically for the African market. Durable, reliable, and budget-friendly.
+            </p>
+            <ul class="biz-div-features">
+              <li><i class="bi bi-check2-circle"></i> CCTV installation & monitoring</li>
+              <li><i class="bi bi-check2-circle"></i> Smart door locks & access control</li>
+              <li><i class="bi bi-check2-circle"></i> Home automation systems</li>
+              <li><i class="bi bi-check2-circle"></i> Solar panel solutions</li>
+              <li><i class="bi bi-check2-circle"></i> Open for manufacturing partnerships & investors</li>
+            </ul>
+            <a href="#partnership-form" class="biz-div-link" style="color:#1ABC9C;">Partner With Us <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open For Partnerships Banner -->
+      <div data-aos="fade-up" data-aos-delay="60"
+           style="background:linear-gradient(135deg,#061A0F,#0D2E1A);border:1px solid rgba(46,204,113,0.22);border-radius:20px;padding:44px 40px;text-align:center;margin-top:20px;">
+        <div class="biz-div-badge" style="justify-content:center;margin-bottom:16px;"><i class="bi bi-handshake-fill"></i> Open For Collaboration</div>
+        <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:#fff;margin-bottom:12px;">
+          We Welcome Strategic Partners & Investors
+        </h3>
+        <p style="color:rgba(255,255,255,0.5);max-width:560px;margin:0 auto 28px;font-size:0.9rem;">
+          Whether you're a manufacturer, tech innovator, distributor, investor, or media partner — if you share our passion for smarter living, let's build the future of Africa together.
+        </p>
+        <a href="#partnership-form" class="btn-biz-primary"><i class="bi bi-plus-circle"></i> Submit Partnership Inquiry</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ PARTNERSHIP FORM ══════════════════════════════════════ -->
+  <section class="biz-form-section" id="partnership-form">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="biz-form-card" data-aos="fade-up">
+            <div class="biz-eyebrow mb-3"><span class="dot"></span> Partnerships & Collaborations</div>
+            <h3>Partner With Nestova Businesses</h3>
+            <p>Tell us about your proposal. Our business team reviews every inquiry and responds within 48 hours.</p>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}biz-alert-success{% else %}biz-alert-error{% endif %}">
+                  <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'services:businesses' %}#partnership-form" novalidate>
+              {% csrf_token %}
+              <div class="row gy-4">
+                <div class="col-md-6">
+                  <label>{{ form.full_name.label }}</label>{{ form.full_name }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.business_name.label }}</label>{{ form.business_name }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.email.label }}</label>{{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.phone.label }}</label>{{ form.phone }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.location.label }}</label>{{ form.location }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.website.label }}</label>{{ form.website }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.partnership_type.label }}</label>{{ form.partnership_type }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.business_size.label }}</label>{{ form.business_size }}
+                </div>
+                <div class="col-12">
+                  <label>{{ form.message.label }}</label>{{ form.message }}
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn-biz-submit">
+                    <i class="bi bi-send-fill"></i> Submit Partnership Inquiry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock content %}

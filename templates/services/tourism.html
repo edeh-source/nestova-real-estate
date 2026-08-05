@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nestova Tourism — Travel, Culture & Investments | Nigeria{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   TOURISM DETAIL PAGE
+   Accent: Teal (#1ABC9C) / Deep Forest-Aqua (#061815)
+   ============================================================ */
+:root { --tour-accent: #1ABC9C; --tour-accent-dark: #148F77; --tour-accent-light: #48C9B0; }
+
+.tour-hero {
+  position: relative; margin-top: 80px;
+  padding: 100px 0 80px; overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #061815 55%, #060B1A 100%);
+}
+.tour-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(26,188,156,0.5), transparent);
+}
+.tour-hero-orb {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,188,156,0.10), transparent 70%);
+  top: -250px; right: -150px; pointer-events: none;
+}
+.tour-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 20px; border-radius: 50px;
+  background: rgba(26,188,156,0.12); border: 1px solid rgba(26,188,156,0.35);
+  color: var(--tour-accent); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 20px;
+}
+.tour-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300; color: #fff; margin-bottom: 16px; line-height: 1.1;
+}
+.tour-hero h1 em { font-style: italic; color: var(--tour-accent-light); }
+.tour-hero p { color: rgba(255,255,255,0.52); font-size: 1rem; max-width: 600px; }
+.tour-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+
+.breadcrumbs-glass {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; border-radius: 50px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+}
+.breadcrumbs-glass a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.breadcrumbs-glass a:hover { color: var(--tour-accent); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.25); }
+.breadcrumbs-glass .current { color: var(--tour-accent); }
+
+.btn-tour-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--tour-accent), var(--tour-accent-dark));
+  color: #fff; font-weight: 700; font-size: 0.88rem;
+  padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: all .28s ease;
+}
+.btn-tour-primary:hover { color: #fff; background: linear-gradient(135deg, var(--tour-accent-light), var(--tour-accent)); box-shadow: 0 10px 28px rgba(26,188,156,0.3); transform: translateY(-2px); }
+.btn-tour-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06); color: #fff; font-weight: 600;
+  font-size: 0.88rem; padding: 13px 28px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12); text-decoration: none; transition: all .28s ease;
+}
+.btn-tour-ghost:hover { color: #fff; background: rgba(255,255,255,0.10); }
+
+/* ---- MISSION BANNER ---- */
+.tour-mission { padding: 40px 0; background: var(--obsidian); border-bottom: 1px solid rgba(26,188,156,0.1); }
+.tour-mission p {
+  margin: 0; font-size: 1.1rem; color: rgba(255,255,255,0.7); text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6;
+}
+.tour-mission p strong { color: #fff; font-weight: 600; }
+
+/* ---- SERVICES GRID ---- */
+.tour-services { padding: 90px 0; background: var(--obsidian); }
+.tour-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--tour-accent); margin-bottom: 12px;
+}
+.tour-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--tour-accent); }
+
+.tour-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  margin-top: 48px;
+}
+@media(max-width:992px){ .tour-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width:768px){ .tour-grid { grid-template-columns: 1fr; } }
+
+.tour-card {
+  background: rgba(18,18,26,0.85); border-radius: 18px;
+  border: 1px solid rgba(26,188,156,0.10); padding: 32px 26px;
+  transition: all .32s ease; position: relative; overflow: hidden;
+  height: 100%; display: flex; flex-direction: column;
+}
+.tour-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--tour-accent), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.tour-card:hover { border-color: rgba(26,188,156,0.3); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.tour-card:hover::before { opacity: 1; }
+.tour-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(26,188,156,0.16), rgba(26,188,156,0.05));
+  border: 1px solid rgba(26,188,156,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--tour-accent); margin-bottom: 20px;
+}
+.tour-card h4 { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
+.tour-card p { font-size: 0.85rem; color: rgba(255,255,255,0.48); line-height: 1.7; margin-bottom: 24px; flex-grow: 1; }
+.tour-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--tour-accent); text-decoration: none;
+  transition: gap .2s; margin-top: auto;
+}
+.tour-link:hover { color: var(--tour-accent-light); gap: 12px; }
+
+/* ---- INQUIRY FORM ---- */
+.tour-form-section { padding: 90px 0; background: linear-gradient(135deg, #061815 0%, #060B1A 100%); }
+.tour-form-card {
+  background: rgba(18,18,26,0.92); border-radius: 24px;
+  border: 1px solid rgba(26,188,156,0.15); padding: 52px 48px;
+}
+@media(max-width:576px){ .tour-form-card { padding: 32px 20px; } }
+.tour-form-card h3 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 400; color: #fff; margin-bottom: 6px; }
+.tour-form-card > p { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 36px; }
+.tour-form-card .form-control, .tour-form-card .form-select {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: #fff !important; border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; transition: border-color .25s;
+}
+.tour-form-card .form-control:focus, .tour-form-card .form-select:focus {
+  border-color: rgba(26,188,156,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(26,188,156,0.12) !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+.tour-form-card .form-control::placeholder { color: rgba(255,255,255,0.28); }
+.tour-form-card label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.tour-form-card .form-select option { background: #12121A; color: #fff; }
+.btn-tour-submit {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--tour-accent), var(--tour-accent-dark));
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  padding: 14px 36px; border-radius: 12px; border: none;
+  letter-spacing: 0.05em; cursor: pointer; width: 100%; justify-content: center; transition: all .28s ease;
+}
+.btn-tour-submit:hover { background: linear-gradient(135deg, var(--tour-accent-light), var(--tour-accent)); box-shadow: 0 12px 32px rgba(26,188,156,0.3); transform: translateY(-2px); }
+.tour-alert-success { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); color: #2ECC71; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+.tour-alert-error { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: #E74C3C; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
+  <section class="tour-hero">
+    <div class="tour-hero-orb"></div>
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7" data-aos="fade-right">
+          <div class="breadcrumbs-glass mb-4">
+            <a href="{% url 'home' %}">Home</a>
+            <span class="sep">›</span>
+            <a href="{% url 'services:all_services' %}">Ecosystem</a>
+            <span class="sep">›</span>
+            <span class="current">Tourism</span>
+          </div>
+          <div class="tour-badge"><i class="bi bi-globe-americas"></i> Ecosystem 04 · Travel & Culture</div>
+          <h1>Nestova <em>Tourism</em></h1>
+          <p>
+            Tourism is no longer just about vacations. It is economic development, cultural preservation, and global connectivity. We are building one of Africa's leading tourism and hospitality ecosystems.
+          </p>
+          <div class="tour-hero-actions">
+            <a href="#inquiry-form" class="btn-tour-primary"><i class="bi bi-compass"></i> Plan a Trip</a>
+            <a href="#services" class="btn-tour-ghost">Explore Offerings <i class="bi bi-arrow-down"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+          <div style="background:linear-gradient(135deg,#061815,#0A241F,#060B1A);border-radius:22px;border:1px solid rgba(26,188,156,0.18);padding:36px;text-align:center;">
+            <i class="bi bi-airplane" style="font-size:4.5rem;color:rgba(26,188,156,0.3);display:block;margin-bottom:24px;"></i>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left;">
+              <div style="background:rgba(26,188,156,0.07);border:1px solid rgba(26,188,156,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--tour-accent);">15+</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Destinations</div>
+              </div>
+              <div style="background:rgba(26,188,156,0.07);border:1px solid rgba(26,188,156,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--tour-accent);">4</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Core Sectors</div>
+              </div>
+              <div style="background:rgba(26,188,156,0.07);border:1px solid rgba(26,188,156,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--tour-accent);"><i class="bi bi-globe"></i></div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Local & Int'l</div>
+              </div>
+              <div style="background:rgba(26,188,156,0.07);border:1px solid rgba(26,188,156,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--tour-accent);">VIP</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Experiences</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MISSION TEXT ══════════════════════════════════════════ -->
+  <section class="tour-mission">
+    <div class="container" data-aos="fade-up">
+      <p>
+        "To leverage tourism, hospitality, real estate, and strategic partnerships to empower people through <strong>exploration, cultural exchange, economic opportunities, and global connectivity.</strong>"
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ SERVICES ══════════════════════════════════════════════ -->
+  <section class="tour-services" id="services">
+    <div class="container">
+      <div data-aos="fade-up">
+        <div class="tour-eyebrow"><span class="dot"></span> What We Do</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:300;color:#fff;">
+          Curated Experiences & <em style="font-style:italic;color:var(--tour-accent-light);">Investments</em>
+        </h2>
+        <p style="color:rgba(255,255,255,0.45);max-width:520px;font-size:0.9rem;margin-top:10px;">
+          Explore the four core pillars of the Nestova Tourism ecosystem — from curated travel to high-yield real estate investments.
+        </p>
+      </div>
+
+      <div class="tour-grid">
+        <!-- 1 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="60">
+          <div class="tour-icon"><i class="bi bi-airplane"></i></div>
+          <h4>Travel & Tour Packages</h4>
+          <p>Local and international travel curation. We handle flight bookings, visa assistance, hotel reservations, and customized vacation packages for individuals, families, and corporate groups.</p>
+          <a href="#inquiry-form" class="tour-link">Book a Trip <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <!-- 2 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="90">
+          <div class="tour-icon"><i class="bi bi-camera"></i></div>
+          <h4>Cultural & Educational Tours</h4>
+          <p>Connecting people to their heritage and creating immersive learning experiences. Explore historical landmarks in Nigeria and Africa through guided cultural tours and educational trips.</p>
+          <a href="#inquiry-form" class="tour-link">Explore Culture <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <!-- 3 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="120">
+          <div class="tour-icon"><i class="bi bi-building"></i></div>
+          <h4>Tourism Real Estate & Hospitality</h4>
+          <p>Invest in shortlets, resorts, and vacation homes. We identify high-yield tourism locations, manage properties, and partner with premium hospitality brands to ensure world-class guest experiences.</p>
+          <a href="#inquiry-form" class="tour-link">Investment Info <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <!-- 4 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="tour-icon"><i class="bi bi-calendar-event"></i></div>
+          <h4>Corporate Events & Retreats</h4>
+          <p>End-to-end planning and execution of corporate retreats, team-building trips, and destination events — ensuring productivity and relaxation in stunning environments.</p>
+          <a href="#inquiry-form" class="tour-link">Plan an Event <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <!-- 5 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="180">
+          <div class="tour-icon"><i class="bi bi-bus-front"></i></div>
+          <h4>Logistics & Concierge</h4>
+          <p>Premium airport pickups, dedicated chauffeurs, security details, and personalized concierge services for VIPs, diaspora returnees, and corporate executives visiting Nigeria.</p>
+          <a href="#inquiry-form" class="tour-link">Request Logistics <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <!-- 6 -->
+        <div class="tour-card" data-aos="fade-up" data-aos-delay="210">
+          <div class="tour-icon"><i class="bi bi-graph-up"></i></div>
+          <h4>Investment Partnerships</h4>
+          <p>We partner with local communities and investors to develop eco-tourism sites, cultural centers, and luxury hospitality destinations that drive economic growth.</p>
+          <a href="#inquiry-form" class="tour-link">Become a Partner <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ INQUIRY FORM ══════════════════════════════════════════ -->
+  <section class="tour-form-section" id="inquiry-form">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="tour-form-card" data-aos="fade-up">
+            <div class="tour-eyebrow mb-3"><span class="dot"></span> Tourism Inquiry</div>
+            <h3>Start Your Journey</h3>
+            <p>Tell us what you're looking for — a vacation package, a cultural tour, or a tourism investment. We will respond within 24 hours.</p>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}tour-alert-success{% else %}tour-alert-error{% endif %}">
+                  <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'services:tourism' %}#inquiry-form" novalidate>
+              {% csrf_token %}
+              <div class="row gy-4">
+                <div class="col-md-6">
+                  <label>{{ form.full_name.label }}</label>{{ form.full_name }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.email.label }}</label>{{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.phone.label }}</label>{{ form.phone }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.service_type.label }}</label>{{ form.service_type }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.destination.label }}</label>{{ form.destination }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.travel_dates.label }}</label>{{ form.travel_dates }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.number_of_people.label }}</label>{{ form.number_of_people }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.budget_range.label }}</label>{{ form.budget_range }}
+                </div>
+                <div class="col-12">
+                  <label>{{ form.special_requirements.label }}</label>{{ form.special_requirements }}
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn-tour-submit">
+                    <i class="bi bi-send-fill"></i> Submit Inquiry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock content %}

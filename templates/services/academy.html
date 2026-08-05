@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nestova Academy — Learning · Growth · Empowerment | Nigeria{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ============================================================
+   ACADEMY DETAIL PAGE
+   Accent: Amber (#F39C12) / Warm Dark (#1A0F05)
+   ============================================================ */
+:root { --acad-accent: #F39C12; --acad-accent-dark: #C0681A; --acad-accent-light: #F7C26E; }
+
+.acad-hero {
+  position: relative; margin-top: 80px;
+  padding: 100px 0 80px; overflow: hidden;
+  background: linear-gradient(160deg, #060B1A 0%, #1A0F05 55%, #0A0A0F 100%);
+}
+.acad-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(243,156,18,0.5), transparent);
+}
+.acad-hero-orb {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(243,156,18,0.10), transparent 70%);
+  top: -250px; right: -150px; pointer-events: none;
+}
+.acad-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 20px; border-radius: 50px;
+  background: rgba(243,156,18,0.12); border: 1px solid rgba(243,156,18,0.35);
+  color: var(--acad-accent); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 20px;
+}
+.acad-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 300; color: #fff; margin-bottom: 16px; line-height: 1.1;
+}
+.acad-hero h1 em { font-style: italic; color: var(--acad-accent-light); }
+.acad-hero p { color: rgba(255,255,255,0.52); font-size: 1rem; max-width: 600px; }
+.acad-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+
+.breadcrumbs-glass {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; border-radius: 50px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+}
+.breadcrumbs-glass a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.breadcrumbs-glass a:hover { color: var(--acad-accent); }
+.breadcrumbs-glass .sep { color: rgba(255,255,255,0.25); }
+.breadcrumbs-glass .current { color: var(--acad-accent); }
+
+.btn-acad-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--acad-accent-dark), #964F12);
+  color: #fff; font-weight: 700; font-size: 0.88rem;
+  padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: all .28s ease;
+}
+.btn-acad-primary:hover { color: #fff; background: linear-gradient(135deg, var(--acad-accent), var(--acad-accent-dark)); box-shadow: 0 10px 28px rgba(243,156,18,0.3); transform: translateY(-2px); }
+.btn-acad-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06); color: #fff; font-weight: 600;
+  font-size: 0.88rem; padding: 13px 28px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12); text-decoration: none; transition: all .28s ease;
+}
+.btn-acad-ghost:hover { color: #fff; background: rgba(255,255,255,0.10); }
+
+/* ---- PROGRAMS SECTION ---- */
+.acad-programs { padding: 90px 0; background: var(--obsidian); }
+.acad-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--acad-accent); margin-bottom: 12px;
+}
+.acad-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--acad-accent); }
+
+.acad-programs-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+  margin-top: 48px;
+}
+@media(max-width:992px){ .acad-programs-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:576px){ .acad-programs-grid { grid-template-columns: 1fr; } }
+
+.acad-prog-card {
+  background: rgba(18,18,26,0.85); border-radius: 18px;
+  border: 1px solid rgba(243,156,18,0.10); padding: 32px 26px;
+  transition: all .32s ease; position: relative; overflow: hidden;
+}
+.acad-prog-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--acad-accent), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.acad-prog-card:hover { border-color: rgba(243,156,18,0.3); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.acad-prog-card:hover::before { opacity: 1; }
+.acad-prog-number {
+  font-family: var(--font-display);
+  font-size: 3.5rem; font-weight: 700;
+  color: rgba(243,156,18,0.10); line-height: 1;
+  position: absolute; top: 16px; right: 20px;
+}
+.acad-prog-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(243,156,18,0.16), rgba(243,156,18,0.05));
+  border: 1px solid rgba(243,156,18,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; color: var(--acad-accent); margin-bottom: 18px;
+}
+.acad-prog-card h4 { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
+.acad-prog-card p { font-size: 0.83rem; color: rgba(255,255,255,0.47); line-height: 1.7; margin-bottom: 16px; }
+.acad-prog-tag {
+  display: inline-block; padding: 3px 12px; border-radius: 50px;
+  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(243,156,18,0.10); border: 1px solid rgba(243,156,18,0.22);
+  color: var(--acad-accent); text-transform: uppercase;
+}
+
+/* ---- MISSION QUOTE ---- */
+.acad-quote {
+  background: linear-gradient(135deg, #1A0F05, #0D0802, #0A0A0F);
+  border: 1px solid rgba(243,156,18,0.18); border-radius: 20px;
+  padding: 56px 48px; text-align: center; margin: 56px 0;
+}
+@media(max-width:576px){ .acad-quote { padding: 36px 24px; } }
+.acad-quote blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  font-weight: 300; color: #fff; font-style: italic;
+  line-height: 1.6; margin: 0 0 20px;
+  border: none; padding: 0;
+}
+.acad-quote blockquote em { color: var(--acad-accent-light); font-style: normal; }
+.acad-quote cite { font-size: 0.78rem; color: rgba(255,255,255,0.4); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* ---- JOURNEY STEPS ---- */
+.acad-journey { padding: 80px 0; background: linear-gradient(135deg, #1A0F05 0%, #0A0A0F 100%); }
+.acad-steps {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 24px;
+  margin-top: 48px; position: relative;
+}
+@media(max-width:900px){ .acad-steps { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:540px){ .acad-steps { grid-template-columns: 1fr; } }
+.acad-step { text-align: center; }
+.acad-step-num {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(243,156,18,0.18), rgba(243,156,18,0.06));
+  border: 2px solid rgba(243,156,18,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 1.2rem;
+  font-weight: 600; color: var(--acad-accent);
+  margin: 0 auto 16px;
+}
+.acad-step h5 { font-size: 0.92rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.acad-step p { font-size: 0.8rem; color: rgba(255,255,255,0.42); line-height: 1.6; }
+
+/* ---- ENROLLMENT FORM ---- */
+.acad-form-section { padding: 90px 0; background: var(--obsidian); }
+.acad-form-card {
+  background: rgba(18,18,26,0.92); border-radius: 24px;
+  border: 1px solid rgba(243,156,18,0.15); padding: 52px 48px;
+}
+@media(max-width:576px){ .acad-form-card { padding: 32px 20px; } }
+.acad-form-card h3 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 400; color: #fff; margin-bottom: 6px; }
+.acad-form-card > p { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 36px; }
+.acad-form-card .form-control, .acad-form-card .form-select {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: #fff !important; border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; transition: border-color .25s;
+}
+.acad-form-card .form-control:focus, .acad-form-card .form-select:focus {
+  border-color: rgba(243,156,18,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(243,156,18,0.12) !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+.acad-form-card .form-control::placeholder { color: rgba(255,255,255,0.28); }
+.acad-form-card label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.acad-form-card .form-select option { background: #12121A; color: #fff; }
+.btn-acad-submit {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--acad-accent-dark), #964F12);
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  padding: 14px 36px; border-radius: 12px; border: none;
+  letter-spacing: 0.05em; cursor: pointer; width: 100%; justify-content: center; transition: all .28s ease;
+}
+.btn-acad-submit:hover { background: linear-gradient(135deg, var(--acad-accent), var(--acad-accent-dark)); box-shadow: 0 12px 32px rgba(243,156,18,0.3); transform: translateY(-2px); }
+.acad-alert-success { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); color: #2ECC71; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+.acad-alert-error { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: #E74C3C; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
+  <section class="acad-hero">
+    <div class="acad-hero-orb"></div>
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7" data-aos="fade-right">
+          <div class="breadcrumbs-glass mb-4">
+            <a href="{% url 'home' %}">Home</a>
+            <span class="sep">›</span>
+            <a href="{% url 'services:all_services' %}">Ecosystem</a>
+            <span class="sep">›</span>
+            <span class="current">Academy</span>
+          </div>
+          <div class="acad-badge"><i class="bi bi-mortarboard-fill"></i> Ecosystem 03 · Learning & Growth</div>
+          <h1>Nestova <em>Academy</em></h1>
+          <p>
+            We believe knowledge creates opportunities. Nestova Academy empowers individuals through structured real estate education, entrepreneurship training, mentorship, and youth development programs — building the next generation of smart professionals.
+          </p>
+          <div class="acad-hero-actions">
+            <a href="#enrollment-form" class="btn-acad-primary"><i class="bi bi-pencil-square"></i> Apply Now</a>
+            <a href="#programs" class="btn-acad-ghost">View Programs <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+          <div style="background:linear-gradient(135deg,#1A0F05,#2E1A08,#0A0A0F);border-radius:22px;border:1px solid rgba(243,156,18,0.18);padding:36px;text-align:center;">
+            <i class="bi bi-mortarboard" style="font-size:4.5rem;color:rgba(243,156,18,0.3);display:block;margin-bottom:24px;"></i>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left;">
+              <div style="background:rgba(243,156,18,0.07);border:1px solid rgba(243,156,18,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:#F39C12;">8</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Programs</div>
+              </div>
+              <div style="background:rgba(243,156,18,0.07);border:1px solid rgba(243,156,18,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:#F39C12;">3</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Formats Available</div>
+              </div>
+              <div style="background:rgba(243,156,18,0.07);border:1px solid rgba(243,156,18,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:#F39C12;">100%</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Practical Focus</div>
+              </div>
+              <div style="background:rgba(243,156,18,0.07);border:1px solid rgba(243,156,18,0.15);border-radius:12px;padding:16px;">
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:#F39C12;">🔥</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Enrolling Now</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROGRAMS ══════════════════════════════════════════════ -->
+  <section class="acad-programs" id="programs">
+    <div class="container">
+      <div data-aos="fade-up">
+        <div class="acad-eyebrow"><span class="dot"></span> Our Focus Areas</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:300;color:#fff;">
+          Programs Built for <em style="font-style:italic;color:var(--acad-accent-light);">Real Results</em>
+        </h2>
+        <p style="color:rgba(255,255,255,0.45);max-width:520px;font-size:0.9rem;margin-top:10px;">
+          Each program is designed to give you practical knowledge, industry connections, and the tools to build a thriving career or business.
+        </p>
+      </div>
+
+      <div class="acad-programs-grid">
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="60">
+          <span class="acad-prog-number">01</span>
+          <div class="acad-prog-icon"><i class="bi bi-house-door"></i></div>
+          <h4>Real Estate Training</h4>
+          <p>Learn property valuation, market analysis, documentation, client acquisition, and deal structuring — from Nigeria's top real estate practitioners.</p>
+          <span class="acad-prog-tag">Foundation · Advanced</span>
+        </div>
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="90">
+          <span class="acad-prog-number">02</span>
+          <div class="acad-prog-icon"><i class="bi bi-rocket-takeoff"></i></div>
+          <h4>Entrepreneurship Development</h4>
+          <p>Build, launch, and scale a business in Nigeria. From ideation to funding, branding to digital marketing — this program covers the full entrepreneurship journey.</p>
+          <span class="acad-prog-tag">Beginner · Startup</span>
+        </div>
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="120">
+          <span class="acad-prog-number">03</span>
+          <div class="acad-prog-icon"><i class="bi bi-person-workspace"></i></div>
+          <h4>Business Mentorship</h4>
+          <p>One-on-one and group mentorship sessions with experienced professionals and entrepreneurs who have built successful ventures across real estate, tech, and lifestyle sectors.</p>
+          <span class="acad-prog-tag">All Levels</span>
+        </div>
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="150">
+          <span class="acad-prog-number">04</span>
+          <div class="acad-prog-icon"><i class="bi bi-diagram-3"></i></div>
+          <h4>Industry Networking</h4>
+          <p>Access curated networking events, industry meetups, and business summits that connect you with developers, investors, professionals, and decision-makers.</p>
+          <span class="acad-prog-tag">Events · Ongoing</span>
+        </div>
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="180">
+          <span class="acad-prog-number">05</span>
+          <div class="acad-prog-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h4>Career Empowerment</h4>
+          <p>Upgrade your professional skills, build a powerful personal brand, and unlock career growth opportunities in Nigeria's real estate and business ecosystem.</p>
+          <span class="acad-prog-tag">Professionals</span>
+        </div>
+
+        <div class="acad-prog-card" data-aos="fade-up" data-aos-delay="210">
+          <span class="acad-prog-number">06</span>
+          <div class="acad-prog-icon"><i class="bi bi-people"></i></div>
+          <h4>Youth Development</h4>
+          <p>Empowering young Nigerians with the knowledge, skills, and connections to build meaningful careers in real estate, tourism, hospitality, and entrepreneurship.</p>
+          <span class="acad-prog-tag">Ages 16–35</span>
+        </div>
+
+      </div>
+
+      <!-- Mission Quote -->
+      <div class="acad-quote" data-aos="fade-up" data-aos-delay="60">
+        <blockquote>
+          "We believe progress becomes possible when <em>access is created.</em>
+          Through Nestova Academy, we are opening doors for individuals to build knowledge,
+          discover their potential, and create pathways for <em>economic growth</em>."
+        </blockquote>
+        <cite>— Nestova Academy, Mission Statement</cite>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ YOUR JOURNEY ══════════════════════════════════════════ -->
+  <section class="acad-journey">
+    <div class="container">
+      <div class="text-center" data-aos="fade-up">
+        <div class="acad-eyebrow" style="justify-content:center;"><span class="dot"></span> How It Works</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:300;color:#fff;">
+          Your Academy <em style="font-style:italic;color:var(--acad-accent-light);">Journey</em>
+        </h2>
+      </div>
+      <div class="acad-steps">
+        <div class="acad-step" data-aos="fade-up" data-aos-delay="60">
+          <div class="acad-step-num">01</div>
+          <h5>Apply Online</h5>
+          <p>Fill out the enrollment form below. Tell us your goals, experience level, and preferred program.</p>
+        </div>
+        <div class="acad-step" data-aos="fade-up" data-aos-delay="120">
+          <div class="acad-step-num">02</div>
+          <h5>Application Review</h5>
+          <p>Our team reviews your application within 48 hours and reaches out to confirm your spot.</p>
+        </div>
+        <div class="acad-step" data-aos="fade-up" data-aos-delay="180">
+          <div class="acad-step-num">03</div>
+          <h5>Onboarding</h5>
+          <p>You receive your program schedule, learning materials, and access to the Nestova Academy community.</p>
+        </div>
+        <div class="acad-step" data-aos="fade-up" data-aos-delay="240">
+          <div class="acad-step-num">04</div>
+          <h5>Grow & Connect</h5>
+          <p>Complete your program, build your network, and access career opportunities within the Nestova ecosystem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ENROLLMENT FORM ════════════════════════════════════════ -->
+  <section class="acad-form-section" id="enrollment-form">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <div class="acad-form-card" data-aos="fade-up">
+            <div class="acad-eyebrow mb-3"><span class="dot"></span> Application Form</div>
+            <h3>Apply to Nestova Academy</h3>
+            <p>Complete this form to apply. We review all applications and respond within 48 hours with next steps.</p>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}acad-alert-success{% else %}acad-alert-error{% endif %}">
+                  <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'services:academy' %}#enrollment-form" novalidate>
+              {% csrf_token %}
+              <div class="row gy-4">
+                <div class="col-md-6">
+                  <label>{{ form.full_name.label }}</label>{{ form.full_name }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.email.label }}</label>{{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.phone.label }}</label>{{ form.phone }}
+                </div>
+                <div class="col-md-3">
+                  <label>{{ form.age.label }}</label>{{ form.age }}
+                </div>
+                <div class="col-md-3">
+                  <label>{{ form.location.label }}</label>{{ form.location }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.occupation.label }}</label>{{ form.occupation }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.program.label }}</label>{{ form.program }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.experience_level.label }}</label>{{ form.experience_level }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.preferred_format.label }}</label>{{ form.preferred_format }}
+                </div>
+                <div class="col-12">
+                  <label>{{ form.goals.label }}</label>{{ form.goals }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.how_heard.label }}</label>{{ form.how_heard }}
+                </div>
+                <div class="col-md-6">
+                  <label>{{ form.referral_name.label }}</label>{{ form.referral_name }}
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn-acad-submit">
+                    <i class="bi bi-send-fill"></i> Submit Application
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock content %}
