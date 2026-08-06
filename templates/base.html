@@ -1747,15 +1747,28 @@
           </li>
 
           <!-- SHORTLETS -->
-          <li class="dropdown">
-            <a href="{% url 'apartment_list' %}">ShortLets <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
-            <ul>
-              <li><a href="{% url 'apartment_list' %}?location=lagos"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Lagos</a></li>
-              <li><a href="{% url 'apartment_list' %}?location=abuja"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Abuja</a></li>
-              <li><a href="{% url 'apartment_list' %}?location=portharcourt"><i class="bi bi-geo-alt dropdown-icon"></i>Short Let in Port Harcourt</a></li>
-              <li class="dropdown-divider-item"><a href="{% url 'apartment_list' %}"><i class="bi bi-grid dropdown-icon"></i>All Short Lets</a></li>
-            </ul>
-          </li>
+          <!-- SHORTLETS -->
+<li class="dropdown">
+  <a href="{% url 'apartment_list' %}">ShortLets <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
+  <ul>
+    {% for city in nav_cities %}
+    <li>
+      <a href="{% url 'apartment_list' %}?city={{ city|urlencode }}">
+        <i class="bi bi-geo-alt dropdown-icon"></i>Short Let in {{ city }}
+      </a>
+    </li>
+    {% empty %}
+    <li>
+      <a href="{% url 'apartment_list' %}">
+        <i class="bi bi-geo-alt dropdown-icon"></i>Browse Short Lets
+      </a>
+    </li>
+    {% endfor %}
+    <li class="dropdown-divider-item">
+      <a href="{% url 'apartment_list' %}"><i class="bi bi-grid dropdown-icon"></i>All Short Lets</a>
+    </li>
+  </ul>
+</li>
 
           <!-- DEVELOPERS -->
           <li><a href="{% url 'developers_list' %}">Developers</a></li>
