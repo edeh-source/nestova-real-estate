@@ -2,15 +2,15 @@
 Management command: python manage.py process_watermarks
 
 Re-processes ALL scraped listing images on Cloudinary by:
-  1. Downloading the current image via Cloudinary SDK (handles auth automatically)
-     with fallback to direct HTTP download
-  2. Completely removing the PropertyPro watermark via seam-carving in image_processor.py
+  1. Downloading the current image — tries Cloudinary first, falls back to original image_url
+  2. Completely removing the PropertyPro watermark via image_processor.py
   3. Re-uploading the clean image to Cloudinary (overwriting the existing file)
 
 Usage:
     python manage.py process_watermarks            # process all
     python manage.py process_watermarks --limit 5  # process first 5 only (test)
     python manage.py process_watermarks --verbose  # show full URLs and HTTP status codes
+    python manage.py process_watermarks --delay 1  # wait 1s between requests
 """
 import os
 import io
@@ -36,17 +36,18 @@ HEADERS = {
 }
 
 
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
 def _extract_public_id(url: str) -> str | None:
     """
     Extract the Cloudinary public_id from a Cloudinary URL.
 
-    Example URL:
+    Example:
       https://res.cloudinary.com/dxmarjmnr/image/upload/v1/media/scraped/abc123.jpg
     Returns:
       media/scraped/abc123
     """
     try:
-        # Strip query string
         url = url.split('?')[0]
         marker = '/image/upload/'
         idx = url.find(marker)
@@ -60,15 +61,14 @@ def _extract_public_id(url: str) -> str | None:
         path = '/'.join(parts)
         # Strip file extension
         public_id, _ = os.path.splitext(path)
-        return public_id
+        return public_id or None
     except Exception:
         return None
 
 
 def _download_via_sdk(public_id: str, verbose: bool = False) -> bytes | None:
-    """Download image bytes using Cloudinary SDK (handles signed URLs automatically)."""
+    """Download image bytes using a Cloudinary SDK-signed URL (handles auth automatically)."""
     try:
-        # Generate a signed download URL valid for 60 seconds
         signed_url = cloudinary.utils.cloudinary_url(
             public_id,
             resource_type='image',
@@ -90,7 +90,7 @@ def _download_via_sdk(public_id: str, verbose: bool = False) -> bytes | None:
 
 
 def _download_direct(url: str, verbose: bool = False) -> bytes | None:
-    """Plain HTTP download — works for public Cloudinary images."""
+    """Plain HTTP download — works for public URLs (Cloudinary public bucket or PropertyPro)."""
     try:
         r = requests.get(url, headers=HEADERS, timeout=30)
         if verbose:
@@ -115,7 +115,7 @@ def _download(url: str, verbose: bool = False) -> bytes | None:
     """
     public_id = _extract_public_id(url)
 
-    # Strategy 1: SDK signed URL (only for Cloudinary URLs)
+    # Strategy 1: SDK signed URL (Cloudinary URLs only)
     if public_id:
         if verbose:
             print(f"    Extracted public_id: {public_id}")
@@ -123,19 +123,38 @@ def _download(url: str, verbose: bool = False) -> bytes | None:
         if raw:
             return raw
 
-    # Strategy 2: Direct HTTP
-    raw = _download_direct(url, verbose=verbose)
-    return raw
+    # Strategy 2: Direct HTTP fallback
+    return _download_direct(url, verbose=verbose)
 
 
 def _ext_from_url(url: str) -> str:
-    url = url.split('?')[0].lower()
-    if url.endswith('.png'):
+    """Detect extension from URL path."""
+    path = url.split('?')[0].lower()
+    if path.endswith('.png'):
         return 'png'
-    if url.endswith('.webp'):
+    if path.endswith('.webp'):
         return 'webp'
-    return 'jpg'
+    if path.endswith('.jpg') or path.endswith('.jpeg'):
+        return 'jpg'
+    return 'jpg'  # safe default for extensionless Cloudinary names
 
+
+def _ext_from_bytes(data: bytes) -> str:
+    """
+    Sniff the actual image format from magic bytes.
+    More reliable than URL-based detection — Cloudinary stored names
+    often lack a file extension entirely.
+    """
+    if data[:8] == b'\x89PNG\r\n\x1a\n':
+        return 'png'
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+        return 'webp'
+    if data[:3] == b'\xff\xd8\xff':
+        return 'jpg'
+    return 'jpg'  # safe default
+
+
+# ── Management Command ────────────────────────────────────────────────────────
 
 class Command(BaseCommand):
     help = 'Remove PropertyPro watermarks from all scraped listing images on Cloudinary'
@@ -189,7 +208,7 @@ class Command(BaseCommand):
             )
             return
 
-        # Quick connectivity check — print Cloudinary config so you can verify it's loaded
+        # Verify Cloudinary config is loaded
         cfg = cloudinary.config()
         self.stdout.write(
             f"Cloudinary cloud: {cfg.cloud_name or '(not set — check CLOUDINARY_URL or settings)'}\n"
@@ -201,49 +220,61 @@ class Command(BaseCommand):
             title_short = (listing.title or 'Untitled')[:60]
             self.stdout.write(f"\n[{i}/{total}] {title_short}")
 
-            # Determine source URL
-            src_url = None
+            # ── Build a prioritised list of URLs to try ───────────────
+            urls_to_try = []
+
             if listing.image_file:
                 try:
-                    src_url = listing.image_file.url
+                    cf_url = listing.image_file.url
+                    urls_to_try.append(('cloudinary', cf_url))
                 except Exception as e:
-                    self.stdout.write(self.style.WARNING(f"  ✗ Could not resolve image_file URL: {e}"))
+                    self.stdout.write(self.style.WARNING(f"  ⚠ Could not resolve image_file URL: {e}"))
 
-            if not src_url:
-                src_url = listing.image_url or None
+            if listing.image_url:
+                urls_to_try.append(('original', listing.image_url))
 
-            if not src_url:
+            if not urls_to_try:
                 self.stdout.write(self.style.WARNING("  ✗ No image URL available — skipping"))
                 skipped += 1
                 continue
 
-            display_url = src_url if verbose else (src_url[:80] + '...' if len(src_url) > 80 else src_url)
-            self.stdout.write(f"  Downloading: {display_url}")
+            # ── Try each source in order ──────────────────────────────
+            raw         = None
+            used_url    = None
+            used_source = None
 
-            raw = _download(src_url, verbose=verbose)
+            for source, url in urls_to_try:
+                display_url = url if verbose else (url[:80] + '...' if len(url) > 80 else url)
+                self.stdout.write(f"  [{source}] Downloading: {display_url}")
+                raw = _download(url, verbose=verbose)
+                if raw:
+                    used_url    = url
+                    used_source = source
+                    self.stdout.write(f"  Downloaded {len(raw):,} bytes from [{source}]")
+                    break
+                else:
+                    self.stdout.write(self.style.WARNING(f"  ✗ [{source}] failed — trying next source..."))
 
             if not raw:
                 self.stdout.write(
                     self.style.ERROR(
-                        "  ✗ Download failed. Possible causes:\n"
-                        "     • Image is in a private/authenticated Cloudinary bucket\n"
-                        "     • CLOUDINARY_URL env var not set or wrong cloud name\n"
-                        "     • Image was deleted from Cloudinary\n"
-                        "    Try running with --verbose for HTTP status codes."
+                        "  ✗ All sources failed. Possible causes:\n"
+                        "     • File deleted from Cloudinary AND original URL is gone\n"
+                        "     • Network/firewall blocking outbound requests\n"
+                        "    Run with --verbose to see HTTP status codes."
                     )
                 )
                 failed += 1
                 time.sleep(delay)
                 continue
 
-            self.stdout.write(f"  Downloaded {len(raw):,} bytes")
-
-            # Detect format
-            ext = _ext_from_url(src_url)
+            # ── Detect format from magic bytes (not URL) ──────────────
+            ext = _ext_from_bytes(raw)
             fmt_map = {'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'webp': 'WEBP'}
             fmt = fmt_map.get(ext, 'JPEG')
+            self.stdout.write(f"  Detected format: {fmt} (.{ext})")
 
-            # Remove watermark
+            # ── Remove watermark ──────────────────────────────────────
             try:
                 processed = process_image_bytes(raw, fmt=fmt, stamp_nestova=False)
             except Exception as e:
@@ -252,21 +283,29 @@ class Command(BaseCommand):
                 time.sleep(delay)
                 continue
 
-            # Determine filename
-            if listing.image_file and listing.image_file.name:
+            # ── Determine output filename ─────────────────────────────
+            if used_source == 'cloudinary' and listing.image_file and listing.image_file.name:
                 fname = listing.image_file.name.split('/')[-1]
-                if '.' not in fname:
+                # Cloudinary names sometimes lack an extension — always ensure one
+                if '.' not in os.path.basename(fname):
                     fname = f"{fname}.{ext}"
             else:
-                h = hashlib.md5(src_url.encode()).hexdigest()
+                # Fell back to original URL, or image_file had no usable name
+                h = hashlib.md5((used_url or '').encode()).hexdigest()
                 fname = f"{h}.{ext}"
+                # Clear the broken/stale image_file reference before saving fresh
+                if listing.image_file:
+                    try:
+                        listing.image_file.delete(save=False)
+                    except Exception:
+                        pass
 
             # Truncate to stay within ImageField max_length=100
             name_base, ext_str = os.path.splitext(fname)
             if len(fname) > 85:
                 fname = f"{name_base[:75]}{ext_str}"
 
-            # Delete old file and re-upload
+            # ── Upload to Cloudinary ──────────────────────────────────
             try:
                 if listing.image_file:
                     listing.image_file.delete(save=False)
@@ -277,7 +316,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"  ✗ Save error: {e}"))
                 failed += 1
 
-            time.sleep(delay)  # Be polite to Cloudinary's API
+            time.sleep(delay)
 
         self.stdout.write(
             self.style.SUCCESS(
