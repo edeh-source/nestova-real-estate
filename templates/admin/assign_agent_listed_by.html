@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div id="content-main" style="padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px;">
+  <h1 style="margin-top: 0; color: #333;">Assign Agent and Listed By</h1>
+  <p style="font-size: 1.05em; color: #555;">Select the <strong>Agent</strong> and/or <strong>Listed By</strong> user to automatically update the following <strong>{{ items.count }}</strong> selected property/properties:</p>
+  
+  <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #417690; margin-bottom: 20px;">
+    <h3 style="margin-top: 0;">Selected Properties:</h3>
+    <ul style="margin-bottom: 0; padding-left: 20px;">
+      {% for obj in items %}
+        <li style="margin-bottom: 5px;">
+          <strong>{{ obj.title }}</strong> 
+          <span style="color: #666; font-size: 0.9em;">
+            (Current Agent: <em>{{ obj.agent|default:"None" }}</em> | Current Listed By: <em>{{ obj.listed_by|default:"None" }}</em>)
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    
+    {% for field in form.hidden_fields %}
+      {{ field }}
+    {% endfor %}
+    
+    <div style="margin-bottom: 20px;">
+      <label for="{{ form.agent.id_for_label }}" style="font-weight: bold; display: block; margin-bottom: 6px; font-size: 1.1em; color: #222;">
+        {{ form.agent.label }}:
+      </label>
+      {{ form.agent }}
+      {% if form.agent.help_text %}
+        <p style="color: #666; font-size: 0.88em; margin-top: 4px; margin-bottom: 0;">{{ form.agent.help_text }}</p>
+      {% endif %}
+      {% if form.agent.errors %}
+        <div style="color: red;">{{ form.agent.errors }}</div>
+      {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 25px;">
+      <label for="{{ form.listed_by.id_for_label }}" style="font-weight: bold; display: block; margin-bottom: 6px; font-size: 1.1em; color: #222;">
+        {{ form.listed_by.label }}:
+      </label>
+      {{ form.listed_by }}
+      {% if form.listed_by.help_text %}
+        <p style="color: #666; font-size: 0.88em; margin-top: 4px; margin-bottom: 0;">{{ form.listed_by.help_text }}</p>
+      {% endif %}
+      {% if form.listed_by.errors %}
+        <div style="color: red;">{{ form.listed_by.errors }}</div>
+      {% endif %}
+    </div>
+
+    {% for item in items %}
+      <input type="hidden" name="{{ action_checkbox_name }}" value="{{ item.pk }}" />
+    {% endfor %}
+
+    <input type="hidden" name="action" value="assign_agent_and_listed_by" />
+    <input type="hidden" name="apply" value="1" />
+    
+    <div class="submit-row" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee;">
+      <input type="submit" value="Update Selected Properties" class="default" style="background: #417690; color: white; padding: 10px 20px; font-size: 1em; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" />
+      <a href="{% url 'admin:property_property_changelist' %}" class="button cancel-link" style="margin-left: 15px; text-decoration: none; padding: 10px 18px; background: #666; color: #fff; border-radius: 4px; display: inline-block; font-size: 0.95em;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
