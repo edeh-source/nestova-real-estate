@@ -248,7 +248,7 @@ class Property(models.Model):
     parking_spaces = models.PositiveIntegerField(default=0)
     
     # Pricing
-    price = models.DecimalField(max_digits=15, decimal_places=2)
+    price = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     price_per_sqft = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     
     # Features & Amenities
@@ -335,9 +335,11 @@ class Property(models.Model):
                 counter += 1
             self.slug = slug
         
-        # Calculate price per square foot
-        if self.square_feet and self.square_feet > 0:
+        # Calculate price per square foot — only when BOTH values are known
+        if self.price is not None and self.square_feet and self.square_feet > 0:
             self.price_per_sqft = self.price / self.square_feet
+        else:
+            self.price_per_sqft = None
         
         super().save(*args, **kwargs)
     
@@ -371,7 +373,9 @@ class Property(models.Model):
     
     @property
     def formatted_price(self):
-        """Format price with currency symbol"""
+        """Format price with currency symbol, or return fallback."""
+        if self.price is None:
+            return "Price on Flyer"
         return f"₦{self.price:,.2f}"
 
 

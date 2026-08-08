@@ -121,9 +121,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'contact.context_processors.contact_info', 
                 'django.template.context_processors.media',
-                'bookings.context_processors.nav_cities'
-                
-        
+                'bookings.context_processors.nav_cities',
+                'property.context_processors.nav_property_types',
             ],
         },
     },

@@ -1726,10 +1726,14 @@
           <li class="dropdown">
             <a href="{% url 'properties' %}?listing_type=sale">Buy <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
             <ul>
+              {% for ptype in nav_property_types %}
+              <li><a href="{% url 'properties' %}?listing_type=sale&type={{ ptype.name }}"><i class="{{ ptype.icon|default:'bi bi-building' }} dropdown-icon"></i>{{ ptype.get_name_display }} for Sale</a></li>
+              {% empty %}
               <li><a href="{% url 'properties' %}?listing_type=sale&type=flat"><i class="bi bi-building dropdown-icon"></i>Flats &amp; Apartments for Sale</a></li>
               <li><a href="{% url 'properties' %}?listing_type=sale&type=house"><i class="bi bi-house-door dropdown-icon"></i>Houses for Sale</a></li>
               <li><a href="{% url 'properties' %}?listing_type=sale&type=land"><i class="bi bi-geo dropdown-icon"></i>Land for Sale</a></li>
               <li><a href="{% url 'properties' %}?listing_type=sale&type=commercial"><i class="bi bi-shop dropdown-icon"></i>Commercial Properties</a></li>
+              {% endfor %}
               <li class="dropdown-divider-item"><a href="{% url 'properties' %}?listing_type=sale"><i class="bi bi-grid dropdown-icon"></i>All Properties for Sale</a></li>
             </ul>
           </li>
@@ -1738,10 +1742,14 @@
           <li class="dropdown">
             <a href="{% url 'properties' %}?listing_type=rent">Rent <i class="bi bi-chevron-down toggle-dropdown" aria-hidden="true"></i></a>
             <ul>
+              {% for ptype in nav_property_types %}
+              <li><a href="{% url 'properties' %}?listing_type=rent&type={{ ptype.name }}"><i class="{{ ptype.icon|default:'bi bi-building' }} dropdown-icon"></i>{{ ptype.get_name_display }} for Rent</a></li>
+              {% empty %}
               <li><a href="{% url 'properties' %}?listing_type=rent&type=flat"><i class="bi bi-building dropdown-icon"></i>Flats &amp; Apartments for Rent</a></li>
               <li><a href="{% url 'properties' %}?listing_type=rent&type=house"><i class="bi bi-house-door dropdown-icon"></i>Houses for Rent</a></li>
               <li><a href="{% url 'properties' %}?listing_type=rent&type=commercial"><i class="bi bi-briefcase dropdown-icon"></i>Office Spaces</a></li>
               <li><a href="{% url 'properties' %}?listing_type=rent&type=land"><i class="bi bi-geo dropdown-icon"></i>Land Lease</a></li>
+              {% endfor %}
               <li class="dropdown-divider-item"><a href="{% url 'properties' %}?listing_type=rent"><i class="bi bi-grid dropdown-icon"></i>All Properties for Rent</a></li>
             </ul>
           </li>

@@ -163,7 +163,9 @@ def search_properties(request):
 
 
 def get_properties_details(request, slug):
-    property_queryset = Property.objects.select_related('city', 'agent__user').prefetch_related('images')
+    property_queryset = Property.objects.select_related(
+        'state', 'city', 'property_type', 'status', 'listed_by', 'agent__user'
+    ).prefetch_related('images')
     property_detail = get_object_or_404(property_queryset, slug=slug)
 
     # ── Saved property check ─────────────────────────────────────────────────
@@ -280,7 +282,7 @@ def property_list(request):
     
     # Base Queryset
     properties_list = Property.objects.select_related(
-        'state', 'city', 'property_type', 'status', 'listed_by'
+        'state', 'city', 'property_type', 'status', 'listed_by', 'agent__user'
     ).prefetch_related('images').filter(status__name__in=['for_sale', 'for_rent', 'pending']) # Show active listings
     
     # --- Filtering ---
@@ -300,8 +302,13 @@ def property_list(request):
         properties_list = properties_list.filter(state_id=state_id)
 
     listing_type = request.GET.get('listing_type')
-    if listing_type and listing_type not in ('', 'buy'):
-        properties_list = properties_list.filter(status__name__icontains=listing_type)    
+    if listing_type:
+        if listing_type in ('buy', 'sale'):
+            properties_list = properties_list.filter(status__name__icontains='sale')
+        elif listing_type == 'rent':
+            properties_list = properties_list.filter(status__name__icontains='rent')
+        else:
+            properties_list = properties_list.filter(status__name__icontains=listing_type)   
 
     # City filter (from homepage search form)
     city_id = request.GET.get('city_type')
@@ -311,7 +318,12 @@ def property_list(request):
     # Property Type
     prop_type = request.GET.get('type')
     if prop_type and prop_type != 'All Types':
-        properties_list = properties_list.filter(property_type__name=prop_type)
+        type_filter = (
+            Q(property_type__name__iexact=prop_type) |
+            Q(property_type__category__iexact=prop_type) |
+            Q(property_type__name__icontains=prop_type)
+        )
+        properties_list = properties_list.filter(type_filter)
 
     # Price Range
     min_price = request.GET.get('min_price')

@@ -1232,7 +1232,15 @@
                     </div>
                     <div class="property-agent">
                       <i class="bi bi-person-circle" style="color:var(--gold);font-size:1rem;"></i>
-                      <strong>{{ prop.listed_by.get_full_name|default:prop.listed_by.username }}</strong>
+                      <strong>
+                        {% if prop.listed_by %}
+                          {{ prop.listed_by.get_full_name|default:prop.listed_by.username }}
+                        {% elif prop.agent and prop.agent.user %}
+                          {{ prop.agent.user.get_full_name|default:prop.agent.user.username }}
+                        {% else %}
+                          Nestova Agent
+                        {% endif %}
+                      </strong>
                     </div>
                     <a href="{{ prop.get_absolute_url }}" class="btn-prop-view">
                       View Details <i class="bi bi-arrow-right"></i>
@@ -1292,7 +1300,15 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                       <div class="property-agent">
                         <i class="bi bi-person-circle" style="color:var(--gold);"></i>
-                        <strong>{{ prop.listed_by.get_full_name|default:prop.listed_by.username }}</strong>
+                        <strong>
+                          {% if prop.listed_by %}
+                            {{ prop.listed_by.get_full_name|default:prop.listed_by.username }}
+                          {% elif prop.agent and prop.agent.user %}
+                            {{ prop.agent.user.get_full_name|default:prop.agent.user.username }}
+                          {% else %}
+                            Nestova Agent
+                          {% endif %}
+                        </strong>
                       </div>
                       <div class="property-actions" style="display:flex;gap:10px;align-items:center;">
                         <button class="btn-outline-action" title="Save"><i class="bi bi-heart"></i></button>

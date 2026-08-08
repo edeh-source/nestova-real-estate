@@ -1917,32 +1917,42 @@
 
               <div class="agent-profile-row">
                 <div class="agent-avatar">
-                  {% if property.agent %}
+                  {% if property.agent and property.agent.user %}
                     <a href="{% url 'agents:agent_profile' property.agent.slug %}">
                       <img src="{{ property.agent.user.get_users_image }}" alt="{{ property.agent.user.get_full_name }}" loading="lazy">
                     </a>
-                  
+                  {% elif property.listed_by %}
+                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="{{ property.listed_by.get_full_name }}" loading="lazy">
                   {% else %}
                     <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Agent" loading="lazy">
                   {% endif %}
                 </div>
                 <div>
-                  {% if property.agent %}
+                  {% if property.agent and property.agent.user %}
                     <a class="agent-name" href="{% url 'agents:agent_profile' property.agent.slug %}">
                       {{ property.agent.user.get_full_name|default:property.agent.user.username }}
                     </a>
-                      <a class="agent-name" 
-   href="https://wa.me/{{ property.agent.user.phone_number|cut:'+' }}" 
-   target="_blank" 
-   rel="noopener noreferrer">
-  <i class="fab fa-whatsapp" style="color: #25D366; margin-right: 6px;"></i>
-  {{ property.agent.user.phone_number }}
-</a>
+                    {% if property.agent.user.phone_number %}
+                    <a class="agent-name" 
+                       href="https://wa.me/{{ property.agent.user.phone_number|cut:'+' }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                      <i class="fab fa-whatsapp" style="color: #25D366; margin-right: 6px;"></i>
+                      {{ property.agent.user.phone_number }}
+                    </a>
+                    {% endif %}
                     <span class="agent-role">Listing Agent</span>
                     {% if property.agent.verification_status == 'verified' %}
                     <div class="badge-verified"><i class="bi bi-patch-check-fill"></i> Verified</div>
                     {% endif %}
-                  
+                  {% elif property.listed_by %}
+                    <span class="agent-name">
+                      {{ property.listed_by.get_full_name|default:property.listed_by.username }}
+                    </span>
+                    <span class="agent-role">Listing Admin</span>
+                  {% else %}
+                    <span class="agent-name">Nestova Agent</span>
+                    <span class="agent-role">Property Manager</span>
                   {% endif %}
                 </div>
               </div>
