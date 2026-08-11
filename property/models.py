@@ -612,3 +612,22 @@ class PropertyApplication(models.Model):
     @property
     def formatted_total(self):
         return f"₦{self.get_total_price():,.2f}"
+
+
+class PaymentAccount(models.Model):
+    """Payment account details shown on the property application form"""
+    account_name = models.CharField(max_length=300)
+    bank_name = models.CharField(max_length=200)
+    account_number = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0, help_text="Display order (lower = first)")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'bank_name']
+        verbose_name = 'Payment Account'
+        verbose_name_plural = 'Payment Accounts'
+
+    def __str__(self):
+        return f"{self.account_name} - {self.bank_name} ({self.account_number})"

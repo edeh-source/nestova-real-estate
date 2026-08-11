@@ -10,7 +10,7 @@ from agents.models import Agent
 from .models import (
     State, City, PropertyType, PropertyStatus, Property,
     PropertyImage, PropertyAmenity, PropertyAmenityLink,
-    Developer,
+    Developer, PaymentAccount, PropertyApplication,
 )
 
 User = get_user_model()
@@ -307,4 +307,50 @@ class PropertyAmenityAdmin(admin.ModelAdmin):
 
 
 
+@admin.register(PaymentAccount)
+class PaymentAccountAdmin(admin.ModelAdmin):
+    list_display = ['account_name', 'bank_name', 'account_number', 'is_active', 'order']
+    list_filter = ['is_active', 'bank_name']
+    list_editable = ['is_active', 'order']
+    search_fields = ['account_name', 'bank_name', 'account_number']
+    ordering = ['order', 'bank_name']
 
+
+@admin.register(PropertyApplication)
+class PropertyApplicationAdmin(admin.ModelAdmin):
+    list_display = ['get_full_name', 'listing', 'email', 'phone_number', 'status', 'submitted_at']
+    list_filter = ['status', 'submitted_at', 'floor_choice', 'payment_plan']
+    search_fields = ['firstname', 'surname', 'email', 'phone_number', 'listing__title']
+    readonly_fields = ['submitted_at', 'updated_at']
+    list_editable = ['status']
+    date_hierarchy = 'submitted_at'
+
+    fieldsets = (
+        ('Application Status', {
+            'fields': ('listing', 'applicant', 'status', 'admin_notes', 'submitted_at', 'updated_at')
+        }),
+        ('Personal Details', {
+            'fields': (
+                'title', 'surname', 'firstname', 'other_names',
+                'residential_address', 'phone_number', 'email',
+                'date_of_birth', 'nationality', 'marital_status',
+                'occupation', 'place_of_work', 'work_address', 'passport_photo'
+            )
+        }),
+        ('Identification', {
+            'fields': ('id_type', 'id_number', 'id_document', 'is_pep', 'pep_details')
+        }),
+        ('Next of Kin', {
+            'fields': ('nok_name', 'nok_relationship', 'nok_phone', 'nok_email', 'nok_address')
+        }),
+        ('Purchase Details', {
+            'fields': ('floor_choice', 'number_of_shops', 'payment_plan', 'intended_use')
+        }),
+        ('Declaration & Signature', {
+            'fields': ('aml_accepted', 'subscriber_signature')
+        }),
+        ('Realtor Details', {
+            'fields': ('realtor_name', 'realtor_email', 'realtor_phone', 'realtor_cid'),
+            'classes': ('collapse',)
+        }),
+    )

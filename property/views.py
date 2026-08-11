@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
-from .models import Property, State, City, PropertyType, PropertyApplication, Developer
+from .models import Property, State, City, PropertyType, PropertyApplication, Developer, PaymentAccount
 from listings.models import SavedProperty
 import logging
 
@@ -217,6 +217,51 @@ def get_properties_details(request, slug):
                 application.save()
                 application_success = True
                 application_form = None  # Clear form after success
+
+                # ── Send email notification to admin ─────────────────────────
+                try:
+                    from django.core.mail import send_mail
+                    from django.template.loader import render_to_string
+                    from django.utils.html import strip_tags
+                    from django.conf import settings
+                    from django.contrib.sites.shortcuts import get_current_site
+                    import datetime
+
+                    current_site = get_current_site(request)
+                    admin_url = f"https://{current_site.domain}/admin/property/propertyapplication/{application.pk}/change/"
+
+                    email_context = {
+                        'property_title': property_detail.title,
+                        'applicant_name': application.get_full_name(),
+                        'applicant_email': application.email,
+                        'applicant_phone': application.phone_number,
+                        'applicant_occupation': application.occupation,
+                        'floor_choice': application.get_floor_choice_display() if application.floor_choice else '',
+                        'payment_plan': application.get_payment_plan_display() if application.payment_plan else '',
+                        'number_of_shops': application.number_of_shops,
+                        'realtor_name': application.realtor_name,
+                        'realtor_email': application.realtor_email,
+                        'realtor_phone': application.realtor_phone,
+                        'admin_url': admin_url,
+                        'year': datetime.datetime.now().year,
+                    }
+
+                    html_message = render_to_string('emails/application_admin_notification.html', email_context)
+                    plain_message = strip_tags(html_message)
+
+                    admin_emails = [a[1] for a in settings.ADMINS] if getattr(settings, 'ADMINS', None) else [settings.DEFAULT_FROM_EMAIL]
+
+                    send_mail(
+                        subject=f'New Property Application: {property_detail.title} — {application.get_full_name()}',
+                        message=plain_message,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=admin_emails,
+                        html_message=html_message,
+                        fail_silently=True,
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to send application notification email: {e}", exc_info=True)
+
             # If invalid, the form with errors falls through to the context below
 
     # ── GET (or failed POST): build a blank / pre-filled form ────────────────
@@ -252,6 +297,9 @@ def get_properties_details(request, slug):
         from agents.utils import generate_property_referral_url
         referral_link = generate_property_referral_url(request, property_detail, request.user.agent_profile)
 
+    # ── Payment accounts for application form ────────────────────────────────
+    payment_accounts = PaymentAccount.objects.filter(is_active=True)
+
     context = {
         'property':              property_detail,
         'referral_link':         referral_link,
@@ -261,6 +309,7 @@ def get_properties_details(request, slug):
         'application_form':      application_form,
         'existing_application':  existing_application,
         'application_success':   application_success,
+        'payment_accounts':      payment_accounts,
 
         # Price reference table for the JS live calculator in the template
         'price_table': {
