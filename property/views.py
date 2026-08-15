@@ -4,7 +4,10 @@ from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
 from .models import Property, State, City, PropertyType, PropertyApplication, Developer, PaymentAccount
 from listings.models import SavedProperty
+from django.conf import settings
 import logging
+from urllib.parse import quote
+
 
 logger = logging.getLogger(__name__)
 
@@ -223,7 +226,6 @@ def get_properties_details(request, slug):
                     from django.core.mail import send_mail
                     from django.template.loader import render_to_string
                     from django.utils.html import strip_tags
-                    from django.conf import settings
                     from django.contrib.sites.shortcuts import get_current_site
                     import datetime
 
@@ -310,6 +312,7 @@ def get_properties_details(request, slug):
         'existing_application':  existing_application,
         'application_success':   application_success,
         'payment_accounts':      payment_accounts,
+        
 
         # Price reference table for the JS live calculator in the template
         'price_table': {
@@ -321,6 +324,9 @@ def get_properties_details(request, slug):
             'dev_doc_fee':      2_500_000,
         },
     }
+    whatsapp_msg = quote(f"Hi, I'm interested in {property_detail.title}. Please send me more details.")
+    context['whatsapp_url']    = f"https://wa.me/{settings.WHATSAPP_NUMBER}?text={whatsapp_msg}"
+    context['contact_phone']   = settings.CONTACT_PHONE
     return render(request, 'estate/property-details.html', context)
 
 

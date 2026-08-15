@@ -11,8 +11,7 @@ Download from:  Apify Console → your run → Export → JSON
 Place this file at:
     <your_app>/management/commands/import_mkh_properties.py
 """
-rediss://default:gQAAAAAAAtQ4AAIgcDE3ZmY3YjczYjFjNzY0NTk2YmIyODg5ODQ4NTFhMjNkYQ@desired-gnat-185400.upstash.io:6379?ssl_cert_reqs=none
-redis-cli --tls -u redis://default:AZyeAAIncDEzMDI4Zjk3OWNkMjg0YTM0YjFkZDVkMGIxZWEzOTI1M3AxNDAwOTQ@new-pegasus-40094.upstash.io:6379
+
 import json
 import re
 import sys

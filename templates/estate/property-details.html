@@ -29,12 +29,16 @@
     "addressCountry": "NG"
   },
   "offers": {
-    "@type": "Offer",
-    "price": "{{ property.price }}",
-    "priceCurrency": "NGN",
-    "availability": "https://schema.org/InStock",
-    "url": "{{ request.build_absolute_uri }}"
-  },
+  "@type": "Offer",
+  {% if property.price and not property.is_call_for_price %}
+  "price": "{{ property.price }}",
+  "priceCurrency": "NGN",
+  {% else %}
+  "priceSpecification": { "@type": "PriceSpecification", "priceCurrency": "NGN" },
+  {% endif %}
+  "availability": "https://schema.org/InStock",
+  "url": "{{ request.build_absolute_uri }}"
+},
   "numberOfRooms": "{{ property.bedrooms }}",
   "numberOfBathroomsTotal": "{{ property.bathrooms }}",
   "floorSize": { "@type": "QuantitativeValue", "value": "{{ property.square_feet }}", "unitCode": "FTK" }
@@ -46,6 +50,58 @@
 /* ============================================================
    PROPERTY DETAIL — LUXURY GLASSMORPHISM SYSTEM
    ============================================================ */
+
+/* ── Call-for-price CTA ───────────────────────────────── */
+.price-on-request {
+  font-size: 1.55rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.price-cta-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  margin-bottom: 2px;
+}
+
+.btn-price-cta {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.25s, transform 0.2s;
+}
+.btn-price-cta:hover { transform: translateY(-2px); }
+
+.btn-price-call {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.35);
+  color: var(--gold-light);
+}
+.btn-price-call:hover {
+  background: rgba(201,168,76,0.2);
+  color: var(--gold-light);
+}
+
+.btn-price-whatsapp {
+  background: rgba(37,211,102,0.1);
+  border-color: rgba(37,211,102,0.35);
+  color: #25D366;
+}
+.btn-price-whatsapp:hover {
+  background: rgba(37,211,102,0.2);
+  color: #25D366;
+}   
 
 .prop-hero {
   position: relative;
@@ -1801,115 +1857,32 @@
           <div class="prop-sidebar">
 
             <!-- Price Card -->
-            <div class="price-card">
-              <div class="price-display">
-                {{ property.formatted_price }}
-                {% if property.status.name == 'for_rent' %}<small>/mo</small>{% endif %}
-              </div>
-              <div class="price-status {% if property.status.name == 'for_rent' %}for-rent{% else %}for-sale{% endif %}">
-                {{ property.status.get_name_display }}
-              </div>
+            <!-- Price Card -->
+<div class="price-card">
 
-              <div class="prop-address">
-                <h4>{{ property.address }}</h4>
-                <p><i class="bi bi-geo-alt-fill"></i> {{ property.city.name }}, {{ property.state.name }}</p>
-              </div>
+  {% if property.is_call_for_price or not property.price %}
+    <div class="price-display price-on-request">
+      Price on Request
+    </div>
+    <div class="price-cta-btns">
+      <a href="tel:{{ contact_phone }}" class="btn-price-cta btn-price-call">
+        <i class="bi bi-telephone-fill"></i> Call Us
+      </a>
+      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer"
+         class="btn-price-cta btn-price-whatsapp">
+        <i class="bi bi-whatsapp"></i> WhatsApp Us
+      </a>
+    </div>
+  {% else %}
+    <div class="price-display">
+      {{ property.formatted_price }}
+      {% if property.status.name == 'for_rent' %}<small>/mo</small>{% endif %}
+    </div>
+  {% endif %}
 
-              <div class="prop-stats-grid">
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-door-open"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.bedrooms }}</span>
-                    <span class="prop-stat-label">Bedrooms</span>
-                  </div>
-                </div>
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-droplet"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.bathrooms }}</span>
-                    <span class="prop-stat-label">Bathrooms</span>
-                  </div>
-                </div>
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-aspect-ratio"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.square_feet|intcomma }}</span>
-                    <span class="prop-stat-label">Sq Ft</span>
-                  </div>
-                </div>
-                {% if property.lot_size %}
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-tree"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.lot_size|intcomma }}</span>
-                    <span class="prop-stat-label">Lot Sq Ft</span>
-                  </div>
-                </div>
-                {% endif %}
-                {% if property.year_built %}
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-calendar3"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.year_built }}</span>
-                    <span class="prop-stat-label">Year Built</span>
-                  </div>
-                </div>
-                {% endif %}
-                <div class="prop-stat">
-                  <div class="prop-stat-icon"><i class="bi bi-car-front"></i></div>
-                  <div>
-                    <span class="prop-stat-value">{{ property.parking_spaces }}</span>
-                    <span class="prop-stat-label">Parking</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Save messages -->
-              <div class="action-msg success" id="property-messagge-success"></div>
-              <div class="action-msg error" id="property-messagge-error"></div>
-
-              <!-- Save / login button -->
-              {% if user.is_authenticated %}
-                {% if saved_property %}
-                  <button class="btn-save btn-save-saved" disabled>
-                    <i class="bi bi-bookmark-check-fill"></i> Property Saved
-                  </button>
-                {% else %}
-                  <form id="property-id" method="post" action="{% url 'property_detail' property.slug %}">
-                    {% csrf_token %}
-                     <input type="hidden" name="save_property" value="1">
-                    <button id="save-btn"  type="submit" class="btn-save btn-save-primary">
-                      <i class="bi bi-bookmark-plus"></i> Save Property
-                    </button>
-                  </form>
-                {% endif %}
-              {% else %}
-                <a class="btn-save btn-save-login" href="{% url 'users:login' %}?next={{ request.path }}">
-                  <i class="bi bi-person-lock"></i> Login to Save Property
-                </a>
-              {% endif %}
-
-              <!-- Apply Now CTA -->
-              {% if not existing_application and not application_success %}
-              <a href="#application-form" class="btn-apply-now" onclick="scrollToForm(event)">
-                <i class="bi bi-clipboard-check"></i>
-                <span>Apply for This Property</span>
-                <i class="bi bi-arrow-down-short ms-auto"></i>
-              </a>
-              {% elif existing_application %}
-              <a href="#application-form" class="btn-apply-now" style="border-color:rgba(60,200,110,0.4);color:#6DFFA8;" onclick="scrollToForm(event)">
-                <i class="bi bi-check-circle-fill"></i>
-                <span>View My Application</span>
-                <i class="bi bi-arrow-down-short ms-auto"></i>
-              </a>
-              {% elif application_success %}
-              <div class="btn-apply-now" style="border-color:rgba(60,200,110,0.4);color:#6DFFA8;cursor:default;">
-                <i class="bi bi-check-circle-fill"></i>
-                <span>Application Submitted!</span>
-              </div>
-              {% endif %}
-
-            </div>
+  <div class="price-status {% if property.status.name == 'for_rent' %}for-rent{% else %}for-sale{% endif %}">
+    {{ property.status.get_name_display }}
+  </div>
 
             <!-- Agent Card -->
             <div class="agent-card">

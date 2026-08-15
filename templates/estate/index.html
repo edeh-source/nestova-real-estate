@@ -1026,7 +1026,8 @@
           <p class="blog-excerpt">{{ post.text|striptags|truncatewords:22 }}</p>
           <div class="blog-footer">
             <div class="blog-author">
-              <div class="blog-author-avatar-default"><i class="bi bi-person-fill"></i></div>
+              <div class="blog-author-avatar-default">
+                <i class="bi bi-person-fill"></i></div>
               <span class="blog-author-name">{{ post.author.user.get_full_name|default:post.author.user.username }}</span>
             </div>
             <span class="blog-read-link">Read Article <i class="bi bi-arrow-right"></i></span>

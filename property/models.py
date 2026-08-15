@@ -242,11 +242,11 @@ class Property(models.Model):
     # Specifications
     bedrooms = models.PositiveIntegerField(default=0)
     bathrooms = models.PositiveIntegerField(default=0)
-    square_feet = models.PositiveIntegerField(help_text="Property size in square feet")
+    square_feet = models.PositiveIntegerField(help_text="Property size in square feet", blank=True, null=True)
     lot_size = models.PositiveIntegerField(blank=True, null=True, help_text="Lot size in square feet")
     year_built = models.PositiveIntegerField(blank=True, null=True)
     parking_spaces = models.PositiveIntegerField(default=0)
-    
+    is_call_for_price = models.BooleanField(default=False)
     # Pricing
     price = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     price_per_sqft = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)

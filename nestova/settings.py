@@ -128,7 +128,8 @@ TEMPLATES = [
     },
 ]
 
-
+CONTACT_PHONE    = "+2349014344271"   
+WHATSAPP_NUMBER  = "2349014344271" 
 if not DEBUG:
     TEMPLATES[0]['APP_DIRS'] = False
     TEMPLATES[0]['OPTIONS']['loaders'] = [
