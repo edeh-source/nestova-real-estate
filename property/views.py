@@ -450,7 +450,7 @@ def property_list(request):
 
     
     # --- Pagination ---
-    paginator = Paginator(properties_list, 9) 
+    paginator = Paginator(properties_list, 12) 
     page_number = request.GET.get('page')
     properties = paginator.get_page(page_number)
     
