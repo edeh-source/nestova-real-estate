@@ -564,7 +564,7 @@
           <select id="property_type" name="type">
             <option value="">Any Type</option>
             {% for pt in property_types %}
-            <option value="{{ pt.name }}">{{ pt.get_name_display }}</option>
+            <option value="{{ pt.name }}" data-category="{{ pt.category }}">{{ pt.get_name_display }}</option>
             {% endfor %}
           </select>
         </div>
@@ -739,99 +739,525 @@
     </div>
   </section>
 
-  <!-- ======================== TESTIMONIALS ======================== -->
-  <section class="testimonials-section mb-4">
-    <div style="text-align: center;" data-reveal>
-      <div class="section-badge"><i class="bi bi-chat-quote-fill"></i> Testimonials</div>
-      <h2 class="section-title-xl" style="color: white;">What Our <em>Clients</em> Say</h2>
-      <p class="section-subtitle" style="margin: 14px auto 0;">Real stories from real people who found their dream homes
-        with Nestova.</p>
-    </div>
+  <!-- ======================== FEATURED DEVELOPERS ======================== -->
+  <section class="dev-section" id="featured-developers">
+    <style>
+      /* ============================================================
+         FEATURED DEVELOPERS SECTION
+         ============================================================ */
+      .dev-section {
+        padding: 100px 0 80px;
+        position: relative;
+        overflow: hidden;
+      }
 
-    <div class="testi-grid">
-      {% if testimonials %}
-      {% for testimonial in testimonials %}
-      <div class="testi-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
-        <div class="testi-stars">
-          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-        </div>
-        <p class="testi-text">{{ testimonial.message }}</p>
-        <div class="testi-author">
-          {% if testimonial.image %}
-          <img src="{{ testimonial.image.url }}" class="testi-avatar" alt="{{ testimonial.name }}">
-          {% else %}
-          <div class="testi-avatar"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1)); display:flex; align-items:center; justify-content:center; font-size:1.2rem; color: var(--gold);">
-            <i class="bi bi-person-fill"></i>
+      /* Ambient background orbs */
+      .dev-section::before {
+        content: '';
+        position: absolute;
+        top: -120px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(201, 168, 76, 0.055) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .dev-section::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        right: -150px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(201, 168, 76, 0.04) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      /* ---- Section header ---- */
+      .dev-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 56px;
+        flex-wrap: wrap;
+      }
+
+      .dev-header-left { flex: 1; min-width: 220px; }
+
+      .dev-header-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold);
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        padding: 5px 14px;
+        border-radius: 50px;
+        margin-bottom: 16px;
+      }
+
+      .dev-header-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 400;
+        color: var(--text-primary);
+        line-height: 1.2;
+        margin: 0 0 10px;
+      }
+
+      .dev-header-title em {
+        font-style: normal;
+        background: linear-gradient(135deg, var(--gold-light), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .dev-header-sub {
+        font-size: 0.93rem;
+        color: var(--text-muted);
+        max-width: 420px;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .dev-header-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 26px;
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        border-radius: 50px;
+        color: var(--gold-light);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        white-space: nowrap;
+        background: rgba(201, 168, 76, 0.06);
+      }
+
+      .dev-header-cta:hover {
+        background: rgba(201, 168, 76, 0.14);
+        border-color: rgba(201, 168, 76, 0.5);
+        color: var(--gold-light);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 30px rgba(201, 168, 76, 0.15);
+      }
+
+      /* ---- Card track ---- */
+      .dev-track {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+      }
+
+      /* ---- Developer card ---- */
+      .dev-card {
+        position: relative;
+        background: var(--surface-1);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+        text-decoration: none;
+        color: var(--text-primary);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                    border-color 0.3s ease;
+      }
+
+      /* Gradient shimmer on hover */
+      .dev-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, rgba(201, 168, 76, 0.06) 0%, transparent 55%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Gold top line accent */
+      .dev-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        border-radius: 0 0 4px 4px;
+      }
+
+      .dev-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(201, 168, 76, 0.28);
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(201, 168, 76, 0.1);
+        text-decoration: none;
+        color: var(--text-primary);
+      }
+
+      .dev-card:hover::before { opacity: 1; }
+      .dev-card:hover::after  { opacity: 1; }
+
+      /* ---- Banner strip ---- */
+      .dev-card-banner {
+        position: relative;
+        height: 90px;
+        background: linear-gradient(135deg, rgba(13, 27, 62, 0.9), rgba(30, 15, 60, 0.9));
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .dev-card-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.35;
+        transition: opacity 0.35s ease;
+      }
+
+      .dev-card:hover .dev-card-banner img { opacity: 0.55; }
+
+      .dev-card-banner-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 40%, var(--surface-1) 100%);
+      }
+
+      /* ---- Logo badge ---- */
+      .dev-logo-wrap {
+        position: absolute;
+        bottom: -24px;
+        left: 20px;
+        z-index: 2;
+      }
+
+      .dev-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: rgba(10, 10, 20, 0.95);
+        border: 2px solid rgba(201, 168, 76, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        transition: border-color 0.3s ease;
+      }
+
+      .dev-card:hover .dev-logo { border-color: rgba(201, 168, 76, 0.5); }
+
+      .dev-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 6px;
+      }
+
+      .dev-logo-initials {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--gold-light);
+        line-height: 1;
+      }
+
+      /* ---- Card body ---- */
+      .dev-card-body {
+        position: relative;
+        z-index: 1;
+        padding: 36px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 14px;
+      }
+
+      .dev-card-name {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .dev-card-tagline {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      /* Location badge */
+      .dev-card-location {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: var(--glass-white);
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+        padding: 3px 10px;
+        width: fit-content;
+      }
+
+      .dev-card-location i { color: var(--gold); font-size: 0.7rem; }
+
+      /* Stats row */
+      .dev-card-stats {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 14px;
+        margin-top: auto;
+      }
+
+      .dev-stat {
+        flex: 1;
+        text-align: center;
+        padding: 0 6px;
+        border-right: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .dev-stat:first-child { padding-left: 0; text-align: left; }
+      .dev-stat:last-child  { border-right: none; text-align: right; padding-right: 0; }
+
+      .dev-stat-value {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+
+      .dev-stat-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-top: 2px;
+      }
+
+      /* Featured badge */
+      .dev-featured-badge {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #0A0A0F;
+        background: linear-gradient(135deg, var(--gold-light), var(--gold));
+        padding: 3px 10px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.35);
+      }
+
+      /* CTA arrow */
+      .dev-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--gold-light);
+        font-weight: 500;
+        margin-top: 4px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .dev-card-footer i {
+        transition: transform 0.2s ease;
+      }
+
+      .dev-card:hover .dev-card-footer i { transform: translateX(4px); }
+
+      /* Empty fallback */
+      .dev-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 64px 20px;
+      }
+
+      .dev-empty-icon {
+        font-size: 3.5rem;
+        color: rgba(201,168,76,0.15);
+        margin-bottom: 20px;
+      }
+
+      .dev-empty h3 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 400;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+      }
+
+      .dev-empty p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        max-width: 340px;
+        margin: 0 auto;
+      }
+
+      /* ---- Responsive ---- */
+      @media (max-width: 1200px) {
+        .dev-track { grid-template-columns: repeat(3, 1fr); }
+      }
+
+      @media (max-width: 900px) {
+        .dev-track { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .dev-section { padding: 70px 0 60px; }
+      }
+
+      @media (max-width: 576px) {
+        .dev-track { grid-template-columns: 1fr; gap: 16px; }
+        .dev-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .dev-header-left { min-width: 0; width: 100%; }
+        .dev-header-sub { max-width: 100%; }
+        .dev-header-cta { align-self: flex-start; }
+      }
+    </style>
+
+    <div class="container">
+
+      <!-- Section Header -->
+      <div class="dev-header" data-reveal>
+        <div class="dev-header-left">
+          <div class="dev-header-eyebrow">
+            <i class="bi bi-buildings-fill"></i> Property Developers
           </div>
-          {% endif %}
-          <div>
-            <div class="testi-name">{{ testimonial.name }}</div>
-            <div class="testi-role">{{ testimonial.role|default:"Verified Client" }}</div>
-          </div>
+          <h2 class="dev-header-title">
+            Trusted <em>Developers</em><br>on Nestova
+          </h2>
+          <p class="dev-header-sub">
+            Hand-picked developers with proven track records, delivering exceptional residential and commercial projects across Nigeria.
+          </p>
         </div>
-      </div>
-      {% endfor %}
-      {% else %}
-      <!-- Fallback testimonials -->
-      <div class="testi-card" data-reveal data-reveal-delay="100">
-        <div class="testi-stars">
-          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-        </div>
-        <p class="testi-text">"Working with Nestova was an absolute pleasure. They found us our dream home in Lekki
-          within two weeks. The process was seamless and their team was incredibly professional."</p>
-        <div class="testi-author">
-          <div class="testi-avatar"
-            style="background:linear-gradient(135deg,rgba(201,168,76,0.3),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);">
-            <i class="bi bi-person-fill"></i>
-          </div>
-          <div>
-            <div class="testi-name">Adaeze Okafor</div>
-            <div class="testi-role">Property Buyer, Lagos</div>
-          </div>
-        </div>
+        <a href="{% url 'developers_list' %}" class="dev-header-cta">
+          View All Developers <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
 
-      <div class="testi-card" data-reveal data-reveal-delay="200">
-        <div class="testi-stars">
-          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-        </div>
-        <p class="testi-text">"Nestova's market insights helped me make a brilliant investment decision. My property
-          value has grown 40% in just 18 months. Truly exceptional guidance and support."</p>
-        <div class="testi-author">
-          <div class="testi-avatar"
-            style="background:linear-gradient(135deg,rgba(30,100,200,0.3),rgba(30,100,200,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#7EB8FF;">
-            <i class="bi bi-person-fill"></i>
+      <!-- Developer Cards -->
+      <div class="dev-track">
+        {% if featured_developers %}
+          {% for dev in featured_developers %}
+          <a href="{% url 'developer_detail' slug=dev.slug %}" class="dev-card" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+
+            <!-- Featured badge -->
+            <div class="dev-featured-badge">
+              <i class="bi bi-star-fill"></i> Featured
+            </div>
+
+            <!-- Banner -->
+            <div class="dev-card-banner">
+              {% if dev.banner_image %}
+                <img src="{{ dev.banner_image.url }}" alt="{{ dev.name }} banner" loading="lazy">
+              {% endif %}
+              <div class="dev-card-banner-overlay"></div>
+              <!-- Logo overlapping banner -->
+              <div class="dev-logo-wrap">
+                <div class="dev-logo">
+                  {% if dev.logo %}
+                    <img src="{{ dev.logo.url }}" alt="{{ dev.name }} logo">
+                  {% else %}
+                    <span class="dev-logo-initials">{{ dev.name|slice:":2"|upper }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="dev-card-body">
+              <div>
+                <h3 class="dev-card-name">{{ dev.name }}</h3>
+                {% if dev.tagline %}
+                  <p class="dev-card-tagline">{{ dev.tagline }}</p>
+                {% endif %}
+              </div>
+
+              {% if dev.headquarters %}
+              <div class="dev-card-location">
+                <i class="bi bi-geo-alt-fill"></i>
+                {{ dev.headquarters }}
+              </div>
+              {% endif %}
+
+              <!-- Stats -->
+              <div class="dev-card-stats">
+                <div class="dev-stat">
+                  <div class="dev-stat-value">{{ dev.property_count }}</div>
+                  <div class="dev-stat-label">Listings</div>
+                </div>
+                <div class="dev-stat">
+                  <div class="dev-stat-value">
+                    {% if dev.total_units_delivered %}
+                      {{ dev.total_units_delivered }}
+                    {% else %}
+                      <span style="color:var(--text-muted);font-size:0.9rem;">—</span>
+                    {% endif %}
+                  </div>
+                  <div class="dev-stat-label">Units</div>
+                </div>
+                <div class="dev-stat">
+                  <div class="dev-stat-value">
+                    {% if dev.founded_year %}
+                      {{ dev.founded_year }}
+                    {% else %}
+                      <span style="color:var(--text-muted);font-size:0.9rem;">—</span>
+                    {% endif %}
+                  </div>
+                  <div class="dev-stat-label">Est.</div>
+                </div>
+              </div>
+
+              <!-- Footer CTA -->
+              <div class="dev-card-footer">
+                <span>View Developer</span>
+                <i class="bi bi-arrow-right"></i>
+              </div>
+
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <!-- Empty state -->
+          <div class="dev-empty">
+            <div class="dev-empty-icon"><i class="bi bi-buildings"></i></div>
+            <h3>Developers Coming Soon</h3>
+            <p>We're onboarding top-tier developers. Check back shortly to explore premium real estate brands.</p>
           </div>
-          <div>
-            <div class="testi-name">Emeka Nwosu</div>
-            <div class="testi-role">Real Estate Investor, Abuja</div>
-          </div>
-        </div>
+        {% endif %}
       </div>
 
-      <div class="testi-card" data-reveal data-reveal-delay="300">
-        <div class="testi-stars">
-          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-        </div>
-        <p class="testi-text">"From shortlisting to closing, Nestova handled everything flawlessly. Their knowledge of
-          the VI market is unmatched. We couldn't be happier with our new home."</p>
-        <div class="testi-author">
-          <div class="testi-avatar"
-            style="background:linear-gradient(135deg,rgba(180,30,100,0.3),rgba(180,30,100,0.1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#FF7EB8;">
-            <i class="bi bi-person-fill"></i>
-          </div>
-          <div>
-            <div class="testi-name">Tunde & Bisi Adeleke</div>
-            <div class="testi-role">Homeowners, Victoria Island</div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
     </div>
   </section>
 
@@ -1562,15 +1988,79 @@
     });
   })();
 
-  // ── Search tab switching ── wires hidden listing_type input
-  document.querySelectorAll('.search-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const typeInput = document.getElementById('listingTypeInput');
-      if (typeInput) typeInput.value = tab.dataset.type || 'buy';
+  // ── Search tab switching & property type category filter ──
+  (function () {
+    const tabs = document.querySelectorAll('.search-tab');
+    const typeInput = document.getElementById('listingTypeInput');
+    const propTypeSelect = document.getElementById('property_type');
+    if (!tabs.length || !propTypeSelect) return;
+
+    // Cache all initial property type options
+    const allTypeOptions = Array.from(propTypeSelect.options).map(opt => ({
+      value: opt.value,
+      text: opt.textContent,
+      category: (opt.dataset.category || '').toLowerCase()
+    }));
+
+    function filterPropertyTypes(tabType) {
+      propTypeSelect.innerHTML = '';
+
+      let defaultLabel = 'Any Type';
+      if (tabType === 'commercial') {
+        defaultLabel = 'Any Commercial Type';
+      } else if (tabType === 'land') {
+        defaultLabel = 'Any Land Type';
+      } else if (tabType === 'buy') {
+        defaultLabel = 'Any Residential Type';
+      }
+
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = '';
+      defaultOpt.textContent = defaultLabel;
+      propTypeSelect.appendChild(defaultOpt);
+
+      allTypeOptions.forEach(item => {
+        if (!item.value) return; // skip default placeholder
+
+        let matches = false;
+        if (tabType === 'commercial') {
+          matches = (item.category === 'commercial');
+        } else if (tabType === 'land') {
+          matches = (item.category === 'land');
+        } else if (tabType === 'buy') {
+          matches = (item.category === 'residential' || item.category === 'special' || !item.category);
+        } else {
+          matches = true;
+        }
+
+        if (matches) {
+          const opt = document.createElement('option');
+          opt.value = item.value;
+          opt.textContent = item.text;
+          opt.dataset.category = item.category;
+          propTypeSelect.appendChild(opt);
+        }
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const tabType = (tab.dataset.type || 'buy').toLowerCase();
+        if (typeInput) typeInput.value = tabType;
+        filterPropertyTypes(tabType);
+      });
     });
-  });
+
+    // Initialize with active tab on load
+    const activeTab = document.querySelector('.search-tab.active');
+    if (activeTab) {
+      const initialType = (activeTab.dataset.type || 'buy').toLowerCase();
+      if (typeInput) typeInput.value = initialType;
+      filterPropertyTypes(initialType);
+    }
+  })();
 
   // ── Events lightbox ──
   function openLightbox(cell) {

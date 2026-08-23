@@ -2969,3 +2969,165 @@
       justify-content: center;
     }
   }
+
+  /* ============================================================
+     GLOBAL OVERFLOW PREVENTION
+     Prevents any section from causing horizontal scroll on mobile.
+     These rules work alongside body { overflow-x: hidden } in
+     base.html. The body rule alone can miss absolutely-positioned
+     children that extend beyond the body edge. Clamping every
+     top-level section + its pseudo-elements is the correct fix.
+  ============================================================ */
+
+  /* ── 1. Every direct page section is contained ── */
+  .hero-universe,
+  .search-section,
+  .stats-float-bar,
+  .section-wrap,
+  .partners-section,
+  .blog-section,
+  .events-section,
+  .excos-section,
+  .licensed-section,
+  .dev-section,
+  .cta-band,
+  .benefits-section,
+  .testimonials-section {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* ── 2. Contain the ambient orb blobs (they are 600-700px wide) ── */
+  .ambient-bg,
+  .dev-section::before,
+  .dev-section::after {
+    overflow: hidden;
+  }
+
+  /* The orbs' parent already has overflow:hidden but the orbs
+     themselves use position:absolute + large widths — this makes
+     the container clip them instead of allowing bleed. */
+  .dev-section {
+    overflow: hidden;
+  }
+
+  /* ── 3. Partner marquee ── */
+  .partners-track-wrap {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  /* ── 4. Stats bar inner — no horizontal scroll ── */
+  .stats-bar-inner {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* ── 5. Remove right-side floating pill on very small screens ── */
+  @media (max-width: 575px) {
+    .hero-price-pill {
+      display: none !important;
+    }
+  }
+
+  /* ── 6. Tighten section horizontal padding on phones ── */
+  @media (max-width: 480px) {
+    .blog-section,
+    .events-section,
+    .excos-section,
+    .dev-section {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .licensed-section {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    /* Search glass card edge clipping */
+    .search-glass-card {
+      margin-left: 0;
+      margin-right: 0;
+      border-radius: 16px;
+    }
+
+    /* CTA band */
+    .cta-band {
+      margin-left: 12px;
+      margin-right: 12px;
+      padding: 48px 22px;
+    }
+
+    /* Benefits section — stack on phones */
+    .benefits-3d-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .benefit-item-3d {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  /* ── 7. Clamp any images that may bleed past the container ── */
+  @media (max-width: 576px) {
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Stats bar number — reduce size so it doesn't wrap/overflow */
+    .stat-number {
+      font-size: 1.8rem;
+    }
+
+    .stat-label {
+      font-size: 0.62rem;
+    }
+
+    /* Licensed glass — ensure it never protrudes on very narrow phones */
+    .licensed-glass {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    /* Dev section header — prevent 220px min-width from overflowing */
+    .dev-header-left {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .dev-header-sub {
+      max-width: 100%;
+    }
+
+    /* Blog / events grid full-width */
+    .blog-grid,
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── 8. Prevent table-like stats bar from horizontal scroll ── */
+  @media (max-width: 400px) {
+    .stats-bar-inner {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-item::after {
+      display: none;
+    }
+
+    .stat-item {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Partner cards — narrow phones */
+    .partner-card {
+      width: 120px !important;
+      height: 70px !important;
+    }
+  }

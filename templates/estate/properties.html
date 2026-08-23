@@ -1052,13 +1052,25 @@
                 {% if search_params.sort %}
                 <input type="hidden" name="sort" value="{{ search_params.sort }}">
                 {% endif %}
+                {% if search_params.listing_type %}
+                <input type="hidden" name="listing_type" value="{{ search_params.listing_type }}">
+                {% endif %}
+                {% if search_params.category %}
+                <input type="hidden" name="category" value="{{ search_params.category }}">
+                {% endif %}
+                {% if search_params.state_type %}
+                <input type="hidden" name="state_type" value="{{ search_params.state_type }}">
+                {% endif %}
+                {% if search_params.city_type %}
+                <input type="hidden" name="city_type" value="{{ search_params.city_type }}">
+                {% endif %}
 
                 <div class="filter-section">
                   <label class="form-label">Property Type</label>
                   <select class="form-select" name="type">
                     <option value="">All Types</option>
                     {% for type in property_types %}
-                    <option value="{{ type.name }}" {% if search_params.type == type.name %}selected{% endif %}>{{ type.name|title }}</option>
+                    <option value="{{ type.name }}" {% if search_params.type == type.name %}selected{% endif %}>{{ type.get_name_display|default:type.name|title }}</option>
                     {% endfor %}
                   </select>
                 </div>

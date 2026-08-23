@@ -59,7 +59,7 @@ def homepage(request):
         featured_developers = Developer.objects.filter(
             is_featured=True,
             is_active=True
-        ).order_by('-created_at')[:6]
+        ).order_by('-created_at')[:5]
 
         context = {
             'states': states,
@@ -114,11 +114,14 @@ def get_cities_by_state(request):
 
 def search_properties(request):
     """Search/filter properties"""
+    from django.db.models import Q
     
     # Get filter parameters
-    state_id = request.GET.get('state_type')
-    city_id = request.GET.get('city_type')
-    property_type = request.GET.get('property_type')
+    state_id = request.GET.get('state_type') or request.GET.get('state')
+    city_id = request.GET.get('city_type') or request.GET.get('city')
+    listing_type = request.GET.get('listing_type')
+    category = request.GET.get('category')
+    property_type = request.GET.get('type') or request.GET.get('property_type')
     price_range = request.GET.get('price_range')
     bedrooms = request.GET.get('bedrooms')
     bathrooms = request.GET.get('bathrooms')
@@ -130,31 +133,77 @@ def search_properties(request):
     
     # Apply filters
     if state_id:
-        properties = properties.filter(state_id=state_id)
+        if str(state_id).isdigit():
+            properties = properties.filter(state_id=state_id)
+        else:
+            properties = properties.filter(state__name__icontains=state_id)
     
     if city_id:
-        properties = properties.filter(city_id=city_id)
+        if str(city_id).isdigit():
+            properties = properties.filter(city_id=city_id)
+        else:
+            properties = properties.filter(city__name__icontains=city_id)
+
+    if category and category.lower() != 'all':
+        properties = properties.filter(
+            Q(property_type__category__iexact=category) |
+            Q(property_type__name__icontains=category)
+        )
+
+    if listing_type:
+        lt_lower = listing_type.lower()
+        if lt_lower == 'commercial':
+            properties = properties.filter(
+                Q(property_type__category__iexact='commercial') |
+                Q(property_type__name__icontains='commercial')
+            )
+        elif lt_lower == 'land':
+            properties = properties.filter(
+                Q(property_type__category__iexact='land') |
+                Q(property_type__name__icontains='land')
+            )
+        elif lt_lower in ('buy', 'sale', 'for_sale'):
+            properties = properties.filter(status__name__icontains='sale')
+        elif lt_lower in ('rent', 'for_rent'):
+            properties = properties.filter(status__name__icontains='rent')
+        else:
+            properties = properties.filter(
+                Q(status__name__icontains=listing_type) |
+                Q(property_type__category__iexact=listing_type) |
+                Q(property_type__name__icontains=listing_type)
+            )
     
-    if property_type:
-        properties = properties.filter(property_type__name=property_type)
+    if property_type and property_type != 'All Types':
+        properties = properties.filter(
+            Q(property_type__name__iexact=property_type) |
+            Q(property_type__category__iexact=property_type) |
+            Q(property_type__name__icontains=property_type)
+        )
     
     if price_range:
-        if price_range == '1200000+':
-            properties = properties.filter(price__gte=1200000)
+        if '+' in price_range:
+            p_val = price_range.replace('+', '').strip()
+            if p_val.isdigit():
+                properties = properties.filter(price__gte=int(p_val))
         elif '-' in price_range:
-            min_price, max_price = price_range.split('-')
-            properties = properties.filter(price__gte=int(min_price), price__lte=int(max_price))
+            parts = price_range.split('-')
+            if len(parts) == 2:
+                p_min, p_max = parts[0].strip(), parts[1].strip()
+                if p_min.isdigit():
+                    properties = properties.filter(price__gte=int(p_min))
+                if p_max.isdigit():
+                    properties = properties.filter(price__lte=int(p_max))
     
     if bedrooms:
         if bedrooms == '5+':
             properties = properties.filter(bedrooms__gte=5)
-        else:
+        elif str(bedrooms).isdigit():
             properties = properties.filter(bedrooms=int(bedrooms))
     
     if bathrooms:
         if bathrooms == '4+':
             properties = properties.filter(bathrooms__gte=4)
-        else:
+        elif str(bathrooms).isdigit():
             properties = properties.filter(bathrooms=int(bathrooms))
     
     context = {
@@ -352,26 +401,57 @@ def property_list(request):
             Q(city__name__icontains=query)
         )
 
-    state_id = request.GET.get('state_type')
-    if state_id:
-        properties_list = properties_list.filter(state_id=state_id)
+    # State filter (handles state_type ID from homepage and state name/ID from sidebar)
+    state_param = request.GET.get('state_type') or request.GET.get('state')
+    if state_param:
+        if str(state_param).isdigit():
+            properties_list = properties_list.filter(state_id=state_param)
+        else:
+            properties_list = properties_list.filter(state__name__icontains=state_param)
 
+    # City filter (handles city_type ID from homepage and city name/ID from sidebar)
+    city_param = request.GET.get('city_type') or request.GET.get('city')
+    if city_param:
+        if str(city_param).isdigit():
+            properties_list = properties_list.filter(city_id=city_param)
+        else:
+            properties_list = properties_list.filter(city__name__icontains=city_param)
+
+    # Category Filter (Residential / Commercial / Land / Special)
+    category = request.GET.get('category')
+    if category and category.lower() != 'all':
+        properties_list = properties_list.filter(
+            Q(property_type__category__iexact=category) |
+            Q(property_type__name__icontains=category)
+        )
+
+    # Listing Type / Homepage Tabs (buy, commercial, land, rent)
     listing_type = request.GET.get('listing_type')
     if listing_type:
-        if listing_type in ('buy', 'sale'):
+        listing_type_lower = listing_type.lower()
+        if listing_type_lower == 'commercial':
+            properties_list = properties_list.filter(
+                Q(property_type__category__iexact='commercial') |
+                Q(property_type__name__icontains='commercial')
+            )
+        elif listing_type_lower == 'land':
+            properties_list = properties_list.filter(
+                Q(property_type__category__iexact='land') |
+                Q(property_type__name__icontains='land')
+            )
+        elif listing_type_lower in ('buy', 'sale', 'for_sale'):
             properties_list = properties_list.filter(status__name__icontains='sale')
-        elif listing_type == 'rent':
+        elif listing_type_lower in ('rent', 'for_rent'):
             properties_list = properties_list.filter(status__name__icontains='rent')
         else:
-            properties_list = properties_list.filter(status__name__icontains=listing_type)   
+            properties_list = properties_list.filter(
+                Q(status__name__icontains=listing_type) |
+                Q(property_type__category__iexact=listing_type) |
+                Q(property_type__name__icontains=listing_type)
+            )
 
-    # City filter (from homepage search form)
-    city_id = request.GET.get('city_type')
-    if city_id:
-        properties_list = properties_list.filter(city_id=city_id)   
-
-    # Property Type
-    prop_type = request.GET.get('type')
+    # Specific Property Type
+    prop_type = request.GET.get('type') or request.GET.get('property_type')
     if prop_type and prop_type != 'All Types':
         type_filter = (
             Q(property_type__name__iexact=prop_type) |
@@ -380,13 +460,28 @@ def property_list(request):
         )
         properties_list = properties_list.filter(type_filter)
 
-    # Price Range
+    # Price Range (supports dropdown formats like "0-5000000", "500000000-999999999", "1200000+" and individual min/max inputs)
+    price_range = request.GET.get('price_range')
+    if price_range:
+        if '+' in price_range:
+            p_val = price_range.replace('+', '').strip()
+            if p_val.isdigit():
+                properties_list = properties_list.filter(price__gte=int(p_val))
+        elif '-' in price_range:
+            parts = price_range.split('-')
+            if len(parts) == 2:
+                p_min, p_max = parts[0].strip(), parts[1].strip()
+                if p_min.isdigit():
+                    properties_list = properties_list.filter(price__gte=int(p_min))
+                if p_max.isdigit():
+                    properties_list = properties_list.filter(price__lte=int(p_max))
+
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
-    if min_price:
-        properties_list = properties_list.filter(price__gte=min_price)
-    if max_price:
-        properties_list = properties_list.filter(price__lte=max_price)
+    if min_price and str(min_price).strip().isdigit():
+        properties_list = properties_list.filter(price__gte=int(min_price.strip()))
+    if max_price and str(max_price).strip().isdigit():
+        properties_list = properties_list.filter(price__lte=int(max_price.strip()))
 
     # Bedrooms
     bedrooms = request.GET.get('bedrooms')
