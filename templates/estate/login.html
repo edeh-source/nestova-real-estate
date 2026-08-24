@@ -796,11 +796,13 @@
         <div class="form-divider"><span>Or continue with</span></div>
 
         <!-- Social -->
-        <div class="social-row">
-          <a href="{% provider_login_url 'google' %}" class="social-btn google">
-            <i class="bi bi-google"></i> Google
-          </a>
-         
+        <div class="social-row" style="grid-template-columns: 1fr;">
+          <form method="post" action="{% provider_login_url 'google' %}" style="width: 100%;">
+            {% csrf_token %}
+            <button type="submit" class="social-btn google" style="width: 100%; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); cursor: pointer;">
+              <i class="bi bi-google"></i> Google
+            </button>
+          </form>
         </div>
 
         <!-- Register -->

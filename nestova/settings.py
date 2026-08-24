@@ -351,13 +351,14 @@ if DEBUG:
     ]
     CSRF_COOKIE_SECURE = False
 else:
-    CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
-    if not CSRF_TRUSTED_ORIGINS or CSRF_TRUSTED_ORIGINS == ['']:
+    env_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+    if env_origins:
+        CSRF_TRUSTED_ORIGINS = [orig.strip() for orig in env_origins.split(',') if orig.strip()]
+    else:
         CSRF_TRUSTED_ORIGINS = [
             'https://nestovaproperty.com',
             'https://www.nestovaproperty.com',
-            'https://nestova-v6ks.onrender.com'
-            
+            'https://nestova-v6ks.onrender.com',
         ]
     CSRF_COOKIE_SECURE = True
 
@@ -533,19 +534,13 @@ CKEDITOR_CONFIGS = {
 }
 
 
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
-
-
-
 if DEBUG:
     PAYSTACK_CALLBACK_URL = os.environ.get('PAYSTACK_CALLBACK_URL')
     
 else:
     PAYSTACK_CALLBACK_URL = os.environ.get('PAYSTACK_CALLBACK_URL')
-CLIENT_ID = os.environ.get("CLIENT_ID")
-CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+CLIENT_ID = os.environ.get("CLIENT_ID", "")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "")
 
 
 # ==================================
@@ -564,28 +559,19 @@ ACCOUNT_LOGIN_REDIRECT_URL = 'shop:profile'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 
 # Email settings
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'  # or 'mandatory' if you want to enforce email verification
-ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Use email for authentication
-ACCOUNT_USERNAME_REQUIRED = False  # Don't require username
+ACCOUNT_LOGIN_METHODS = {'email'}  # Use email for authentication
+ACCOUNT_SIGNUP_FIELDS = ['email*']
 
 # Social account settings
 SOCIALACCOUNT_EMAIL_REQUIRED = True
-SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create account on social login
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create account on social login (bypasses signup template)
 SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Immediately redirects to Google (bypasses login confirmation template)
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True  # Auto-authenticates if email matches
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True  # Auto-connects existing accounts without prompting
 
-# Provider settings
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-    }
-}
+
 
 SOCIALACCOUNT_ADAPTER = 'users.adapters.CustomSocialAccountAdapter'
 
