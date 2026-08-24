@@ -205,6 +205,19 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = 'users.User'
 
+
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
