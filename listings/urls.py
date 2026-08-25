@@ -11,6 +11,7 @@ urlpatterns = [
 
     # ── Pricing & payment ─────────────────────────────────────────────────────
     path('pricing/',                  views.pricing_plans,  name='pricing'),
+    path('package/<slug:slug>/',      views.package_detail, name='package_detail'),
     path('subscribe/<int:package_id>/', views.subscribe,    name='subscribe'),
     path('verify/listing/package/',   views.verify_payment, name='verify_payment'),
 

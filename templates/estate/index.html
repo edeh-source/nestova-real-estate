@@ -670,6 +670,320 @@
     </div>
   </section>
 
+  <!-- ======================== LISTING PACKAGES & SLOTS ======================== -->
+  <section class="slots-section section-wrap" id="listing-packages">
+    <style>
+      /* ============================================================
+         LISTING PACKAGES & SLOTS HOMEPAGE SECTION
+         ============================================================ */
+      .slots-section {
+        position: relative;
+        padding: 90px 0 80px;
+        overflow: hidden;
+      }
+      .slots-section::before {
+        content: '';
+        position: absolute;
+        width: 700px;
+        height: 700px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201,168,76,0.09), transparent 70%);
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 24px;
+        margin-top: 48px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .slot-card {
+        background: rgba(13, 27, 62, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 32px 24px;
+        display: flex;
+        flex-direction: column;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slot-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(201, 168, 76, 0.45);
+        box-shadow: 0 20px 48px rgba(0,0,0,0.5), 0 0 30px rgba(201,168,76,0.12);
+      }
+
+      .slot-card.featured-pkg {
+        background: linear-gradient(180deg, rgba(201, 168, 76, 0.12) 0%, rgba(13, 27, 62, 0.55) 100%);
+        border: 1.5px solid rgba(201, 168, 76, 0.55);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 25px rgba(201,168,76,0.15);
+      }
+
+      .slot-card.featured-pkg::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      }
+
+      .slot-ribbon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        color: #0A0A0F;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 4px 12px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(201,168,76,0.3);
+      }
+
+      .slot-header {
+        margin-bottom: 20px;
+      }
+
+      .slot-capacity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(201, 168, 76, 0.1);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        color: var(--gold-light);
+        font-size: 0.76rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+
+      .slot-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ivory);
+        margin: 0 0 6px;
+      }
+
+      .slot-desc {
+        font-size: 0.84rem;
+        color: rgba(245, 240, 232, 0.6);
+        line-height: 1.45;
+        min-height: 38px;
+      }
+
+      .slot-price-wrap {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin: 18px 0 22px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .slot-price-num {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--gold-light);
+        line-height: 1;
+      }
+
+      .slot-price-cycle {
+        font-size: 0.82rem;
+        color: rgba(245, 240, 232, 0.45);
+        font-weight: 500;
+      }
+
+      .slot-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 28px;
+        flex-grow: 1;
+      }
+
+      .slot-bullet {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 0.84rem;
+        color: rgba(245, 240, 232, 0.8);
+        line-height: 1.45;
+        margin-bottom: 10px;
+      }
+
+      .slot-bullet i {
+        color: var(--gold);
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .slot-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn-slot-primary {
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        color: #0A0A0F;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 12px 18px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(201,168,76,0.25);
+      }
+
+      .btn-slot-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(201,168,76,0.45);
+        color: #0A0A0F;
+      }
+
+      .btn-slot-detail {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        color: var(--ivory);
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 10px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-slot-detail:hover {
+        background: rgba(201, 168, 76, 0.1);
+        border-color: var(--gold);
+        color: var(--gold-light);
+      }
+
+      @media (max-width: 768px) {
+        .slots-grid { grid-template-columns: 1fr; gap: 20px; }
+        .slot-card { padding: 26px 20px; }
+      }
+    </style>
+
+    <div data-reveal>
+      <div class="section-badge"><i class="bi bi-gem"></i> Listing Packages &amp; Slots</div>
+      <h2 class="section-title-xl">Supercharge Your Reach with <em>Listing Slots</em></h2>
+      <p class="section-subtitle">
+        Whether you are a homeowner, certified realtor, or corporate brokerage, choose the perfect listing slots package with automated push-ups and direct buyer lead capture.
+      </p>
+    </div>
+
+    <div class="slots-grid">
+      {% for pkg in pricing_packages %}
+      <div class="slot-card {% if pkg.slug == 'executive-pro' or pkg.slug == 'agent-pro' %}featured-pkg{% endif %}" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+        
+        {% if pkg.slug == 'executive-pro' %}
+          <div class="slot-ribbon">Most Popular</div>
+        {% elif pkg.slug == 'advanced-pro' %}
+          <div class="slot-ribbon">Corporate</div>
+        {% elif pkg.slug == 'free-starter' %}
+          <div class="slot-ribbon" style="background:rgba(255,255,255,0.15);color:var(--ivory);">Free Tier</div>
+        {% endif %}
+
+        <div class="slot-header">
+          <div class="slot-capacity-badge">
+            <i class="bi bi-houses"></i> {{ pkg.listing_limit }} Property Slot{{ pkg.listing_limit|pluralize }}
+          </div>
+          <h3 class="slot-title">{{ pkg.name }}</h3>
+          <p class="slot-desc">{{ pkg.description|default:"Supercharge your listings with premium search rank and verified branding."|truncatewords:10 }}</p>
+        </div>
+
+        <div class="slot-price-wrap">
+          <div class="slot-price-num">
+            {% if pkg.price == 0 %}
+              Free
+            {% else %}
+              ₦{{ pkg.price|intcomma }}
+            {% endif %}
+          </div>
+          <div class="slot-price-cycle">/ {{ pkg.duration_days }} days</div>
+        </div>
+
+        <ul class="slot-bullets">
+          <li class="slot-bullet">
+            <i class="bi bi-check-circle-fill"></i>
+            <span><strong>{{ pkg.listing_limit }}</strong> Active listing capacity</span>
+          </li>
+          <li class="slot-bullet">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Auto push-up every <strong>{{ pkg.auto_boost_interval_days }} days</strong></span>
+          </li>
+          {% if pkg.manual_boosts_per_cycle > 0 %}
+          <li class="slot-bullet">
+            <i class="bi bi-check-circle-fill"></i>
+            <span><strong>{{ pkg.manual_boosts_per_cycle }}</strong> Instant manual boost credits</span>
+          </li>
+          {% endif %}
+          {% if pkg.premium_slots_per_cycle > 0 or pkg.premium_gold_slots_per_cycle > 0 %}
+          <li class="slot-bullet">
+            <i class="bi bi-check-circle-fill"></i>
+            <span><strong>{{ pkg.premium_slots_per_cycle|add:pkg.premium_gold_slots_per_cycle }}</strong> Premium 5× / 10× rank credits</span>
+          </li>
+          {% endif %}
+          <li class="slot-bullet">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Direct WhatsApp &amp; phone leads</span>
+          </li>
+        </ul>
+
+        <div class="slot-actions">
+          {% if pkg.price == 0 %}
+            <a href="{% url 'listings:post_property' %}" class="btn-slot-primary">
+              <i class="bi bi-plus-circle-fill"></i> Start Free Listing
+            </a>
+          {% else %}
+            <a href="{% url 'listings:subscribe' pkg.id %}" class="btn-slot-primary">
+              <i class="bi bi-lightning-charge-fill"></i> Choose {{ pkg.name }}
+            </a>
+          {% endif %}
+
+          <a href="{% url 'listings:package_detail' pkg.slug %}" class="btn-slot-detail">
+            <i class="bi bi-info-circle"></i> View Full Package Details
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 48px;" data-reveal>
+      <a href="{% url 'listings:pricing' %}" class="cta-primary" style="background:transparent; border:1px solid rgba(201,168,76,0.35); color:var(--gold-light);">
+        <i class="bi bi-grid-3x3-gap"></i> Compare All Packages &amp; Features <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
   <!-- ======================== WHY NESTOVA ======================== -->
   <section class="why-section">
     <div class="why-bg-accent"></div>

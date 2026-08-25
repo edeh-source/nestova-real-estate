@@ -688,8 +688,8 @@
 
         <!-- Slot count bubble -->
         <div class="pkg-slots-display">
-          <div class="pkg-slots-number">{{ pkg.slots_count }}</div>
-          <div class="pkg-slots-text">Property Posting Slot{% if pkg.slots_count > 1 %}s{% endif %}</div>
+          <div class="pkg-slots-number">{{ pkg.listing_limit }}</div>
+          <div class="pkg-slots-text">Property Posting Slot{{ pkg.listing_limit|pluralize }}</div>
         </div>
 
         <!-- Price -->
@@ -702,7 +702,7 @@
             <span class="pkg-price-currency">₦</span>
             <span class="pkg-price-value">{{ pkg.price|floatformat:0|intcomma }}</span>
           </div>
-          <p class="pkg-price-per">₦{{ pkg.price_per_slot|floatformat:0|intcomma }} per slot</p>
+          <p class="pkg-price-per">/ {{ pkg.duration_days }} days billing cycle</p>
           {% endif %}
         </div>
 
@@ -710,46 +710,50 @@
         <ul class="pkg-features">
           <li>
             <span class="feat-icon check"><i class="fas fa-check"></i></span>
-            {{ pkg.slots_count }} Property Listing{% if pkg.slots_count > 1 %}s{% endif %}
+            {{ pkg.listing_limit }} Active Listing Capacity
           </li>
           <li>
             <span class="feat-icon check"><i class="fas fa-check"></i></span>
-            Slots Never Expire
+            Auto Push-Up Every {{ pkg.auto_boost_interval_days }} Days
           </li>
+          {% if pkg.manual_boosts_per_cycle > 0 %}
           <li>
             <span class="feat-icon check"><i class="fas fa-check"></i></span>
-            Post Anytime
-          </li>
-          <li>
-            <span class="feat-icon check"><i class="fas fa-check"></i></span>
-            Manage from Dashboard
-          </li>
-          {% if pkg.slots_count >= 10 %}
-          <li>
-            <span class="feat-icon star"><i class="fas fa-star"></i></span>
-            Priority Support
-          </li>
-          <li>
-            <span class="feat-icon star"><i class="fas fa-star"></i></span>
-            Featured Listings
+            {{ pkg.manual_boosts_per_cycle }} Instant Boost Credits
           </li>
           {% endif %}
+          {% if pkg.premium_slots_per_cycle > 0 or pkg.premium_gold_slots_per_cycle > 0 %}
+          <li>
+            <span class="feat-icon star"><i class="fas fa-star"></i></span>
+            {{ pkg.premium_slots_per_cycle|add:pkg.premium_gold_slots_per_cycle }} Premium Rank Credits
+          </li>
+          {% endif %}
+          <li>
+            <span class="feat-icon check"><i class="fas fa-check"></i></span>
+            Direct WhatsApp &amp; Phone Leads
+          </li>
         </ul>
 
-        <!-- CTA -->
-        {% if user.is_authenticated %}
-        <a href="{% url 'listings:subscribe' pkg.id %}" class="pkg-btn primary">
-          {% if pkg.price == 0 %}
-          <i class="fas fa-rocket me-2"></i>Get Started Free
+        <!-- Actions -->
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+          {% if user.is_authenticated %}
+          <a href="{% url 'listings:subscribe' pkg.id %}" class="pkg-btn primary">
+            {% if pkg.price == 0 %}
+            <i class="fas fa-rocket me-2"></i>Get Started Free
+            {% else %}
+            <i class="fas fa-bag-shopping me-2"></i>Choose {{ pkg.name }}
+            {% endif %}
+          </a>
           {% else %}
-          <i class="fas fa-bag-shopping me-2"></i>Purchase Package
+          <a href="{% url 'users:login' %}?next={% url 'listings:pricing' %}" class="pkg-btn secondary">
+            <i class="fas fa-lock me-2"></i>Login to Choose Plan
+          </a>
           {% endif %}
-        </a>
-        {% else %}
-        <a href="{% url 'users:login' %}?next={% url 'listings:pricing' %}" class="pkg-btn secondary">
-          <i class="fas fa-lock me-2"></i>Login to Purchase
-        </a>
-        {% endif %}
+
+          <a href="{% url 'listings:package_detail' pkg.slug %}" class="pkg-btn secondary" style="font-size: 0.82rem; padding: 10px 16px;">
+            <i class="fas fa-circle-info me-2"></i>View Plan Details
+          </a>
+        </div>
 
       </div>
       {% endfor %}

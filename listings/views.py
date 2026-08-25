@@ -275,6 +275,26 @@ def pricing_plans(request):
     })
 
 
+def package_detail(request, slug):
+    """Detailed breakdown and explanation page for a specific listing slot package."""
+    package = get_object_or_404(ListingPackage, slug=slug, is_active=True)
+    other_packages = ListingPackage.objects.filter(is_active=True).exclude(id=package.id).order_by('price')
+
+    user_subscription = None
+    is_current_plan = False
+    if request.user.is_authenticated:
+        user_subscription = _get_or_create_sub(request.user)
+        if user_subscription and user_subscription.package == package:
+            is_current_plan = True
+
+    return render(request, 'listings/package_detail.html', {
+        'package':           package,
+        'other_packages':    other_packages,
+        'user_subscription': user_subscription,
+        'is_current_plan':   is_current_plan,
+    })
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Payment — subscribe & verify
 # ─────────────────────────────────────────────────────────────────────────────
