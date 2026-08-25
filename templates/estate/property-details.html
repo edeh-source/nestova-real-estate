@@ -1884,7 +1884,7 @@
     {{ property.status.get_name_display }}
   </div>
 
-            <!-- Agent Card -->
+            <!-- Agent / Lister Card -->
             <div class="agent-card">
               <div class="agent-card-header"><i class="bi bi-person-badge me-2"></i>Listed By</div>
 
@@ -1895,9 +1895,11 @@
                       <img src="{{ property.agent.user.get_users_image }}" alt="{{ property.agent.user.get_full_name }}" loading="lazy">
                     </a>
                   {% elif property.listed_by %}
-                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="{{ property.listed_by.get_full_name }}" loading="lazy">
+                    <a href="{% url 'user_properties' property.listed_by.username %}">
+                      <img src="{{ property.listed_by.get_users_image }}" alt="{{ property.listed_by.get_full_name }}" loading="lazy">
+                    </a>
                   {% else %}
-                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Agent" loading="lazy">
+                    <img src="{% static 'assets/img/real-estate/agent-3.webp' %}" alt="Nestova Lister" loading="lazy">
                   {% endif %}
                 </div>
                 <div>
@@ -1909,20 +1911,34 @@
                     <a class="agent-name" 
                        href="https://wa.me/{{ property.agent.user.phone_number|cut:'+' }}" 
                        target="_blank" 
-                       rel="noopener noreferrer">
-                      <i class="fab fa-whatsapp" style="color: #25D366; margin-right: 6px;"></i>
+                       rel="noopener noreferrer" style="font-size:0.85rem;color:#25D366;display:inline-flex;align-items:center;margin-top:2px;">
+                      <i class="bi bi-whatsapp me-1"></i>
                       {{ property.agent.user.phone_number }}
                     </a>
                     {% endif %}
                     <span class="agent-role">Listing Agent</span>
                     {% if property.agent.verification_status == 'verified' %}
-                    <div class="badge-verified"><i class="bi bi-patch-check-fill"></i> Verified</div>
+                    <div class="badge-verified"><i class="bi bi-patch-check-fill"></i> Verified Agent</div>
                     {% endif %}
+
                   {% elif property.listed_by %}
-                    <span class="agent-name">
+                    <a class="agent-name" href="{% url 'user_properties' property.listed_by.username %}">
                       {{ property.listed_by.get_full_name|default:property.listed_by.username }}
-                    </span>
-                    <span class="agent-role">Listing Admin</span>
+                    </a>
+                    {% if property.listed_by.phone_number %}
+                    <a class="agent-name" 
+                       href="https://wa.me/{{ property.listed_by.phone_number|cut:'+' }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" style="font-size:0.85rem;color:#25D366;display:inline-flex;align-items:center;margin-top:2px;">
+                      <i class="bi bi-whatsapp me-1"></i>
+                      {{ property.listed_by.phone_number }}
+                    </a>
+                    {% endif %}
+                    <span class="agent-role">Property Owner / Seller</span>
+                    {% if property.listed_by.id_verified or property.listed_by.verification_status == 'verified' %}
+                    <div class="badge-verified"><i class="bi bi-patch-check-fill"></i> Verified Lister</div>
+                    {% endif %}
+
                   {% else %}
                     <span class="agent-name">Nestova Agent</span>
                     <span class="agent-role">Property Manager</span>
@@ -1933,6 +1949,10 @@
               {% if property.agent %}
               <a href="{% url 'agents:agent_properties' property.agent.slug %}" class="btn-agent-props">
                 <i class="bi bi-house-door"></i> View All Agent Properties
+              </a>
+              {% elif property.listed_by %}
+              <a href="{% url 'user_properties' property.listed_by.username %}" class="btn-agent-props">
+                <i class="bi bi-house-door"></i> View All Lister's Properties
               </a>
               {% endif %}
             </div>

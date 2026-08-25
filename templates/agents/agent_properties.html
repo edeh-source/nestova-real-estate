@@ -3,7 +3,7 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}Properties by {{ agent.user.get_full_name|default:agent.user.username }} | Nestova{% endblock %}
+{% block title %}Properties by {{ user_name|default:lister_user.get_full_name|default:lister_user.username }} | Nestova{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -546,57 +546,81 @@
   .ap-view-btn:hover {
     background: linear-gradient(135deg, var(--gold), var(--gold-dark));
     color: #0A0A0F;
-    border-color: transparent;
-    box-shadow: 0 6px 22px rgba(201,168,76,.35);
-    transform: translateY(-1px);
+    margin-top: auto;
   }
-  .ap-view-btn i { font-size: .7rem; transition: transform .25s; }
-  .ap-view-btn:hover i { transform: translateX(3px); }
-
-  /* ── Gold divider line ── */
-  .gold-divider {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(201,168,76,.4), transparent);
-    margin: 0 5vw 60px;
-  }
-
-  /* ── Empty state ── */
-  .ap-empty {
+  .ap-card-view-btn {
+    width: 100%;
     text-align: center;
-    padding: 100px 20px;
-  }
-  .ap-empty-icon {
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(201,168,76,.1);
+    border: 1px solid rgba(201,168,76,.25);
+    color: var(--gold-light);
+    font-weight: 600;
+    font-size: .84rem;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all .3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 28px;
-    font-size: 2.5rem;
-    color: rgba(255,255,255,.2);
+    gap: 7px;
+  }
+  .ap-card-view-btn:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0A0A0F;
+    border-color: transparent;
+    transform: translateY(-1px);
+  }
+
+  /* ── Empty State ── */
+  .ap-empty {
+    text-align: center;
+    padding: 80px 20px;
+    background: rgba(13,27,62,.3);
+    border: 1px dashed rgba(201,168,76,.2);
+    border-radius: 24px;
+  }
+  .ap-empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(201,168,76,.1);
+    border: 1px solid rgba(201,168,76,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--gold);
+    margin: 0 auto 20px;
   }
   .ap-empty h3 {
     font-family: var(--font-display);
-    font-size: 1.9rem;
-    font-weight: 300;
-    margin-bottom: 12px;
+    font-size: 1.8rem;
+    color: var(--ivory);
+    margin-bottom: 10px;
   }
-  .ap-empty p { color: rgba(245,240,232,.45); margin-bottom: 32px; }
+  .ap-empty p {
+    color: rgba(245,240,232,.55);
+    max-width: 420px;
+    margin: 0 auto 28px;
+    font-size: .95rem;
+  }
 
   /* ── Pagination ── */
   .ap-pagination {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 64px;
     gap: 8px;
+    margin-top: 60px;
     flex-wrap: wrap;
   }
   .ap-page-btn {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    display: flex;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     background: rgba(255,255,255,.05);
@@ -613,15 +637,6 @@
     border-color: transparent;
     color: #0A0A0F;
     font-weight: 700;
-    box-shadow: 0 6px 20px rgba(201,168,76,.35);
-    transform: translateY(-2px);
-  }
-  .ap-page-btn.disabled {
-    opacity: .3;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .ap-hero { padding: 120px 5vw 60px; }
@@ -657,27 +672,29 @@
   <!-- ── Hero Banner ── -->
   <section class="ap-hero">
     <div class="ap-hero-inner">
-      <div class="ap-eyebrow">Licensed Real Estate Professional</div>
+      <div class="ap-eyebrow">{% if agent %}Licensed Real Estate Professional{% else %}Verified Property Lister{% endif %}</div>
       <h1>
         Properties by
-        <em>{{ agent.user.get_full_name|default:agent.user.username }}</em>
+        <em>{{ user_name }}</em>
       </h1>
       <p class="ap-hero-sub">
         Explore {{ total_properties }} hand-verified
-        propert{{ total_properties|pluralize:"y,ies" }} listed by this agent
+        propert{{ total_properties|pluralize:"y,ies" }} listed by this {% if agent %}agent{% else %}lister{% endif %}
         — each one curated to meet Nestova's premium standards.
       </p>
       <nav class="ap-breadcrumb" aria-label="Breadcrumb">
         <a href="{% url 'home' %}">Home</a>
         <i class="bi bi-chevron-right"></i>
-        <a href="{% url 'agents:agent_profile' agent.slug %}">{{ agent.user.get_full_name|default:agent.user.username }}</a>
+        {% if agent and agent.slug %}
+        <a href="{% url 'agents:agent_profile' agent.slug %}">{{ user_name }}</a>
         <i class="bi bi-chevron-right"></i>
+        {% endif %}
         <span class="current">Properties</span>
       </nav>
     </div>
   </section>
 
-  <!-- ── Agent Identity Card ── -->
+  <!-- ── Lister / Agent Identity Card ── -->
   <div class="ap-agent-wrap" data-aos="fade-up" data-aos-delay="100">
     <div class="ap-agent-card">
 
@@ -685,18 +702,18 @@
         <div class="ap-avatar-wrap">
           <div class="ap-avatar-ring"></div>
           <img
-            src="{{ agent.user.get_users_image }}"
-            alt="{{ agent.user.get_full_name }}"
+            src="{{ lister_user.get_users_image }}"
+            alt="{{ user_name }}"
             class="ap-avatar">
         </div>
 
         <div class="ap-agent-info">
-          <h3>{{ agent.user.get_full_name|default:agent.user.username }}</h3>
-          <p class="ap-agent-role">Real Estate Professional</p>
+          <h3>{{ user_name }}</h3>
+          <p class="ap-agent-role">{% if agent %}Real Estate Professional{% else %}Property Owner / Seller{% endif %}</p>
 
-          {% if agent.verification_status == 'verified' %}
+          {% if agent and agent.verification_status == 'verified' or lister_user.id_verified or lister_user.verification_status == 'verified' %}
           <span class="ap-verified-badge">
-            <i class="bi bi-patch-check-fill"></i> Verified Agent
+            <i class="bi bi-patch-check-fill"></i> Verified {% if agent %}Agent{% else %}Lister{% endif %}
           </span>
           {% endif %}
 
@@ -706,10 +723,10 @@
               {{ total_properties }} Listing{{ total_properties|pluralize }}
             </span>
             
-            {% if agent.user.phone_number %}
+            {% if lister_user.phone_number %}
             <span class="ap-chip">
               <i class="bi bi-telephone"></i>
-              {{ agent.user.phone_number }}
+              {{ lister_user.phone_number }}
             </span>
             {% endif %}
           </div>
@@ -718,20 +735,22 @@
 
       <!-- Action buttons -->
       <div class="ap-actions">
+        {% if agent and agent.slug %}
         <a href="{% url 'agents:agent_profile' agent.slug %}" class="ap-btn-outline">
           <i class="bi bi-person"></i> View Profile
         </a>
+        {% endif %}
 
-        {% if agent.user.phone_number %}
-        <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}"
+        {% if lister_user.phone_number %}
+        <a href="https://wa.me/{{ lister_user.phone_number|cut:'+' }}"
            target="_blank" rel="noopener noreferrer"
            class="ap-btn-whatsapp">
           <i class="fab fa-whatsapp"></i> WhatsApp
         </a>
         {% endif %}
 
-        {% if agent.user.email %}
-        <a href="mailto:{{ agent.user.email }}" class="ap-btn-gold">
+        {% if lister_user.email %}
+        <a href="mailto:{{ lister_user.email }}" class="ap-btn-gold">
           <i class="bi bi-envelope-fill"></i> Send Message
         </a>
         {% endif %}
@@ -797,11 +816,11 @@
                title="View property">
               <i class="bi bi-eye"></i>
             </a>
-            {% if agent.user.phone_number %}
-            <a href="https://wa.me/{{ agent.user.phone_number|cut:'+' }}?text=Hi, I'm interested in {{ property.title|urlencode }}"
+            {% if lister_user.phone_number %}
+            <a href="https://wa.me/{{ lister_user.phone_number|cut:'+' }}?text=Hi, I'm interested in {{ property.title|urlencode }}"
                target="_blank" rel="noopener noreferrer"
                class="ap-card-action-btn whatsapp"
-               title="WhatsApp agent">
+               title="WhatsApp lister">
               <i class="fab fa-whatsapp"></i>
             </a>
             {% endif %}
@@ -882,7 +901,7 @@
         <i class="bi bi-house-slash"></i>
       </div>
       <h3>No Properties Listed Yet</h3>
-      <p>This agent hasn't added any properties to their portfolio yet.<br>Check back soon or explore all available listings.</p>
+      <p>This {% if agent %}agent{% else %}lister{% endif %} hasn't added any properties to their portfolio yet.<br>Check back soon or explore all available listings.</p>
       <a href="{% url 'properties' %}" class="ap-btn-gold" style="text-decoration:none; display:inline-flex; align-items:center; gap:9px;">
         <i class="bi bi-search"></i> Browse All Properties
       </a>

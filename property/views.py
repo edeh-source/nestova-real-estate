@@ -291,7 +291,7 @@ def get_properties_details(request, slug):
                 application_success = True
                 application_form = None  # Clear form after success
 
-                # ── Send email notification to admin ─────────────────────────
+                # ── Send email notification to admin & Property Owner ─────────
                 try:
                     from django.core.mail import send_mail
                     from django.template.loader import render_to_string
@@ -301,9 +301,11 @@ def get_properties_details(request, slug):
 
                     current_site = get_current_site(request)
                     admin_url = f"https://{current_site.domain}/admin/property/propertyapplication/{application.pk}/change/"
+                    property_url = request.build_absolute_uri(f"/property/details/{property_detail.slug}/")
 
                     email_context = {
                         'property_title': property_detail.title,
+                        'property_url': property_url,
                         'applicant_name': application.get_full_name(),
                         'applicant_email': application.email,
                         'applicant_phone': application.phone_number,
@@ -318,9 +320,9 @@ def get_properties_details(request, slug):
                         'year': datetime.datetime.now().year,
                     }
 
+                    # 1. Admin notification
                     html_message = render_to_string('emails/application_admin_notification.html', email_context)
                     plain_message = strip_tags(html_message)
-
                     admin_emails = [a[1] for a in settings.ADMINS] if getattr(settings, 'ADMINS', None) else [settings.DEFAULT_FROM_EMAIL]
 
                     send_mail(
@@ -331,6 +333,32 @@ def get_properties_details(request, slug):
                         html_message=html_message,
                         fail_silently=True,
                     )
+
+                    # 2. Property Owner / Lister notification
+                    owner_email = None
+                    owner_name = None
+                    if property_detail.listed_by and property_detail.listed_by.email:
+                        owner_email = property_detail.listed_by.email
+                        owner_name = property_detail.listed_by.get_full_name()
+                    elif property_detail.agent and property_detail.agent.user and property_detail.agent.user.email:
+                        owner_email = property_detail.agent.user.email
+                        owner_name = property_detail.agent.user.get_full_name()
+
+                    if owner_email:
+                        owner_context = {
+                            **email_context,
+                            'owner_name': owner_name or 'Property Owner',
+                        }
+                        owner_html = render_to_string('emails/application_owner_notification.html', owner_context)
+                        owner_plain = strip_tags(owner_html)
+                        send_mail(
+                            subject=f'🎉 New Application Received for Your Property: {property_detail.title}',
+                            message=owner_plain,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[owner_email],
+                            html_message=owner_html,
+                            fail_silently=True,
+                        )
                 except Exception as e:
                     logger.error(f"Failed to send application notification email: {e}", exc_info=True)
 
@@ -421,6 +449,14 @@ def property_list(request):
             Q(address__icontains=query) |
             Q(city__name__icontains=query)
         )
+
+    # User / Lister filter
+    user_param = request.GET.get('user') or request.GET.get('lister')
+    if user_param:
+        if str(user_param).isdigit():
+            properties_list = properties_list.filter(listed_by__id=user_param)
+        else:
+            properties_list = properties_list.filter(listed_by__username=user_param)
 
     # State filter (handles state_type ID from homepage and state name/ID from sidebar)
     state_param = request.GET.get('state_type') or request.GET.get('state')
@@ -638,3 +674,45 @@ def developer_detail(request, slug):
         'listing_type': listing_type,
         'tab_counts': tab_counts,
     })
+
+
+def user_properties(request, username):
+    """Display all properties listed by a specific user / seller / agent."""
+    from django.shortcuts import get_object_or_404
+    from django.core.paginator import Paginator
+    from django.contrib.auth import get_user_model
+    from django.db.models import Q
+    from property.models import Property
+    
+    User = get_user_model()
+    lister_user = get_object_or_404(User, username=username)
+    
+    agent = getattr(lister_user, 'agent_profile', None)
+
+    # Get all active properties listed by this user or their agent profile
+    if agent:
+        properties_list = Property.objects.filter(
+            Q(listed_by=lister_user) | Q(agent=agent),
+            is_active=True
+        ).select_related('state', 'city', 'property_type', 'status').order_by('-created_at')
+    else:
+        properties_list = Property.objects.filter(
+            listed_by=lister_user,
+            is_active=True
+        ).select_related('state', 'city', 'property_type', 'status').order_by('-created_at')
+
+    # Pagination
+    paginator = Paginator(properties_list, 12)
+    page_number = request.GET.get('page')
+    properties = paginator.get_page(page_number)
+
+    user_name = lister_user.get_full_name() or lister_user.username
+
+    context = {
+        'lister_user': lister_user,
+        'user_name': user_name,
+        'agent': agent,
+        'properties': properties,
+        'total_properties': properties_list.count(),
+    }
+    return render(request, 'agents/agent_properties.html', context)

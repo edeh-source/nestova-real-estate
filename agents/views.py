@@ -659,8 +659,13 @@ def agent_properties(request, slug):
     page_number = request.GET.get('page')
     properties = paginator.get_page(page_number)
     
+    lister_user = agent.user
+    user_name = lister_user.get_full_name() or lister_user.username
+    
     context = {
         'agent': agent,
+        'lister_user': lister_user,
+        'user_name': user_name,
         'properties': properties,
         'total_properties': properties_list.count(),
     }
