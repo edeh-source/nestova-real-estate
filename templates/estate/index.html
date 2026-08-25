@@ -680,14 +680,17 @@
         position: relative;
         padding: 90px 0 80px;
         overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
       }
       .slots-section::before {
         content: '';
         position: absolute;
-        width: 700px;
-        height: 700px;
+        width: 600px;
+        height: 600px;
+        max-width: 90vw;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(201,168,76,0.09), transparent 70%);
+        background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
         top: 20%;
         left: 50%;
         transform: translateX(-50%);
@@ -695,39 +698,77 @@
         z-index: 0;
       }
 
-      .slots-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-        gap: 24px;
-        margin-top: 48px;
+      .slots-container {
+        max-width: 1480px;
+        margin: 0 auto;
+        padding: 0 15px;
         position: relative;
         z-index: 1;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 48px;
+        align-items: stretch;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      @media (max-width: 1280px) {
+        .slots-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 20px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .slots-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+        }
+      }
+
+      @media (max-width: 580px) {
+        .slots-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
       }
 
       .slot-card {
-        background: rgba(13, 27, 62, 0.4);
+        background: rgba(13, 27, 62, 0.45);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        padding: 32px 24px;
+        border-radius: 20px;
+        padding: 24px 18px;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
         position: relative;
         overflow: hidden;
+        box-sizing: border-box;
       }
 
       .slot-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-6px);
         border-color: rgba(201, 168, 76, 0.45);
-        box-shadow: 0 20px 48px rgba(0,0,0,0.5), 0 0 30px rgba(201,168,76,0.12);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 25px rgba(201,168,76,0.1);
       }
 
+      /* Featured / Highlighted Plan Styles */
       .slot-card.featured-pkg {
-        background: linear-gradient(180deg, rgba(201, 168, 76, 0.12) 0%, rgba(13, 27, 62, 0.55) 100%);
+        background: linear-gradient(180deg, rgba(201, 168, 76, 0.14) 0%, rgba(13, 27, 62, 0.6) 100%);
         border: 1.5px solid rgba(201, 168, 76, 0.55);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 25px rgba(201,168,76,0.15);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 24px rgba(201,168,76,0.14);
       }
 
       .slot-card.featured-pkg::before {
@@ -738,73 +779,116 @@
         background: linear-gradient(90deg, transparent, var(--gold), transparent);
       }
 
-      .slot-ribbon {
-        position: absolute;
-        top: 18px;
-        right: 18px;
-        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-        color: #0A0A0F;
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        padding: 4px 12px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(201,168,76,0.3);
+      .slot-card.vip-pkg {
+        background: linear-gradient(180deg, rgba(30, 60, 120, 0.25) 0%, rgba(13, 27, 62, 0.65) 100%);
+        border: 1.5px solid rgba(100, 180, 255, 0.35);
       }
 
-      .slot-header {
-        margin-bottom: 20px;
+      .slot-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
       }
 
       .slot-capacity-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        background: rgba(201, 168, 76, 0.1);
-        border: 1px solid rgba(201, 168, 76, 0.25);
+        gap: 5px;
+        background: rgba(201, 168, 76, 0.12);
+        border: 1px solid rgba(201, 168, 76, 0.28);
         color: var(--gold-light);
-        font-size: 0.76rem;
+        font-size: 0.72rem;
         font-weight: 700;
-        padding: 4px 12px;
+        padding: 3px 10px;
         border-radius: 20px;
-        margin-bottom: 12px;
+        letter-spacing: 0.02em;
+      }
+
+      .slot-ribbon-tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 10px;
+        border-radius: 50px;
+        white-space: nowrap;
+      }
+
+      .slot-ribbon-tag.popular {
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        color: #0A0A0F;
+        box-shadow: 0 2px 8px rgba(201,168,76,0.3);
+      }
+
+      .slot-ribbon-tag.vip {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: #FFFFFF;
+        box-shadow: 0 2px 8px rgba(59,130,246,0.35);
+      }
+
+      .slot-ribbon-tag.agency {
+        background: rgba(201, 168, 76, 0.2);
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--gold-light);
+      }
+
+      .slot-ribbon-tag.starter {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--ivory);
+      }
+
+      .slot-ribbon-tag.free {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(245, 240, 232, 0.7);
       }
 
       .slot-title {
         font-family: var(--font-display);
-        font-size: 1.5rem;
+        font-size: 1.35rem;
         font-weight: 700;
         color: var(--ivory);
         margin: 0 0 6px;
+        line-height: 1.2;
       }
 
       .slot-desc {
-        font-size: 0.84rem;
-        color: rgba(245, 240, 232, 0.6);
-        line-height: 1.45;
-        min-height: 38px;
+        font-size: 0.8rem;
+        color: rgba(245, 240, 232, 0.65);
+        line-height: 1.4;
+        margin-bottom: 16px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 36px;
       }
 
       .slot-price-wrap {
         display: flex;
         align-items: baseline;
         gap: 6px;
-        margin: 18px 0 22px;
-        padding-bottom: 18px;
+        margin-bottom: 18px;
+        padding-bottom: 16px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
       }
 
       .slot-price-num {
         font-family: var(--font-display);
-        font-size: 2rem;
+        font-size: clamp(1.4rem, 1.8vw, 1.75rem);
         font-weight: 800;
         color: var(--gold-light);
         line-height: 1;
+        white-space: nowrap;
       }
 
       .slot-price-cycle {
-        font-size: 0.82rem;
+        font-size: 0.76rem;
         color: rgba(245, 240, 232, 0.45);
         font-weight: 500;
       }
@@ -812,71 +896,81 @@
       .slot-bullets {
         list-style: none;
         padding: 0;
-        margin: 0 0 28px;
+        margin: 0 0 22px;
         flex-grow: 1;
       }
 
       .slot-bullet {
         display: flex;
         align-items: flex-start;
-        gap: 9px;
-        font-size: 0.84rem;
-        color: rgba(245, 240, 232, 0.8);
-        line-height: 1.45;
-        margin-bottom: 10px;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: rgba(245, 240, 232, 0.82);
+        line-height: 1.38;
+        margin-bottom: 9px;
       }
 
       .slot-bullet i {
         color: var(--gold);
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         flex-shrink: 0;
         margin-top: 1px;
+      }
+
+      .slot-bullet.highlight-bullet {
+        color: var(--gold-light);
+        font-weight: 600;
+      }
+
+      .slot-bullet.highlight-bullet i {
+        color: var(--gold-light);
       }
 
       .slot-actions {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+        margin-top: auto;
       }
 
       .btn-slot-primary {
         background: linear-gradient(135deg, var(--gold), var(--gold-dark));
         color: #0A0A0F;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
         font-weight: 700;
         text-align: center;
-        padding: 12px 18px;
-        border-radius: 12px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 16px rgba(201,168,76,0.25);
-      }
-
-      .btn-slot-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(201,168,76,0.45);
-        color: #0A0A0F;
-      }
-
-      .btn-slot-detail {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(201, 168, 76, 0.25);
-        color: var(--ivory);
-        font-size: 0.82rem;
-        font-weight: 600;
-        text-align: center;
-        padding: 10px 16px;
-        border-radius: 12px;
+        padding: 11px 14px;
+        border-radius: 10px;
         text-decoration: none;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        box-shadow: 0 3px 12px rgba(201,168,76,0.22);
+      }
+
+      .btn-slot-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201,168,76,0.4);
+        color: #0A0A0F;
+      }
+
+      .btn-slot-detail {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        color: rgba(245, 240, 232, 0.8);
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 8px 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: all 0.25s ease;
       }
 
       .btn-slot-detail:hover {
@@ -886,103 +980,139 @@
       }
 
       @media (max-width: 768px) {
-        .slots-grid { grid-template-columns: 1fr; gap: 20px; }
-        .slot-card { padding: 26px 20px; }
+        .slots-section { padding: 60px 0; }
+        .slot-card { padding: 20px 16px; }
       }
     </style>
 
-    <div data-reveal>
-      <div class="section-badge"><i class="bi bi-gem"></i> Listing Packages &amp; Slots</div>
-      <h2 class="section-title-xl">Supercharge Your Reach with <em>Listing Slots</em></h2>
-      <p class="section-subtitle">
-        Whether you are a homeowner, certified realtor, or corporate brokerage, choose the perfect listing slots package with automated push-ups and direct buyer lead capture.
-      </p>
-    </div>
-
-    <div class="slots-grid">
-      {% for pkg in pricing_packages %}
-      <div class="slot-card {% if pkg.slug == 'executive-pro' or pkg.slug == 'agent-pro' %}featured-pkg{% endif %}" data-reveal data-reveal-delay="{{ forloop.counter }}00">
-        
-        {% if pkg.slug == 'executive-pro' %}
-          <div class="slot-ribbon">Most Popular</div>
-        {% elif pkg.slug == 'advanced-pro' %}
-          <div class="slot-ribbon">Corporate</div>
-        {% elif pkg.slug == 'free-starter' %}
-          <div class="slot-ribbon" style="background:rgba(255,255,255,0.15);color:var(--ivory);">Free Tier</div>
-        {% endif %}
-
-        <div class="slot-header">
-          <div class="slot-capacity-badge">
-            <i class="bi bi-houses"></i> {{ pkg.listing_limit }} Property Slot{{ pkg.listing_limit|pluralize }}
-          </div>
-          <h3 class="slot-title">{{ pkg.name }}</h3>
-          <p class="slot-desc">{{ pkg.description|default:"Supercharge your listings with premium search rank and verified branding."|truncatewords:10 }}</p>
-        </div>
-
-        <div class="slot-price-wrap">
-          <div class="slot-price-num">
-            {% if pkg.price == 0 %}
-              Free
-            {% else %}
-              ₦{{ pkg.price|intcomma }}
-            {% endif %}
-          </div>
-          <div class="slot-price-cycle">/ {{ pkg.duration_days }} days</div>
-        </div>
-
-        <ul class="slot-bullets">
-          <li class="slot-bullet">
-            <i class="bi bi-check-circle-fill"></i>
-            <span><strong>{{ pkg.listing_limit }}</strong> Active listing capacity</span>
-          </li>
-          <li class="slot-bullet">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>Auto push-up every <strong>{{ pkg.auto_boost_interval_days }} days</strong></span>
-          </li>
-          {% if pkg.manual_boosts_per_cycle > 0 %}
-          <li class="slot-bullet">
-            <i class="bi bi-check-circle-fill"></i>
-            <span><strong>{{ pkg.manual_boosts_per_cycle }}</strong> Instant manual boost credits</span>
-          </li>
-          {% endif %}
-          {% if pkg.premium_slots_per_cycle > 0 or pkg.premium_gold_slots_per_cycle > 0 %}
-          <li class="slot-bullet">
-            <i class="bi bi-check-circle-fill"></i>
-            <span><strong>{{ pkg.premium_slots_per_cycle|add:pkg.premium_gold_slots_per_cycle }}</strong> Premium 5× / 10× rank credits</span>
-          </li>
-          {% endif %}
-          <li class="slot-bullet">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>Direct WhatsApp &amp; phone leads</span>
-          </li>
-        </ul>
-
-        <div class="slot-actions">
-          {% if pkg.price == 0 %}
-            <a href="{% url 'listings:post_property' %}" class="btn-slot-primary">
-              <i class="bi bi-plus-circle-fill"></i> Start Free Listing
-            </a>
-          {% else %}
-            <a href="{% url 'listings:subscribe' pkg.id %}" class="btn-slot-primary">
-              <i class="bi bi-lightning-charge-fill"></i> Choose {{ pkg.name }}
-            </a>
-          {% endif %}
-
-          <a href="{% url 'listings:package_detail' pkg.slug %}" class="btn-slot-detail">
-            <i class="bi bi-info-circle"></i> View Full Package Details
-          </a>
-        </div>
-
+    <div class="slots-container">
+      <div data-reveal class="text-center mb-4">
+        <div class="section-badge"><i class="bi bi-gem"></i> Listing Packages &amp; Slots</div>
+        <h2 class="section-title-xl">Supercharge Your Reach with <em>Listing Slots</em></h2>
+        <p class="section-subtitle mx-auto" style="max-width: 680px;">
+          Whether you are an independent realtor, agency, or corporate developer, choose the ideal plan with automated push-ups and direct buyer lead capture.
+        </p>
       </div>
-      {% endfor %}
-    </div>
 
-    <div style="text-align: center; margin-top: 48px;" data-reveal>
-      <a href="{% url 'listings:pricing' %}" class="cta-primary" style="background:transparent; border:1px solid rgba(201,168,76,0.35); color:var(--gold-light);">
-        <i class="bi bi-grid-3x3-gap"></i> Compare All Packages &amp; Features <i class="bi bi-arrow-right"></i>
-      </a>
+      <div class="slots-grid">
+        {% for pkg in pricing_packages %}
+        <div class="slot-card {% if pkg.slug == 'executive' or pkg.slug == 'executive-pro' %}featured-pkg{% elif pkg.slug == 'platinum' %}vip-pkg{% endif %}" data-reveal data-reveal-delay="{{ forloop.counter }}00">
+          
+          <div>
+            <!-- Top Bar with Capacity & Ribbon -->
+            <div class="slot-card-top">
+              <div class="slot-capacity-badge">
+                <i class="bi bi-houses"></i>
+                {% if pkg.listing_limit >= 10000 %}
+                  Unlimited Slots
+                {% else %}
+                  {{ pkg.listing_limit }} Slot{{ pkg.listing_limit|pluralize }}
+                {% endif %}
+              </div>
+
+              {% if pkg.slug == 'executive' or pkg.slug == 'executive-pro' %}
+                <span class="slot-ribbon-tag popular">Most Popular</span>
+              {% elif pkg.slug == 'platinum' %}
+                <span class="slot-ribbon-tag vip">VIP Enterprise</span>
+              {% elif pkg.slug == 'gold' or pkg.slug == 'advanced-pro' %}
+                <span class="slot-ribbon-tag agency">Agency Choice</span>
+              {% elif pkg.slug == 'manager' or pkg.slug == 'agent-pro' %}
+                <span class="slot-ribbon-tag starter">Starter Pro</span>
+              {% elif pkg.slug == 'freemium' or pkg.slug == 'free-starter' %}
+                <span class="slot-ribbon-tag free">Free Tier</span>
+              {% endif %}
+            </div>
+
+            <h3 class="slot-title">{{ pkg.name }}</h3>
+            <p class="slot-desc">{{ pkg.description|default:"Supercharge your listings with premium search rank and verified branding." }}</p>
+
+            <div class="slot-price-wrap">
+              <div class="slot-price-num">
+                {% if pkg.price == 0 %}
+                  Free
+                {% else %}
+                  ₦{{ pkg.price|intcomma }}
+                {% endif %}
+              </div>
+              <div class="slot-price-cycle">/ {{ pkg.duration_days }} days</div>
+            </div>
+
+            <ul class="slot-bullets">
+              <li class="slot-bullet">
+                <i class="bi bi-check2-circle"></i>
+                <span><strong>{% if pkg.listing_limit >= 10000 %}Unlimited{% else %}{{ pkg.listing_limit }}{% endif %}</strong> Active listing capacity</span>
+              </li>
+
+              {% if pkg.price > 0 %}
+              <li class="slot-bullet highlight-bullet">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>Auto push-up every <strong>{{ pkg.auto_boost_interval_days }} day{{ pkg.auto_boost_interval_days|pluralize }}</strong></span>
+              </li>
+              {% endif %}
+
+              {% if pkg.manual_boosts_per_cycle > 0 %}
+              <li class="slot-bullet">
+                <i class="bi bi-arrow-up-circle-fill"></i>
+                <span><strong>{{ pkg.manual_boosts_per_cycle }}</strong> Instant manual boosts</span>
+              </li>
+              {% endif %}
+
+              {% if pkg.premium_slots_per_cycle > 0 or pkg.premium_gold_slots_per_cycle > 0 %}
+              <li class="slot-bullet">
+                <i class="bi bi-star-fill"></i>
+                <span><strong>{{ pkg.premium_slots_per_cycle|add:pkg.premium_gold_slots_per_cycle }}</strong> Premium 5× / 10× credits</span>
+              </li>
+              {% endif %}
+
+              {% if pkg.sponsored_slots_per_cycle > 0 %}
+              <li class="slot-bullet">
+                <i class="bi bi-award-fill"></i>
+                <span><strong>{{ pkg.sponsored_slots_per_cycle }}</strong> Sponsored (20×) slots</span>
+              </li>
+              {% endif %}
+
+              {% if pkg.banner_ads > 0 or pkg.social_media_ads_per_cycle > 0 %}
+              <li class="slot-bullet">
+                <i class="bi bi-megaphone-fill"></i>
+                <span><strong>{{ pkg.banner_ads }}</strong> Banner + <strong>{{ pkg.social_media_ads_per_cycle }}</strong> Social Ads</span>
+              </li>
+              {% endif %}
+
+              <li class="slot-bullet">
+                <i class="bi bi-whatsapp"></i>
+                <span>Direct WhatsApp &amp; call leads</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="slot-actions">
+            {% if pkg.price == 0 %}
+              <a href="{% url 'listings:post_property' %}" class="btn-slot-primary">
+                <i class="bi bi-plus-circle-fill"></i> Start Free Listing
+              </a>
+            {% else %}
+              <a href="{% url 'listings:subscribe' pkg.id %}" class="btn-slot-primary">
+                <i class="bi bi-lightning-charge-fill"></i> Choose {{ pkg.name }}
+              </a>
+            {% endif %}
+
+            <a href="{% url 'listings:package_detail' pkg.slug %}" class="btn-slot-detail">
+              <i class="bi bi-info-circle"></i> View Plan Specs
+            </a>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="text-align: center; margin-top: 44px;" data-reveal>
+        <a href="{% url 'listings:pricing' %}" class="cta-primary" style="background:transparent; border:1px solid rgba(201,168,76,0.35); color:var(--gold-light);">
+          <i class="bi bi-grid-3x3-gap"></i> Compare All Packages &amp; Features <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
     </div>
   </section>
+
 
   <!-- ======================== WHY NESTOVA ======================== -->
   <section class="why-section">

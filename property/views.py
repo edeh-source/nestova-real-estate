@@ -38,9 +38,9 @@ def homepage(request):
             'state', 'city', 'property_type', 'status'
         )[:10]
         
-        # Get pricing packages for "Sell Your Properties" section
+        # Get pricing packages for "Listing Packages & Slots" section
         from listings.models import ListingPackage
-        pricing_packages = ListingPackage.objects.filter(is_active=True).order_by('price')[:4]
+        pricing_packages = ListingPackage.objects.filter(is_active=True).order_by('price')
         
         # Get recent blog posts
         from blogs.models import Post

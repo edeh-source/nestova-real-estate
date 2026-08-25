@@ -278,6 +278,25 @@ class Property(models.Model):
     is_new = models.BooleanField(default=False)
     is_exclusive = models.BooleanField(default=False)
     
+    # Boost & Visibility Tiers
+    boost_tier = models.CharField(
+        max_length=20,
+        choices=[
+            ('standard',     'Standard'),
+            ('premium',      'Premium (5× exposure)'),
+            ('premium_gold', 'Premium Gold (10× exposure)'),
+            ('sponsored',    'Sponsored (20× exposure)'),
+        ],
+        default='standard',
+        db_index=True,
+        help_text="Visibility rank: standard, premium, premium_gold, sponsored"
+    )
+    boosted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Timestamp of last push-up / boost"
+    )
     
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True, related_name='properties')
 

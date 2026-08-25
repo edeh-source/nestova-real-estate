@@ -973,13 +973,25 @@
    ============================================ */
   .properties-section {
     background: var(--obsidian);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .prop-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: 28px;
     margin-top: 52px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 576px) {
+    .prop-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
   }
 
   .prop-card {
