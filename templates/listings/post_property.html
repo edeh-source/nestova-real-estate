@@ -1,1626 +1,1191 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{% if is_edit %}Edit Property{% else %}Post a Property{% endif %} — NESTOVA{% endblock %}
+
 {% block content %}
+{{ form.media }}
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
-
-    /* ==================== CSS VARIABLES ==================== */
-    :root {
-        /* Premium Color Palette */
-        --primary-hue: 155;
-        --primary-sat: 70%;
-        --primary-light: 45%;
-
-        --primary-color: hsl(var(--primary-hue), var(--primary-sat), var(--primary-light));
-        --primary-light: hsl(var(--primary-hue), var(--primary-sat), 55%);
-        --primary-dark: hsl(var(--primary-hue), var(--primary-sat), 35%);
-        --primary-gradient: linear-gradient(135deg, hsl(155, 70%, 45%) 0%, hsl(155, 65%, 35%) 100%);
-
-        --accent-hue: 220;
-        --accent-color: hsl(var(--accent-hue), 80%, 60%);
-        --accent-gradient: linear-gradient(135deg, hsl(220, 80%, 60%) 0%, hsl(260, 75%, 65%) 100%);
-
-        /* Neutral Colors */
-        --surface-light: hsl(0, 0%, 98%);
-        --surface-dark: hsl(220, 15%, 12%);
-        --text-primary: hsl(220, 15%, 15%);
-        --text-secondary: hsl(220, 10%, 45%);
-        --border-color: hsl(220, 15%, 90%);
-
-        /* Glassmorphism */
-        --glass-bg: rgba(255, 255, 255, 0.95);
-        --glass-border: rgba(255, 255, 255, 0.3);
-        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-
-        /* Shadows */
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-        --shadow-primary: 0 8px 24px rgba(46, 202, 106, 0.25);
-
-        /* Spacing */
-        --spacing-xs: 0.5rem;
-        --spacing-sm: 1rem;
-        --spacing-md: 1.5rem;
-        --spacing-lg: 2rem;
-        --spacing-xl: 3rem;
-
-        /* Border Radius */
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 20px;
-        --radius-xl: 28px;
-
-        /* Transitions */
-        --transition-fast: 150ms ease;
-        --transition-base: 250ms ease;
-        --transition-slow: 400ms ease;
-    }
-
-    /* ==================== GLOBAL STYLES ==================== */
-    .post-property-wrapper {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(220, 70%, 98%) 100%);
-        min-height: 100vh;
-        padding: 2rem 0;
-    }
-
-    .post-property-wrapper h1,
-    .post-property-wrapper h2,
-    .post-property-wrapper h3,
-    .post-property-wrapper h4,
-    .post-property-wrapper h5,
-    .post-property-wrapper h6 {
-        font-family: 'Outfit', sans-serif;
-    }
-
-    /* ==================== BREADCRUMBS ==================== */
-    .modern-breadcrumbs {
-        background: transparent;
-        padding: 1.5rem 0;
-        margin-bottom: 2rem;
-    }
-
-    .modern-breadcrumbs .breadcrumb {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border-radius: var(--radius-lg);
-        padding: 1rem 1.5rem;
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 0;
-    }
-
-    .modern-breadcrumbs .breadcrumb-item a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition: color var(--transition-fast);
-    }
-
-    .modern-breadcrumbs .breadcrumb-item a:hover {
-        color: var(--primary-color);
-    }
-
-    .modern-breadcrumbs .breadcrumb-item.active {
-        color: var(--primary-color);
-        font-weight: 600;
-    }
-
-    /* ==================== WIZARD CONTAINER ==================== */
-    .wizard-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-
-    .wizard-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-lg);
-        border: 1px solid var(--glass-border);
-        overflow: hidden;
-        animation: slideUp 0.6s ease;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ==================== WIZARD HEADER ==================== */
-    .wizard-header {
-        background: var(--primary-gradient);
-        color: white;
-        padding: 2.5rem 2rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .wizard-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0) translateX(0);
-        }
-
-        50% {
-            transform: translateY(-20px) translateX(10px);
-        }
-    }
-
-    .wizard-header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 0 0 0.5rem 0;
-        position: relative;
-        z-index: 1;
-    }
-
-    .wizard-header p {
-        margin: 0;
-        opacity: 0.95;
-        font-size: 1rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    /* ==================== PROGRESS BAR ==================== */
-    .wizard-progress {
-        background: rgba(0, 0, 0, 0.05);
-        padding: 2rem;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .progress-steps {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .progress-steps::before {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--border-color);
-        z-index: 0;
-    }
-
-    .progress-line {
-        position: absolute;
-        top: 20px;
-        left: 0;
-        height: 3px;
-        background: var(--primary-gradient);
-        transition: width var(--transition-slow);
-        z-index: 1;
-    }
-
-    .progress-step {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        flex: 1;
-    }
-
-    .step-circle {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: white;
-        border: 3px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.75rem;
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        transition: all var(--transition-base);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .progress-step.active .step-circle {
-        background: var(--primary-gradient);
-        border-color: var(--primary-color);
-        color: white;
-        transform: scale(1.15);
-        box-shadow: var(--shadow-primary);
-    }
-
-    .progress-step.completed .step-circle {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-    }
-
-    .progress-step.completed .step-circle i {
-        display: block;
-    }
-
-    .step-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-        transition: color var(--transition-base);
-    }
-
-    .progress-step.active .step-label {
-        color: var(--primary-color);
-    }
-
-    /* ==================== FORM STEPS ==================== */
-    .wizard-body {
-        padding: 2.5rem 2rem;
-    }
-
-    .form-step {
-        display: none;
-        animation: fadeIn 0.4s ease;
-    }
-
-    .form-step.active {
-        display: block;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .step-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .step-title i {
-        color: var(--primary-color);
-        font-size: 1.5rem;
-    }
-
-    .step-description {
-        color: var(--text-secondary);
-        margin-bottom: 2rem;
-        font-size: 1rem;
-    }
-
-    /* ==================== FORM CONTROLS ==================== */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
-    }
-
-    .form-control,
-    .form-select {
-        border: 2px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: 0.875rem 1.25rem;
-        font-size: 1rem;
-        transition: all var(--transition-base);
-        background: white;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 4px rgba(46, 202, 106, 0.1);
-        outline: none;
-    }
-
-    .form-control:hover,
-    .form-select:hover {
-        border-color: var(--primary-light);
-    }
-
-    textarea.form-control {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    /* ==================== AMENITIES GRID ==================== */
-    .amenities-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .amenity-card {
-        background: white;
-        border: 2px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: 1.25rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all var(--transition-base);
-        position: relative;
-    }
-
-    .amenity-card:hover {
-        border-color: var(--primary-color);
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .amenity-card input[type="checkbox"] {
-        position: absolute;
-        opacity: 0;
-    }
-
-    .amenity-card input[type="checkbox"]:checked+.amenity-content {
-        color: var(--primary-color);
-    }
-
-    .amenity-card input[type="checkbox"]:checked~.check-indicator {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    .amenity-card.selected {
-        background: linear-gradient(135deg, hsl(155, 70%, 96%) 0%, hsl(155, 70%, 98%) 100%);
-        border-color: var(--primary-color);
-        box-shadow: var(--shadow-md);
-    }
-
-    .amenity-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        transition: color var(--transition-base);
-    }
-
-    .amenity-content i {
-        font-size: 1.75rem;
-        color: var(--primary-color);
-    }
-
-    .amenity-content span {
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-
-    .check-indicator {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        width: 24px;
-        height: 24px;
-        background: var(--primary-gradient);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 0.75rem;
-        opacity: 0;
-        transform: scale(0);
-        transition: all var(--transition-base);
-    }
-
-    /* ==================== FILE UPLOAD ==================== */
-    .upload-zone {
-        border: 3px dashed var(--border-color);
-        border-radius: var(--radius-lg);
-        padding: 3rem 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all var(--transition-base);
-        background: white;
-        position: relative;
-    }
-
-    .upload-zone:hover,
-    .upload-zone.dragover {
-        border-color: var(--primary-color);
-        background: linear-gradient(135deg, hsl(155, 70%, 98%) 0%, hsl(155, 70%, 99%) 100%);
-        transform: scale(1.02);
-    }
-
-    .upload-zone i {
-        font-size: 3rem;
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-        display: block;
-    }
-
-    .upload-zone h4 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
-    }
-
-    .upload-zone p {
-        color: var(--text-secondary);
-        margin: 0;
-    }
-
-    .upload-zone input[type="file"] {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        cursor: pointer;
-    }
-
-    .file-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .preview-item {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .preview-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .preview-remove {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        width: 28px;
-        height: 28px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background var(--transition-fast);
-    }
-
-    .preview-remove:hover {
-        background: #dc3545;
-    }
-
-    /* ==================== WIZARD NAVIGATION ==================== */
-    .wizard-footer {
-        padding: 2rem;
-        background: rgba(0, 0, 0, 0.02);
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .btn-wizard {
-        padding: 0.875rem 2rem;
-        font-weight: 600;
-        border-radius: var(--radius-md);
-        border: none;
-        cursor: pointer;
-        transition: all var(--transition-base);
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .btn-wizard-primary {
-        background: var(--primary-gradient);
-        color: white;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .btn-wizard-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-primary);
-    }
-
-    .btn-wizard-primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .btn-wizard-secondary {
-        background: white;
-        color: var(--text-primary);
-        border: 2px solid var(--border-color);
-    }
-
-    .btn-wizard-secondary:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        transform: translateY(-2px);
-    }
-
-    .btn-wizard-success {
-        background: linear-gradient(135deg, hsl(155, 70%, 45%) 0%, hsl(155, 65%, 35%) 100%);
-        color: white;
-        padding: 1rem 3rem;
-        font-size: 1.1rem;
-        box-shadow: var(--shadow-md);
-    }
-
-    .btn-wizard-success:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-primary);
-    }
-
-    /* ==================== RESPONSIVE DESIGN ==================== */
-    @media (max-width: 768px) {
-        .wizard-header h1 {
-            font-size: 1.5rem;
-        }
-
-        .wizard-progress {
-            padding: 1.5rem 1rem;
-        }
-
-        .step-label {
-            font-size: 0.75rem;
-        }
-
-        .step-circle {
-            width: 36px;
-            height: 36px;
-            font-size: 0.8rem;
-        }
-
-        .wizard-body {
-            padding: 2rem 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-        }
-
-        .amenities-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .wizard-footer {
-            flex-direction: column-reverse;
-        }
-
-        .btn-wizard {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .progress-steps {
-            gap: 0;
-        }
-
-        .step-label {
-            display: none;
-        }
-
-        .amenities-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .upload-zone {
-            padding: 2rem 1rem;
-        }
-    }
-
-    /* ==================== VALIDATION & ERRORS ==================== */
-    .is-invalid {
-        border-color: #dc3545 !important;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-        display: none;
-    }
-
-    .is-invalid~.invalid-feedback {
-        display: block;
-    }
-
-    /* ==================== SUCCESS ANIMATION ==================== */
-    .success-checkmark {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1.5rem;
-    }
-
-    .success-checkmark .check-icon {
-        width: 80px;
-        height: 80px;
-        position: relative;
-        border-radius: 50%;
-        box-sizing: content-box;
-        border: 4px solid var(--primary-color);
-        animation: scaleUp 0.5s ease;
-    }
-
-    .success-checkmark .check-icon::before {
-        top: 3px;
-        left: -2px;
-        width: 30px;
-        transform-origin: 100% 50%;
-        border-radius: 100px 0 0 100px;
-    }
-
-    .success-checkmark .check-icon::after {
-        top: 0;
-        left: 30px;
-        width: 60px;
-        transform-origin: 0 50%;
-        border-radius: 0 100px 100px 0;
-        animation: rotateCircle 4.25s ease-in;
-    }
-
-    .success-checkmark .icon-line {
-        height: 5px;
-        background-color: var(--primary-color);
-        display: block;
-        border-radius: 2px;
-        position: absolute;
-        z-index: 10;
-    }
-
-    .success-checkmark .icon-line.line-tip {
-        top: 43px;
-        left: 14px;
-        width: 25px;
-        transform: rotate(45deg);
-        animation: iconLineTip 0.75s;
-    }
-
-    .success-checkmark .icon-line.line-long {
-        top: 38px;
-        right: 8px;
-        width: 47px;
-        transform: rotate(-45deg);
-        animation: iconLineLong 0.75s;
-    }
-
-    @keyframes scaleUp {
-        0% {
-            transform: scale(0);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    @keyframes iconLineTip {
-        0% {
-            width: 0;
-            left: 1px;
-            top: 19px;
-        }
-
-        54% {
-            width: 0;
-            left: 1px;
-            top: 19px;
-        }
-
-        70% {
-            width: 50px;
-            left: -8px;
-            top: 37px;
-        }
-
-        84% {
-            width: 17px;
-            left: 21px;
-            top: 48px;
-        }
-
-        100% {
-            width: 25px;
-            left: 14px;
-            top: 43px;
-        }
-    }
-
-    @keyframes iconLineLong {
-        0% {
-            width: 0;
-            right: 46px;
-            top: 54px;
-        }
-
-        65% {
-            width: 0;
-            right: 46px;
-            top: 54px;
-        }
-
-        84% {
-            width: 55px;
-            right: 0px;
-            top: 35px;
-        }
-
-        100% {
-            width: 47px;
-            right: 8px;
-            top: 38px;
-        }
-    }
+  /* ─── SCOPED DESIGN TOKENS (dark luxury matching base.html) ─── */
+  .pp-wrap {
+    --gold:          #C9A84C;
+    --gold-light:    #E8C96E;
+    --gold-dark:     #9A7A2E;
+    --obsidian:      #0A0A0F;
+    --charcoal:      #12121A;
+    --surface-1:     rgba(18, 18, 26, 0.92);
+    --surface-2:     rgba(30, 30, 46, 0.96);
+    --glass-border:  rgba(201, 168, 76, 0.18);
+    --glass-hover:   rgba(201, 168, 76, 0.10);
+    --text-primary:  #F5F0E8;
+    --text-muted:    rgba(245, 240, 232, 0.55);
+    --danger:        #e05252;
+    --success:       #3ecf8e;
+    --font-display:  'Cormorant Garamond', serif;
+    --font-body:     'DM Sans', sans-serif;
+    --radius-sm:     10px;
+    --radius-md:     16px;
+    --radius-lg:     24px;
+    --trans:         all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ─── PAGE WRAPPER ─── */
+  .pp-wrap {
+    font-family: var(--font-body);
+    background: var(--obsidian);
+    min-height: 100vh;
+    padding: 100px 0 4rem;
+  }
+
+  /* ─── HERO BAND ─── */
+  .pp-hero {
+    position: relative;
+    background: linear-gradient(135deg, #12121A 0%, #0D1B3E 100%);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 3rem 0 2rem;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+  }
+  .pp-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(201,168,76,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .pp-hero-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem; color: #0A0A0F;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 32px rgba(201,168,76,.35);
+  }
+  .pp-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 .4rem;
+  }
+  .pp-hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* slot badge */
+  .slot-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(201,168,76,.12);
+    border: 1px solid rgba(201,168,76,.3);
+    color: var(--gold-light);
+    border-radius: 50px;
+    padding: .4rem 1rem;
+    font-size: .875rem; font-weight: 600;
+    margin-top: 1rem;
+  }
+
+  /* ─── WIZARD CARD ─── */
+  .pp-card {
+    background: var(--surface-1);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(24px);
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,.55);
+    animation: ppSlideUp .5s ease both;
+  }
+  @keyframes ppSlideUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0);    }
+  }
+
+  /* ─── STEP PROGRESS ─── */
+  .pp-steps {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    position: relative;
+    padding: 2rem 2.5rem 1.75rem;
+    background: rgba(0,0,0,.25);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .pp-steps::before {
+    content: '';
+    position: absolute;
+    top: calc(2rem + 20px);   /* vertically centre on the circle */
+    left: calc(2.5rem + 20px);
+    right: calc(2.5rem + 20px);
+    height: 2px;
+    background: rgba(201,168,76,.15);
+    z-index: 0;
+  }
+  .pp-progress-bar {
+    position: absolute;
+    top: calc(2rem + 20px);
+    left: calc(2.5rem + 20px);
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+    z-index: 1;
+  }
+  .pp-step {
+    display: flex; flex-direction: column; align-items: center;
+    gap: .5rem; position: relative; z-index: 2; flex: 1;
+    cursor: pointer;
+  }
+  .pp-step-circle {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,168,76,.25);
+    background: var(--charcoal);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .9rem;
+    color: var(--text-muted);
+    transition: var(--trans);
+  }
+  .pp-step.active .pp-step-circle {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border-color: var(--gold);
+    color: #0A0A0F;
+    box-shadow: 0 0 20px rgba(201,168,76,.45);
+    transform: scale(1.1);
+  }
+  .pp-step.done .pp-step-circle {
+    background: rgba(62,207,142,.15);
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .pp-step-label {
+    font-size: .78rem; font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    transition: color .25s;
+    white-space: nowrap;
+  }
+  .pp-step.active .pp-step-label { color: var(--gold-light); }
+  .pp-step.done  .pp-step-label  { color: var(--success); }
+
+  /* ─── WIZARD BODY ─── */
+  .pp-body { padding: 2.5rem 2.5rem 2rem; }
+
+  .pp-form-step { display: none; animation: ppFadeIn .35s ease both; }
+  .pp-form-step.active { display: block; }
+  @keyframes ppFadeIn {
+    from { opacity:0; transform:translateX(16px); }
+    to   { opacity:1; transform:translateX(0);    }
+  }
+
+  .pp-step-heading {
+    display: flex; align-items: center; gap: .75rem;
+    margin-bottom: .35rem;
+  }
+  .pp-step-heading .step-icon {
+    width: 40px; height: 40px;
+    background: rgba(201,168,76,.12);
+    border: 1px solid rgba(201,168,76,.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; color: var(--gold);
+    flex-shrink: 0;
+  }
+  .pp-step-heading h3 {
+    font-family: var(--font-display);
+    font-size: 1.6rem; font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .pp-step-sub {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-bottom: 2rem;
+    padding-left: 52px;
+  }
+
+  /* ─── FORM CONTROLS ─── */
+  .pp-label {
+    display: flex; align-items: center; gap: .45rem;
+    color: var(--text-primary);
+    font-size: .875rem; font-weight: 600;
+    margin-bottom: .5rem;
+    letter-spacing: .01em;
+  }
+  .pp-label .lbl-icon { color: var(--gold); font-size: .95rem; }
+  .pp-label .badge-opt {
+    background: rgba(245,240,232,.08);
+    color: var(--text-muted);
+    border-radius: 4px;
+    font-size: .7rem; padding: 2px 6px;
+    font-weight: 500;
+  }
+
+  .pp-wrap .form-control,
+  .pp-wrap .form-select,
+  .pp-wrap input[type="text"],
+  .pp-wrap input[type="number"],
+  .pp-wrap input[type="url"],
+  .pp-wrap select,
+  .pp-wrap textarea:not(.cke_source) {
+    background: rgba(255,255,255,.05) !important;
+    border: 1.5px solid rgba(255,255,255,.1) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-body) !important;
+    font-size: .95rem !important;
+    padding: .75rem 1rem !important;
+    transition: var(--trans) !important;
+    width: 100%;
+  }
+  .pp-wrap .form-control:focus,
+  .pp-wrap .form-select:focus,
+  .pp-wrap input[type="text"]:focus,
+  .pp-wrap input[type="number"]:focus,
+  .pp-wrap input[type="url"]:focus,
+  .pp-wrap select:focus,
+  .pp-wrap textarea:focus {
+    border-color: rgba(201,168,76,.6) !important;
+    box-shadow: 0 0 0 3px rgba(201,168,76,.12) !important;
+    outline: none !important;
+    background: rgba(255,255,255,.07) !important;
+  }
+  .pp-wrap .form-control:hover,
+  .pp-wrap .form-select:hover,
+  .pp-wrap select:hover {
+    border-color: rgba(201,168,76,.35) !important;
+  }
+  .pp-wrap select option {
+    background: #1a1a2a;
+    color: var(--text-primary);
+  }
+  .pp-hint {
+    color: var(--text-muted);
+    font-size: .8rem;
+    margin-top: .35rem;
+    display: flex; align-items: flex-start; gap: .35rem;
+    line-height: 1.4;
+  }
+
+  /* price wrapper */
+  .pp-price-wrap { position: relative; }
+  .pp-price-wrap .currency-symbol {
+    position: absolute;
+    left: 1rem; top: 50%; transform: translateY(-50%);
+    color: var(--gold); font-weight: 700; font-size: 1rem;
+    pointer-events: none; z-index: 2;
+  }
+  .pp-price-wrap input { padding-left: 2.25rem !important; }
+
+  /* ─── STEP COUNTER INPUTS ─── */
+  .pp-counter {
+    display: flex; align-items: center;
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .pp-counter button {
+    width: 42px; height: 50px;
+    background: rgba(201,168,76,.1);
+    border: none; color: var(--gold);
+    font-size: 1.25rem; cursor: pointer;
+    transition: background .2s;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pp-counter button:hover { background: rgba(201,168,76,.25); }
+  .pp-counter input {
+    flex: 1; text-align: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--text-primary) !important;
+    font-size: 1.05rem !important; font-weight: 700 !important;
+    padding: .75rem .5rem !important;
+  }
+  .pp-counter input:focus { border: none !important; box-shadow: none !important; }
+
+  /* ─── AMENITY GRID ─── */
+  .pp-amenities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: .85rem;
+    margin-top: .75rem;
+  }
+  .pp-amenity {
+    background: rgba(255,255,255,.03);
+    border: 1.5px solid rgba(255,255,255,.08);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem .75rem;
+    text-align: center; cursor: pointer;
+    transition: var(--trans); position: relative;
+    user-select: none;
+  }
+  .pp-amenity:hover {
+    border-color: rgba(201,168,76,.4);
+    background: rgba(201,168,76,.06);
+    transform: translateY(-2px);
+  }
+  .pp-amenity.active {
+    background: rgba(201,168,76,.1);
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(201,168,76,.2);
+  }
+  .pp-amenity input[type="checkbox"] { display: none; }
+  .pp-amenity-icon { font-size: 1.6rem; color: var(--text-muted); margin-bottom: .4rem; transition: color .2s; }
+  .pp-amenity.active .pp-amenity-icon { color: var(--gold); }
+  .pp-amenity-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); transition: color .2s; }
+  .pp-amenity.active .pp-amenity-label { color: var(--gold-light); }
+  .pp-amenity-check {
+    position: absolute; top: .4rem; right: .4rem;
+    width: 20px; height: 20px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .65rem; color: #0A0A0F;
+    opacity: 0; transform: scale(0);
+    transition: var(--trans);
+  }
+  .pp-amenity.active .pp-amenity-check { opacity: 1; transform: scale(1); }
+
+  /* ─── UPLOAD ZONES ─── */
+  .pp-upload {
+    border: 2px dashed rgba(201,168,76,.25);
+    border-radius: var(--radius-md);
+    padding: 2.5rem 1.5rem;
+    text-align: center; cursor: pointer;
+    transition: var(--trans); position: relative;
+    background: rgba(255,255,255,.025);
+  }
+  .pp-upload:hover, .pp-upload.dragover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,.06);
+    transform: scale(1.01);
+  }
+  .pp-upload input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .pp-upload-icon {
+    font-size: 2.5rem; color: var(--gold);
+    margin-bottom: .75rem; display: block;
+    transition: transform .3s;
+  }
+  .pp-upload:hover .pp-upload-icon { transform: translateY(-4px); }
+  .pp-upload h5 {
+    font-family: var(--font-display);
+    color: var(--text-primary); font-size: 1.15rem; margin-bottom: .25rem;
+  }
+  .pp-upload p { color: var(--text-muted); font-size: .85rem; margin: 0; }
+
+  /* image preview grid */
+  .pp-preview {
+    display: flex; flex-wrap: wrap; gap: .75rem;
+    margin-top: 1rem;
+  }
+  .pp-preview-item {
+    position: relative; width: 100px; height: 100px;
+    border-radius: var(--radius-sm); overflow: hidden;
+    border: 1.5px solid var(--glass-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,.4);
+  }
+  .pp-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .pp-preview-remove {
+    position: absolute; top: .3rem; right: .3rem;
+    width: 22px; height: 22px;
+    background: rgba(0,0,0,.75); color: #fff;
+    border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; cursor: pointer;
+    transition: background .2s;
+  }
+  .pp-preview-remove:hover { background: var(--danger); }
+
+  /* ─── CKEDITOR WRAPPER ─── */
+  .pp-ckeditor-wrap { border-radius: var(--radius-sm); overflow: hidden; }
+  .pp-ckeditor-wrap .django-ckeditor-widget { width: 100% !important; }
+  .pp-ckeditor-wrap .cke { border: 1.5px solid rgba(255,255,255,.1) !important; border-radius: var(--radius-sm) !important; }
+  .pp-ckeditor-wrap .cke_top { background: rgba(18,18,26,.95) !important; border-bottom: 1px solid rgba(255,255,255,.08) !important; }
+  .pp-ckeditor-wrap .cke_bottom { background: rgba(18,18,26,.95) !important; border-top: 1px solid rgba(255,255,255,.08) !important; }
+  .pp-ckeditor-wrap .cke_editable { background: rgba(255,255,255,.04) !important; color: var(--text-primary) !important; min-height: 200px; }
+
+  /* ─── DIVIDER ─── */
+  .pp-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 2rem 0;
+  }
+
+  /* ─── FOOTER NAV ─── */
+  .pp-footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(0,0,0,.2);
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  }
+
+  .pp-btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .75rem 1.75rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: .95rem; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: var(--trans);
+    text-decoration: none;
+  }
+  .pp-btn-secondary {
+    background: rgba(255,255,255,.06);
+    border: 1.5px solid rgba(255,255,255,.12);
+    color: var(--text-primary);
+  }
+  .pp-btn-secondary:hover {
+    background: rgba(255,255,255,.1);
+    border-color: rgba(255,255,255,.25);
+    color: var(--text-primary);
+  }
+  .pp-btn-gold {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #0A0A0F;
+    box-shadow: 0 4px 16px rgba(201,168,76,.3);
+  }
+  .pp-btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,168,76,.45);
+    color: #0A0A0F;
+  }
+  .pp-btn-gold:disabled {
+    opacity: .6; cursor: not-allowed; transform: none;
+  }
+  .pp-btn-submit {
+    background: linear-gradient(135deg, #1a6b40 0%, #0f4a2c 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(62,207,142,.2);
+    font-size: 1rem; padding: .85rem 2.25rem;
+  }
+  .pp-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(62,207,142,.35);
+    color: #fff;
+  }
+
+  /* step counter chip */
+  .pp-step-counter {
+    color: var(--text-muted); font-size: .85rem; font-weight: 500;
+  }
+  .pp-step-counter span { color: var(--gold); font-weight: 700; }
+
+  /* ─── VALIDATION ─── */
+  .pp-invalid { border-color: var(--danger) !important; }
+  .pp-error-msg {
+    color: var(--danger); font-size: .8rem;
+    margin-top: .3rem; display: none;
+  }
+  .pp-invalid ~ .pp-error-msg { display: block; }
+
+  /* ─── VIDEO PREVIEW ─── */
+  .pp-video-preview { border-radius: var(--radius-sm); overflow: hidden; margin-top: 1rem; }
+
+  /* ─── EXISTING IMAGES ─── */
+  .pp-existing-label {
+    font-size: .8rem; color: var(--text-muted); margin-bottom: .5rem;
+    display: flex; align-items: center; gap: .4rem;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .pp-body { padding: 1.75rem 1.25rem 1.5rem; }
+    .pp-footer { padding: 1.25rem; flex-direction: column-reverse; }
+    .pp-btn { width: 100%; justify-content: center; }
+    .pp-steps { padding: 1.5rem 1rem 1.25rem; }
+    .pp-amenities { grid-template-columns: repeat(3, 1fr); }
+    .pp-step-label { display: none; }
+    .pp-hero { padding: 2rem 0 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .pp-amenities { grid-template-columns: repeat(2, 1fr); }
+    .pp-steps::before, .pp-progress-bar { display: none; }
+  }
 </style>
 
-<div class="post-property-wrapper">
-    <!-- Breadcrumbs -->
-    <section class="modern-breadcrumbs">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>Home</a>
-                    </li>
-                    <li class="breadcrumb-item"><a href="{% url 'listings:dashboard' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Post Property</li>
-                </ol>
-            </nav>
-        </div>
-    </section>
+<div class="pp-wrap">
 
-    <!-- Wizard Container -->
-    <div class="wizard-container">
-        <div class="wizard-card">
-            <!-- Header -->
-            <div class="wizard-header">
-                <h1><i class="bi bi-building-{% if is_edit %}check{% else %}add{% endif %} me-2"></i>{% if is_edit %}Edit Property{% else %}List Your Property{% endif %}</h1>
-                <p>{% if is_edit %}Update your property details{% else %}Follow these simple steps to showcase your
-                    property to thousands of potential buyers{% endif %}</p>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="wizard-progress">
-                <div class="progress-steps">
-                    <div class="progress-line" id="progressLine"></div>
-
-                    <div class="progress-step active" data-step="1">
-                        <div class="step-circle">1</div>
-                        <div class="step-label">Basic Info</div>
-                    </div>
-
-                    <div class="progress-step" data-step="2">
-                        <div class="step-circle">2</div>
-                        <div class="step-label">Location</div>
-                    </div>
-
-                    <div class="progress-step" data-step="3">
-                        <div class="step-circle">3</div>
-                        <div class="step-label">Features</div>
-                    </div>
-
-                    <div class="progress-step" data-step="4">
-                        <div class="step-circle">4</div>
-                        <div class="step-label">Media</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form -->
-            <form method="post" enctype="multipart/form-data" id="propertyForm">
-                {% csrf_token %}
-
-                <div class="wizard-body">
-                    <!-- Step 1: Basic Information -->
-                    <div class="form-step active" data-step="1">
-                        <h3 class="step-title"><i class="bi bi-info-circle-fill"></i>Basic Information</h3>
-                        <p class="step-description">Let's start with the essential details of your property</p>
-
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="{{ form.title.id_for_label }}" class="form-label">
-                                        <i class="bi bi-tag-fill text-primary"></i>Property Title *
-                                    </label>
-                                    {{ form.title }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: "Luxury 4-Bedroom Duplex in
-                                        Lekki Phase 1" or "Modern 3-Bed Apartment in Victoria Island"</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.property_type.id_for_label }}" class="form-label">
-                                        <i class="bi bi-house-fill text-primary"></i>Property Type *
-                                    </label>
-                                    {{ form.property_type }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
-                                        the type that best matches your property</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.status.id_for_label }}" class="form-label">
-                                        <i class="bi bi-toggles text-primary"></i>Listing Status *
-                                    </label>
-                                    {{ form.status }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Are you
-                                        selling or renting this property?</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.price.id_for_label }}" class="form-label">
-                                        <i class="bi bi-currency-exchange text-primary"></i>Price (₦) *
-                                    </label>
-                                    {{ form.price }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: 45000000 or 45000000.00 (for
-                                        ₦45M). Enter numbers without commas</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.square_feet.id_for_label }}" class="form-label">
-                                        <i class="bi bi-aspect-ratio text-primary"></i>Total Area (sq ft) *
-                                    </label>
-                                    {{ form.square_feet }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: 2500 (for a 2,500 sq ft
-                                        property)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Location & Details -->
-                    <div class="form-step" data-step="2">
-                        <h3 class="step-title"><i class="bi bi-geo-alt-fill"></i>Location & Details</h3>
-                        <p class="step-description">Help buyers find your property with accurate location information
-                        </p>
-
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.state.id_for_label }}" class="form-label">
-                                        <i class="bi bi-map text-primary"></i>State *
-                                    </label>
-                                    {{ form.state }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
-                                        the state where the property is located</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.city.id_for_label }}" class="form-label">
-                                        <i class="bi bi-pin-map text-primary"></i>City *
-                                    </label>
-                                    {{ form.city }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Select
-                                        the city within the chosen state</small>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="{{ form.address.id_for_label }}" class="form-label">
-                                        <i class="bi bi-signpost text-primary"></i>Full Address *
-                                    </label>
-                                    {{ form.address }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: "15 Admiralty Way, Lekki Phase
-                                        1" or "Plot 234, Gwarinpa Estate"</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.zip_code.id_for_label }}" class="form-label">
-                                        <i class="bi bi-mailbox text-primary"></i>Zip/Postal Code
-                                    </label>
-                                    {{ form.zip_code }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: 101245 (if available for your
-                                        area)</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.year_built.id_for_label }}" class="form-label">
-                                        <i class="bi bi-calendar-event text-primary"></i>Year Built
-                                    </label>
-                                    {{ form.year_built }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example: 2020 or 2018 (year of
-                                        construction)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Features & Amenities -->
-                    <div class="form-step" data-step="3">
-                        <h3 class="step-title"><i class="bi bi-stars"></i>Features & Amenities</h3>
-                        <p class="step-description">Highlight what makes your property special</p>
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="{{ form.bedrooms.id_for_label }}" class="form-label">
-                                        <i class="bi bi-door-closed text-primary"></i>Bedrooms *
-                                    </label>
-                                    {{ form.bedrooms }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
-                                        of bedrooms (e.g., 4)</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="{{ form.bathrooms.id_for_label }}" class="form-label">
-                                        <i class="bi bi-droplet text-primary"></i>Bathrooms *
-                                    </label>
-                                    {{ form.bathrooms }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
-                                        of bathrooms (e.g., 5)</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="{{ form.parking_spaces.id_for_label }}" class="form-label">
-                                        <i class="bi bi-car-front text-primary"></i>Parking Spaces
-                                    </label>
-                                    {{ form.parking_spaces }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Number
-                                        of parking spaces (e.g., 2)</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.lot_size.id_for_label }}" class="form-label">
-                                        <i class="bi bi-grid-3x3 text-primary"></i>Lot Size (sq ft)
-                                    </label>
-                                    {{ form.lot_size }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Total
-                                        land size in sq ft (e.g., 3500)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <label class="form-label mb-3"><i class="bi bi-check2-square text-primary"></i> Select
-                            Amenities</label>
-                        <div class="amenities-grid">
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.has_garage.id_for_label }}')">
-                                {{ form.has_garage }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-car-garage"></i>
-                                    <span>Garage</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_pool.id_for_label }}')">
-                                {{ form.has_pool }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-water"></i>
-                                    <span>Pool</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.has_garden.id_for_label }}')">
-                                {{ form.has_garden }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-flower1"></i>
-                                    <span>Garden</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.has_security.id_for_label }}')">
-                                {{ form.has_security }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-shield-check"></i>
-                                    <span>Security</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_gym.id_for_label }}')">
-                                {{ form.has_gym }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-bicycle"></i>
-                                    <span>Gym</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.has_balcony.id_for_label }}')">
-                                {{ form.has_balcony }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-sunset"></i>
-                                    <span>Balcony</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.is_furnished.id_for_label }}')">
-                                {{ form.is_furnished }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-lamp"></i>
-                                    <span>Furnished</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card" onclick="toggleAmenity(this, '{{ form.has_ac.id_for_label }}')">
-                                {{ form.has_ac }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-snow"></i>
-                                    <span>AC</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.has_heating.id_for_label }}')">
-                                {{ form.has_heating }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-thermometer-sun"></i>
-                                    <span>Heating</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-
-                            <div class="amenity-card"
-                                onclick="toggleAmenity(this, '{{ form.pet_friendly.id_for_label }}')">
-                                {{ form.pet_friendly }}
-                                <div class="amenity-content">
-                                    <i class="bi bi-emoji-heart-eyes"></i>
-                                    <span>Pet Friendly</span>
-                                </div>
-                                <div class="check-indicator"><i class="bi bi-check"></i></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Media & Description -->
-                    <div class="form-step" data-step="4">
-                        <h3 class="step-title"><i class="bi bi-images"></i>Media & Description</h3>
-                        <p class="step-description">Add photos and details to make your listing stand out</p>
-
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="{{ form.description.id_for_label }}" class="form-label">
-                                        <i class="bi bi-text-paragraph text-primary"></i>Property Description *
-                                    </label>
-                                    {{ form.description }}
-                                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Use the
-                                        rich text editor to describe key features, location benefits,
-                                        nearby amenities (schools, malls, hospitals), finishes, and what makes this
-                                        property special</small>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="bi bi-camera-fill text-primary"></i>Primary Image (Featured) *
-                                    </label>
-                                    <div class="upload-zone" id="uploadZone">
-                                        <i class="bi bi-cloud-upload"></i>
-                                        <h4>Drag & Drop your primary image here</h4>
-                                        <p>or click to browse (JPG, PNG, max 5MB)</p>
-                                        {{ form.featured_image }}
-                                    </div>
-                                    <div class="file-preview" id="filePreview"></div>
-                                    {% if is_edit and property.featured_image %}
-                                    <div class="mt-3">
-                                        <p class="text-muted">Current primary image:</p>
-                                        <img src="{{ property.featured_image.url }}" alt="Current"
-                                            style="max-width: 200px; border-radius: 8px;">
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="bi bi-images text-primary"></i>Secondary Images (Gallery)
-                                    </label>
-                                    <div class="upload-zone" id="secondaryUploadZone">
-                                        <i class="bi bi-cloud-upload"></i>
-                                        <h4>Drag & Drop multiple images here</h4>
-                                        <p>or click to browse (JPG, PNG, max 5MB each)</p>
-                                        <input type="file" name="secondary_images" id="secondaryImages" multiple
-                                            accept="image/*"
-                                            style="position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;">
-                                    </div>
-                                    <div class="file-preview" id="secondaryPreview"></div>
-                                    {% if is_edit and existing_images %}
-                                    <div class="mt-3">
-                                        <p class="text-muted">Existing secondary images:</p>
-                                        <div class="file-preview">
-                                            {% for img in existing_images %}
-                                            <div class="preview-item">
-                                                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="{{ form.video_url.id_for_label }}" class="form-label">
-                                        <i class="bi bi-play-circle text-primary"></i>YouTube Video URL (Optional)
-                                    </label>
-                                    {{ form.video_url }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example:
-                                        https://youtube.com/watch?v=abc123 or https://youtu.be/abc123</small>
-                                    <div id="videoPreview" class="mt-3" style="display: none;">
-                                        <p class="text-muted mb-2">Video Preview:</p>
-                                        <div class="ratio ratio-16x9" style="max-width: 560px;">
-                                            <iframe id="youtubeEmbed" src="" frameborder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                allowfullscreen></iframe>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.virtual_tour_url.id_for_label }}" class="form-label">
-                                        <i class="bi bi-badges-3d text-primary"></i>Virtual Tour URL (Optional)
-                                    </label>
-                                    {{ form.virtual_tour_url }}
-                                    <small class="text-muted d-block mt-1"><i
-                                            class="bi bi-info-circle me-1"></i>Example:
-                                        https://my.matterport.com/show/?m=abc123 (360° virtual tour link)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer Navigation -->
-                <div class="wizard-footer">
-                    <button type="button" class="btn-wizard btn-wizard-secondary" id="prevBtn" style="display: none;">
-                        <i class="bi bi-arrow-left"></i> Previous
-                    </button>
-                    <div style="flex: 1;"></div>
-                    <button type="button" class="btn-wizard btn-wizard-primary" id="nextBtn">
-                        Next <i class="bi bi-arrow-right"></i>
-                    </button>
-                    <button type="submit" class="btn-wizard btn-wizard-success" id="submitBtn" style="display: none;">
-                        <i class="bi bi-check-circle me-2"></i> {% if is_edit %}Update Property{% else %}Publish
-                        Property{% endif %}
-                    </button>
-                </div>
-            </form>
-        </div>
+  <!-- ─── HERO ─── -->
+  <section class="pp-hero">
+    <div class="container">
+      <div class="pp-hero-icon">
+        <i class="bi bi-building{% if is_edit %}-check{% else %}-add{% endif %}"></i>
+      </div>
+      <h1>{% if is_edit %}Edit Property Listing{% else %}List Your Property{% endif %}</h1>
+      <p>{% if is_edit %}Update your listing details to attract the right buyers.{% else %}Follow the steps below to showcase your property to thousands of buyers &amp; renters.{% endif %}</p>
+      {% if not is_edit %}
+      <div class="slot-badge">
+        <i class="bi bi-layers-fill"></i>
+        <span>{{ remaining_slots }} of {{ total_slots }} listing slots remaining</span>
+      </div>
+      {% endif %}
     </div>
-</div>
+  </section>
 
-<script>
-    // ==================== WIZARD STATE ====================
-    let currentStep = 1;
-    const totalSteps = 4;
+  <!-- ─── MESSAGES ─── -->
+  {% if messages %}
+  <div class="container mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert"
+         style="background:rgba(18,18,26,.9);border:1px solid rgba(201,168,76,.25);color:var(--text-primary);">
+      {{ message }}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    // ==================== DOM ELEMENTS ====================
-    const formSteps = document.querySelectorAll('.form-step');
-    const progressSteps = document.querySelectorAll('.progress-step');
-    const progressLine = document.getElementById('progressLine');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const propertyForm = document.getElementById('propertyForm');
+  <!-- ─── MAIN CARD ─── -->
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-11">
+        <div class="pp-card">
 
-    // ==================== FUNCTIONS ====================
-    function updateWizard() {
-        // Update form steps
-        formSteps.forEach((step, index) => {
-            step.classList.toggle('active', index + 1 === currentStep);
-        });
+          <!-- Step Progress -->
+          <div class="pp-steps" id="ppSteps">
+            <div class="pp-progress-bar" id="ppProgressBar"></div>
 
-        // Update progress steps
-        progressSteps.forEach((step, index) => {
-            const stepNum = index + 1;
-            step.classList.toggle('active', stepNum === currentStep);
-            step.classList.toggle('completed', stepNum < currentStep);
+            <div class="pp-step active" data-step="1">
+              <div class="pp-step-circle">1</div>
+              <div class="pp-step-label">Basics</div>
+            </div>
+            <div class="pp-step" data-step="2">
+              <div class="pp-step-circle">2</div>
+              <div class="pp-step-label">Location</div>
+            </div>
+            <div class="pp-step" data-step="3">
+              <div class="pp-step-circle">3</div>
+              <div class="pp-step-label">Features</div>
+            </div>
+            <div class="pp-step" data-step="4">
+              <div class="pp-step-circle">4</div>
+              <div class="pp-step-label">Media</div>
+            </div>
+          </div>
 
-            // Update circle content for completed steps
-            const circle = step.querySelector('.step-circle');
-            if (stepNum < currentStep) {
-                circle.innerHTML = '<i class="bi bi-check"></i>';
-            } else {
-                circle.textContent = stepNum;
-            }
-        });
+          <!-- Form -->
+          <form method="post" enctype="multipart/form-data" id="ppForm" novalidate>
+            {% csrf_token %}
 
-        // Update progress line
-        const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-        progressLine.style.width = progressPercent + '%';
+            <div class="pp-body">
 
-        // Update buttons
-        prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-flex';
-        nextBtn.style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
-        submitBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
+              <!-- ══════════ STEP 1: BASIC INFO ══════════ -->
+              <div class="pp-form-step active" data-step="1">
+                <div class="pp-step-heading">
+                  <div class="step-icon"><i class="bi bi-info-circle-fill"></i></div>
+                  <h3>Basic Information</h3>
+                </div>
+                <p class="pp-step-sub">Start with the core details — what is this property and how much is it?</p>
 
-        // Smooth scroll to top
-        document.querySelector('.wizard-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+                <div class="row g-4">
+                  <!-- Title -->
+                  <div class="col-12">
+                    <label class="pp-label" for="{{ form.title.id_for_label }}">
+                      <i class="bi bi-tag-fill lbl-icon"></i> Property Title <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.title }}
+                    <p class="pp-hint"><i class="bi bi-lightbulb"></i> e.g. "Luxury 4-Bed Duplex in Lekki Phase 1" or "Modern 3-Bed Apartment, Victoria Island"</p>
+                  </div>
 
-    function nextStep() {
-        if (validateStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateWizard();
-            }
-        }
-    }
+                  <!-- Type + Status -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.property_type.id_for_label }}">
+                      <i class="bi bi-house-fill lbl-icon"></i> Property Type <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.property_type }}
+                  </div>
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.status.id_for_label }}">
+                      <i class="bi bi-toggles lbl-icon"></i> Listing Status <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.status }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> Are you selling or renting?</p>
+                  </div>
 
-    function prevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            updateWizard();
-        }
-    }
+                  <!-- Price -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.price.id_for_label }}">
+                      <i class="bi bi-currency-exchange lbl-icon"></i> Price (₦) <span style="color:var(--gold)">*</span>
+                    </label>
+                    <div class="pp-price-wrap">
+                      <span class="currency-symbol">₦</span>
+                      {{ form.price }}
+                    </div>
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> Enter numbers only — e.g. <strong style="color:var(--gold-light)">45000000</strong> for ₦45M</p>
+                    <p class="pp-hint" id="priceFormatted" style="color:var(--gold-light);font-weight:600;"></p>
+                  </div>
 
-    function validateStep(step) {
-        const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
-        const requiredFields = currentStepElement.querySelectorAll('[required]');
-        let isValid = true;
+                  <!-- Area -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.square_feet.id_for_label }}">
+                      <i class="bi bi-aspect-ratio lbl-icon"></i> Total Area (sq ft) <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.square_feet }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> e.g. 2500 for a 2,500 sq ft property</p>
+                  </div>
+                </div>
+              </div>
 
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
+              <!-- ══════════ STEP 2: LOCATION ══════════ -->
+              <div class="pp-form-step" data-step="2">
+                <div class="pp-step-heading">
+                  <div class="step-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                  <h3>Location &amp; Details</h3>
+                </div>
+                <p class="pp-step-sub">Accurate location details help buyers find your property faster.</p>
 
-        return isValid;
-    }
+                <div class="row g-4">
+                  <!-- State + City -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.state.id_for_label }}">
+                      <i class="bi bi-map lbl-icon"></i> State <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.state }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> Select the state in Nigeria</p>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.city.id_for_label }}">
+                      <i class="bi bi-pin-map lbl-icon"></i> City / Town / Area <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.city }}
+                    <p class="pp-hint"><i class="bi bi-pencil-square"></i> Type the city, district, or area (e.g. Awka, Onitsha, Lekki, Maitama)</p>
+                  </div>
 
-    // ==================== AMENITY TOGGLE ====================
-    function toggleAmenity(card, checkboxId) {
-        const checkbox = document.getElementById(checkboxId);
-        checkbox.checked = !checkbox.checked;
-        card.classList.toggle('selected', checkbox.checked);
-    }
+                  <!-- Address -->
+                  <div class="col-12">
+                    <label class="pp-label" for="{{ form.address.id_for_label }}">
+                      <i class="bi bi-signpost lbl-icon"></i> Full Address <span style="color:var(--gold)">*</span>
+                    </label>
+                    {{ form.address }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> e.g. "15 Admiralty Way, Lekki Phase 1" or "Plot 234, Gwarinpa Estate, Abuja"</p>
+                  </div>
 
-    // Make function global for onclick handlers
-    window.toggleAmenity = toggleAmenity;
+                  <!-- Zip + Year Built -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.zip_code.id_for_label }}">
+                      <i class="bi bi-mailbox lbl-icon"></i> Zip / Postal Code <span class="badge-opt">optional</span>
+                    </label>
+                    {{ form.zip_code }}
+                  </div>
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.year_built.id_for_label }}">
+                      <i class="bi bi-calendar-event lbl-icon"></i> Year Built <span class="badge-opt">optional</span>
+                    </label>
+                    {{ form.year_built }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> e.g. 2020</p>
+                  </div>
+                </div>
+              </div>
 
-    // ==================== FILE UPLOAD ====================
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.querySelector('input[type="file"]');
-    const filePreview = document.getElementById('filePreview');
+              <!-- ══════════ STEP 3: FEATURES ══════════ -->
+              <div class="pp-form-step" data-step="3">
+                <div class="pp-step-heading">
+                  <div class="step-icon"><i class="bi bi-stars"></i></div>
+                  <h3>Features &amp; Amenities</h3>
+                </div>
+                <p class="pp-step-sub">Tell buyers about the key features and what makes this property special.</p>
 
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadZone.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
-    });
+                <!-- Bed/Bath/Parking counters -->
+                <div class="row g-4 mb-4">
+                  <div class="col-md-4">
+                    <label class="pp-label"><i class="bi bi-door-closed lbl-icon"></i> Bedrooms <span style="color:var(--gold)">*</span></label>
+                    <div class="pp-counter">
+                      <button type="button" onclick="ppCounter('{{ form.bedrooms.id_for_label }}', -1)"><i class="bi bi-dash"></i></button>
+                      {{ form.bedrooms }}
+                      <button type="button" onclick="ppCounter('{{ form.bedrooms.id_for_label }}', 1)"><i class="bi bi-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="pp-label"><i class="bi bi-droplet lbl-icon"></i> Bathrooms <span style="color:var(--gold)">*</span></label>
+                    <div class="pp-counter">
+                      <button type="button" onclick="ppCounter('{{ form.bathrooms.id_for_label }}', -1)"><i class="bi bi-dash"></i></button>
+                      {{ form.bathrooms }}
+                      <button type="button" onclick="ppCounter('{{ form.bathrooms.id_for_label }}', 1)"><i class="bi bi-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="pp-label"><i class="bi bi-car-front lbl-icon"></i> Parking <span class="badge-opt">optional</span></label>
+                    <div class="pp-counter">
+                      <button type="button" onclick="ppCounter('{{ form.parking_spaces.id_for_label }}', -1)"><i class="bi bi-dash"></i></button>
+                      {{ form.parking_spaces }}
+                      <button type="button" onclick="ppCounter('{{ form.parking_spaces.id_for_label }}', 1)"><i class="bi bi-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.lot_size.id_for_label }}">
+                      <i class="bi bi-grid-3x3 lbl-icon"></i> Lot Size (sq ft) <span class="badge-opt">optional</span>
+                    </label>
+                    {{ form.lot_size }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> Total land size e.g. 3500</p>
+                  </div>
+                </div>
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
+                <div class="pp-divider"></div>
 
-    // Highlight drop zone when item is dragged over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        uploadZone.addEventListener(eventName, () => {
-            uploadZone.classList.add('dragover');
-        }, false);
-    });
+                <!-- Amenities -->
+                <label class="pp-label mb-2"><i class="bi bi-check2-square lbl-icon"></i> Amenities &amp; Features</label>
+                <div class="pp-amenities" id="ppAmenities">
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        uploadZone.addEventListener(eventName, () => {
-            uploadZone.classList.remove('dragover');
-        }, false);
-    });
+                  {% for field, icon, label in amenity_fields %}
+                  <label class="pp-amenity" id="am-{{ field.html_name }}">
+                    {{ field }}
+                    <div class="pp-amenity-icon"><i class="{{ icon }}"></i></div>
+                    <div class="pp-amenity-label">{{ label }}</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  {% empty %}
+                  {# Fallback: render amenities manually if context var not provided #}
+                  <label class="pp-amenity" id="am-has_garage">
+                    {{ form.has_garage }}
+                    <div class="pp-amenity-icon"><i class="bi bi-car-garage"></i></div>
+                    <div class="pp-amenity-label">Garage</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_pool">
+                    {{ form.has_pool }}
+                    <div class="pp-amenity-icon"><i class="bi bi-water"></i></div>
+                    <div class="pp-amenity-label">Pool</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_garden">
+                    {{ form.has_garden }}
+                    <div class="pp-amenity-icon"><i class="bi bi-flower1"></i></div>
+                    <div class="pp-amenity-label">Garden</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_security">
+                    {{ form.has_security }}
+                    <div class="pp-amenity-icon"><i class="bi bi-shield-check"></i></div>
+                    <div class="pp-amenity-label">Security</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_gym">
+                    {{ form.has_gym }}
+                    <div class="pp-amenity-icon"><i class="bi bi-activity"></i></div>
+                    <div class="pp-amenity-label">Gym</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_balcony">
+                    {{ form.has_balcony }}
+                    <div class="pp-amenity-icon"><i class="bi bi-sunset"></i></div>
+                    <div class="pp-amenity-label">Balcony</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-is_furnished">
+                    {{ form.is_furnished }}
+                    <div class="pp-amenity-icon"><i class="bi bi-lamp-fill"></i></div>
+                    <div class="pp-amenity-label">Furnished</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_ac">
+                    {{ form.has_ac }}
+                    <div class="pp-amenity-icon"><i class="bi bi-snow2"></i></div>
+                    <div class="pp-amenity-label">Air Con</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-has_heating">
+                    {{ form.has_heating }}
+                    <div class="pp-amenity-icon"><i class="bi bi-thermometer-sun"></i></div>
+                    <div class="pp-amenity-label">Heating</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  <label class="pp-amenity" id="am-pet_friendly">
+                    {{ form.pet_friendly }}
+                    <div class="pp-amenity-icon"><i class="bi bi-emoji-heart-eyes"></i></div>
+                    <div class="pp-amenity-label">Pet Friendly</div>
+                    <div class="pp-amenity-check"><i class="bi bi-check"></i></div>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
 
-    // Handle dropped files
-    uploadZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        fileInput.files = files;
-        handleFiles(files);
-    });
+              <!-- ══════════ STEP 4: MEDIA & DESCRIPTION ══════════ -->
+              <div class="pp-form-step" data-step="4">
+                <div class="pp-step-heading">
+                  <div class="step-icon"><i class="bi bi-images"></i></div>
+                  <h3>Media &amp; Description</h3>
+                </div>
+                <p class="pp-step-sub">Great photos and a compelling description significantly increase buyer interest.</p>
 
-    // Handle file input change
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
+                <div class="row g-4">
 
-    function handleFiles(files) {
-        filePreview.innerHTML = '';
-        [...files].forEach(previewFile);
-    }
+                  <!-- Description (CKEditor) -->
+                  <div class="col-12">
+                    <label class="pp-label" for="{{ form.description.id_for_label }}">
+                      <i class="bi bi-text-paragraph lbl-icon"></i> Property Description <span style="color:var(--gold)">*</span>
+                    </label>
+                    <div class="pp-ckeditor-wrap">
+                      {{ form.description }}
+                    </div>
+                    <p class="pp-hint"><i class="bi bi-lightbulb"></i> Describe key features, location benefits, nearby amenities (schools, hospitals, malls), finishes, and what makes this property special.</p>
+                  </div>
 
-    function previewFile(file) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function () {
-            const img = document.createElement('div');
-            img.className = 'preview-item';
-            img.innerHTML = `
-                <img src="${reader.result}" alt="Preview">
-                <button type="button" class="preview-remove" onclick="removePreview(this)">
-                    <i class="bi bi-x"></i>
+                  <!-- Featured image -->
+                  <div class="col-12">
+                    <label class="pp-label">
+                      <i class="bi bi-camera-fill lbl-icon"></i> Featured / Primary Image <span style="color:var(--gold)">*</span>
+                    </label>
+                    <div class="pp-upload" id="ppUploadPrimary">
+                      <i class="bi bi-cloud-arrow-up pp-upload-icon"></i>
+                      <h5>Drag &amp; drop your hero image here</h5>
+                      <p>or click to browse &nbsp;·&nbsp; JPG, PNG, WEBP &nbsp;·&nbsp; max 5 MB</p>
+                      {{ form.featured_image }}
+                    </div>
+                    <div class="pp-preview" id="ppPreviewPrimary"></div>
+                    {% if is_edit and property.featured_image %}
+                    <div class="mt-2">
+                      <p class="pp-existing-label"><i class="bi bi-image"></i> Current featured image:</p>
+                      <div class="pp-preview">
+                        <div class="pp-preview-item">
+                          <img src="{{ property.featured_image.url }}" alt="Current featured">
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Gallery images -->
+                  <div class="col-12">
+                    <label class="pp-label">
+                      <i class="bi bi-images lbl-icon"></i> Gallery Images <span class="badge-opt">optional — up to 10</span>
+                    </label>
+                    <div class="pp-upload" id="ppUploadGallery">
+                      <i class="bi bi-collection pp-upload-icon"></i>
+                      <h5>Drag &amp; drop multiple images here</h5>
+                      <p>or click to browse &nbsp;·&nbsp; JPG, PNG, WEBP &nbsp;·&nbsp; max 5 MB each</p>
+                      <input type="file" name="secondary_images" id="ppGalleryInput" multiple accept="image/*">
+                    </div>
+                    <div class="pp-preview" id="ppPreviewGallery"></div>
+                    {% if is_edit and existing_images %}
+                    <div class="mt-2">
+                      <p class="pp-existing-label"><i class="bi bi-images"></i> Existing gallery images:</p>
+                      <div class="pp-preview">
+                        {% for img in existing_images %}
+                        <div class="pp-preview-item">
+                          <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Gallery' }}">
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Video URL -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.video_url.id_for_label }}">
+                      <i class="bi bi-play-circle lbl-icon"></i> YouTube Video URL <span class="badge-opt">optional</span>
+                    </label>
+                    {{ form.video_url }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> e.g. https://youtu.be/abc123</p>
+                    <div class="pp-video-preview" id="ppVideoPreview" style="display:none;">
+                      <div class="ratio ratio-16x9" style="max-width:480px;margin-top:.75rem;">
+                        <iframe id="ppYtEmbed" src="" frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowfullscreen></iframe>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Virtual Tour -->
+                  <div class="col-md-6">
+                    <label class="pp-label" for="{{ form.virtual_tour_url.id_for_label }}">
+                      <i class="bi bi-badge-3d lbl-icon"></i> Virtual Tour URL <span class="badge-opt">optional</span>
+                    </label>
+                    {{ form.virtual_tour_url }}
+                    <p class="pp-hint"><i class="bi bi-info-circle"></i> e.g. Matterport 360° link</p>
+                  </div>
+
+                </div>
+              </div>
+
+            </div><!-- /pp-body -->
+
+            <!-- ─── FOOTER NAV ─── -->
+            <div class="pp-footer">
+              <button type="button" class="pp-btn pp-btn-secondary" id="ppPrevBtn" style="display:none;">
+                <i class="bi bi-arrow-left"></i> Previous
+              </button>
+
+              <div class="pp-step-counter" id="ppStepCounter">Step <span id="ppCurrent">1</span> of 4</div>
+
+              <div style="display:flex;gap:.75rem;align-items:center;">
+                <button type="button" class="pp-btn pp-btn-gold" id="ppNextBtn">
+                  Next <i class="bi bi-arrow-right"></i>
                 </button>
-            `;
-            filePreview.appendChild(img);
-        }
-    }
+                <button type="submit" class="pp-btn pp-btn-submit" id="ppSubmitBtn" style="display:none;">
+                  <i class="bi bi-check-circle-fill"></i>
+                  {% if is_edit %}Save Changes{% else %}Publish Property{% endif %}
+                </button>
+              </div>
+            </div>
 
-    window.removePreview = function (btn) {
-        btn.closest('.preview-item').remove();
-        fileInput.value = '';
-    }
+          </form>
+        </div><!-- /pp-card -->
+      </div>
+    </div>
+  </div>
 
-    // ==================== EVENT LISTENERS ====================
-    nextBtn.addEventListener('click', nextStep);
-    prevBtn.addEventListener('click', prevStep);
+</div><!-- /pp-wrap -->
 
-    // Remove invalid class on input
-    document.querySelectorAll('.form-control, .form-select').forEach(field => {
-        field.addEventListener('input', function () {
-            this.classList.remove('is-invalid');
-        });
-    });
-
-
-    // Initialize amenity checkboxes state
-    document.querySelectorAll('.amenity-card input[type="checkbox"]').forEach(checkbox => {
-        const card = checkbox.closest('.amenity-card');
-        if (checkbox.checked) {
-            card.classList.add('selected');
-        }
-    });
-
-    // Initialize wizard
-    updateWizard();
-
-    // ==================== FORM ENHANCEMENT ====================
-    // Add Bootstrap classes to all form controls
-    document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="url"], textarea').forEach(el => {
-        if (!el.classList.contains('form-control')) {
-            el.classList.add('form-control');
-        }
-        el.setAttribute('placeholder', el.getAttribute('placeholder') || 'Enter ' + (el.previousElementSibling?.textContent || 'value'));
-    });
-
-    document.querySelectorAll('select').forEach(el => {
-        if (!el.classList.contains('form-select')) {
-            el.classList.add('form-select');
-        }
-    });
-
-    document.querySelectorAll('input[type="checkbox"]').forEach(el => {
-        if (!el.classList.contains('form-check-input')) {
-            el.classList.add('form-check-input');
-        }
-    });
-
-    // ==================== SECONDARY IMAGES UPLOAD ====================
-    const secondaryUploadZone = document.getElementById('secondaryUploadZone');
-    const secondaryImagesInput = document.getElementById('secondaryImages');
-    const secondaryPreview = document.getElementById('secondaryPreview');
-
-    if (secondaryUploadZone && secondaryImagesInput) {
-        // Prevent default drag behaviors for secondary upload
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            secondaryUploadZone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        // Highlight drop zone
-        ['dragenter', 'dragover'].forEach(eventName => {
-            secondaryUploadZone.addEventListener(eventName, () => {
-                secondaryUploadZone.classList.add('dragover');
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            secondaryUploadZone.addEventListener(eventName, () => {
-                secondaryUploadZone.classList.remove('dragover');
-            }, false);
-        });
-
-        // Handle dropped files
-        secondaryUploadZone.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            secondaryImagesInput.files = files;
-            handleSecondaryFiles(files);
-        });
-
-        // Handle file input change
-        secondaryImagesInput.addEventListener('change', (e) => {
-            handleSecondaryFiles(e.target.files);
-        });
-
-        function handleSecondaryFiles(files) {
-            secondaryPreview.innerHTML = '';
-            [...files].forEach(previewSecondaryFile);
-        }
-
-        function previewSecondaryFile(file) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = function () {
-                const img = document.createElement('div');
-                img.className = 'preview-item';
-                img.innerHTML = `
-                    <img src="${reader.result}" alt="Preview">
-                    <button type="button" class="preview-remove" onclick="removeSecondaryPreview(this)">
-                        <i class="bi bi-x"></i>
-                    </button>
-                `;
-                secondaryPreview.appendChild(img);
-            }
-        }
-
-        window.removeSecondaryPreview = function (btn) {
-            btn.closest('.preview-item').remove();
-        }
-    }
-
-    // ==================== YOUTUBE VIDEO PREVIEW ====================
-    const videoUrlInput = document.querySelector('input[name="video_url"]');
-    const videoPreview = document.getElementById('videoPreview');
-    const youtubeEmbed = document.getElementById('youtubeEmbed');
-
-    if (videoUrlInput && videoPreview && youtubeEmbed) {
-        // Extract YouTube video ID from URL
-        function extractYouTubeID(url) {
-            if (!url) return null;
-
-            const patterns = [
-                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-                /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
-            ];
-
-            for (let pattern of patterns) {
-                const match = url.match(pattern);
-                if (match && match[1]) {
-                    return match[1];
-                }
-            }
-
-            // Check if it's already just the ID
-            if (url.length === 11 && /^[a-zA-Z0-9_-]+$/.test(url)) {
-                return url;
-            }
-
-            return null;
-        }
-
-        // Update video preview
-        function updateVideoPreview() {
-            const url = videoUrlInput.value.trim();
-            const videoId = extractYouTubeID(url);
-
-            if (videoId) {
-                youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}`;
-                videoPreview.style.display = 'block';
-            } else {
-                videoPreview.style.display = 'none';
-                youtubeEmbed.src = '';
-            }
-        }
-
-        // Listen for input changes
-        videoUrlInput.addEventListener('input', updateVideoPreview);
-        videoUrlInput.addEventListener('blur', updateVideoPreview);
-
-        // Initialize on page load if there's already a value
-        if (videoUrlInput.value) {
-            updateVideoPreview();
-        }
-    }
-</script>
-
-<!-- CKEditor Script -->
-<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 <script>
-    // Initialize CKEditor for description field
-    document.addEventListener('DOMContentLoaded', function () {
-        const descriptionTextarea = document.querySelector('textarea[name="description"]');
-        if (descriptionTextarea && typeof CKEDITOR !== 'undefined') {
-            CKEDITOR.replace(descriptionTextarea, {
-                height: 300,
-                toolbar: [
-                    { name: 'document', items: ['Source'] },
-                    { name: 'clipboard', items: ['Undo', 'Redo'] },
-                    { name: 'editing', items: ['Find', 'Replace'] },
-                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
-                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
-                    { name: 'links', items: ['Link', 'Unlink'] },
-                    { name: 'insert', items: ['Table', 'HorizontalRule'] },
-                    { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
-                    { name: 'colors', items: ['TextColor', 'BGColor'] },
-                    { name: 'tools', items: ['Maximize'] }
-                ]
-            });
+(function () {
+  'use strict';
+
+  /* ─── WIZARD STATE ─── */
+  let current = 1;
+  const total  = 4;
+
+  const steps      = document.querySelectorAll('.pp-step');
+  const formSteps  = document.querySelectorAll('.pp-form-step');
+  const progressBar = document.getElementById('ppProgressBar');
+  const prevBtn    = document.getElementById('ppPrevBtn');
+  const nextBtn    = document.getElementById('ppNextBtn');
+  const submitBtn  = document.getElementById('ppSubmitBtn');
+  const currentLbl = document.getElementById('ppCurrent');
+
+  /* Calculate the width of the progress bar correctly */
+  function getProgressWidth() {
+    // The bar spans between circle centres across the full width
+    const stepsEl = document.getElementById('ppSteps');
+    const allCircles = stepsEl.querySelectorAll('.pp-step-circle');
+    if (allCircles.length < 2 || current === 1) return '0%';
+    const first  = allCircles[0].getBoundingClientRect();
+    const last   = allCircles[allCircles.length - 1].getBoundingClientRect();
+    const target = allCircles[current - 1].getBoundingClientRect();
+    const total_ = last.left - first.left;
+    const done   = target.left - first.left;
+    return total_ > 0 ? ((done / total_) * 100).toFixed(1) + '%' : '0%';
+  }
+
+  function refreshCKEditor() {
+    if (typeof CKEDITOR !== 'undefined') {
+      setTimeout(function () {
+        for (const inst in CKEDITOR.instances) {
+          try {
+            CKEDITOR.instances[inst].resize('100%', 280);
+          } catch (e) {}
         }
+      }, 80);
+    }
+  }
+
+  function renderWizard() {
+    formSteps.forEach((s, i) => s.classList.toggle('active', i + 1 === current));
+
+    steps.forEach((s, i) => {
+      const n = i + 1;
+      s.classList.toggle('active', n === current);
+      s.classList.toggle('done',   n < current);
+      const circle = s.querySelector('.pp-step-circle');
+      circle.innerHTML = n < current ? '<i class="bi bi-check"></i>' : n;
     });
+
+    progressBar.style.width = getProgressWidth();
+
+    prevBtn.style.display   = current === 1 ? 'none' : 'inline-flex';
+    nextBtn.style.display   = current === total ? 'none' : 'inline-flex';
+    submitBtn.style.display = current === total ? 'inline-flex' : 'none';
+    currentLbl.textContent  = current;
+
+    if (current === 4) {
+      refreshCKEditor();
+    }
+
+    // Scroll to top of card
+    document.querySelector('.pp-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ─── VALIDATION ─── */
+  function validateCurrent() {
+    const stepEl = document.querySelector(`.pp-form-step[data-step="${current}"]`);
+    // Only validate text/number/select — CKEditor handles itself
+    const fields = stepEl.querySelectorAll('input[type="text"], input[type="number"], select, textarea:not(.cke_source)');
+    let valid = true;
+
+    fields.forEach(f => {
+      if (f.closest('.pp-amenity') || f.type === 'file' || f.type === 'checkbox') return;
+      if (f.hasAttribute('required') && !f.value.trim()) {
+        f.classList.add('pp-invalid');
+        valid = false;
+      } else {
+        f.classList.remove('pp-invalid');
+      }
+    });
+
+    // CKEditor: update underlying textarea before submit
+    if (typeof CKEDITOR !== 'undefined') {
+      for (const inst in CKEDITOR.instances) {
+        try {
+          CKEDITOR.instances[inst].updateElement();
+        } catch (e) {}
+      }
+    }
+
+    return valid;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (validateCurrent() && current < total) { current++; renderWizard(); }
+  });
+  prevBtn.addEventListener('click', () => {
+    if (current > 1) { current--; renderWizard(); }
+  });
+
+  // Allow clicking completed steps to jump back
+  steps.forEach(s => {
+    s.addEventListener('click', () => {
+      const n = parseInt(s.dataset.step);
+      if (n < current) { current = n; renderWizard(); }
+    });
+  });
+
+  /* ─── REMOVE INVALID CLASS ON INPUT ─── */
+  document.querySelectorAll('.pp-wrap input, .pp-wrap select, .pp-wrap textarea').forEach(f => {
+    f.addEventListener('input', () => f.classList.remove('pp-invalid'));
+  });
+
+  /* ─── COUNTER BUTTONS ─── */
+  window.ppCounter = function (id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const v = parseInt(el.value) || 0;
+    el.value = Math.max(0, v + delta);
+  };
+
+  /* ─── AMENITY TOGGLE ─── */
+  document.querySelectorAll('.pp-amenity').forEach(card => {
+    const cb = card.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    if (cb.checked) card.classList.add('active');
+    card.addEventListener('click', () => {
+      cb.checked = !cb.checked;
+      card.classList.toggle('active', cb.checked);
+    });
+  });
+
+  /* ─── LIVE PRICE FORMAT ─── */
+  const priceInput = document.getElementById('{{ form.price.id_for_label }}');
+  const priceLabel = document.getElementById('priceFormatted');
+  function formatPrice() {
+    if (!priceInput || !priceLabel) return;
+    const v = parseFloat(String(priceInput.value).replace(/,/g, ''));
+    if (!isNaN(v) && v > 0) {
+      priceLabel.textContent = '≈ ₦' + v.toLocaleString('en-NG');
+    } else {
+      priceLabel.textContent = '';
+    }
+  }
+  if (priceInput) {
+    priceInput.addEventListener('input', formatPrice);
+    formatPrice();
+  }
+
+  /* ─── FILE UPLOAD HELPERS ─── */
+  function setupUpload(zoneId, inputSelector, previewId, multiple) {
+    const zone    = document.getElementById(zoneId);
+    const preview = document.getElementById(previewId);
+    const input   = zone ? zone.querySelector('input[type="file"]') || document.getElementById(inputSelector) : null;
+    if (!zone || !input || !preview) return;
+
+    const prevent = e => { e.preventDefault(); e.stopPropagation(); };
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => {
+      zone.addEventListener(ev, prevent);
+      document.body.addEventListener(ev, prevent);
+    });
+    ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, () => zone.classList.add('dragover')));
+    ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('dragover')));
+
+    zone.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      renderPreviews(files, preview, multiple);
+    });
+
+    input.addEventListener('change', e => renderPreviews(e.target.files, preview, multiple));
+  }
+
+  function renderPreviews(files, container, multiple) {
+    if (!multiple) container.innerHTML = '';
+    [...files].forEach(file => {
+      const reader = new FileReader();
+      reader.onload = evt => {
+        const div = document.createElement('div');
+        div.className = 'pp-preview-item';
+        div.innerHTML = `
+          <img src="${evt.target.result}" alt="Preview">
+          <button type="button" class="pp-preview-remove" onclick="this.closest('.pp-preview-item').remove()">
+            <i class="bi bi-x"></i>
+          </button>`;
+        container.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  setupUpload('ppUploadPrimary',  null,           'ppPreviewPrimary', false);
+  setupUpload('ppUploadGallery',  'ppGalleryInput','ppPreviewGallery', true);
+
+  /* ─── YOUTUBE PREVIEW ─── */
+  const videoInput   = document.querySelector('input[name="video_url"]');
+  const videoWrap    = document.getElementById('ppVideoPreview');
+  const ytEmbed      = document.getElementById('ppYtEmbed');
+
+  function ytId(url) {
+    const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+  if (videoInput && videoWrap && ytEmbed) {
+    videoInput.addEventListener('input', () => {
+      const id = ytId(videoInput.value.trim());
+      if (id) { ytEmbed.src = `https://www.youtube.com/embed/${id}`; videoWrap.style.display = 'block'; }
+      else    { ytEmbed.src = ''; videoWrap.style.display = 'none'; }
+    });
+  }
+
+  /* ─── ENSURE CKEDITOR SYNCS ON SUBMIT ─── */
+  document.getElementById('ppForm').addEventListener('submit', function (e) {
+    if (typeof CKEDITOR !== 'undefined') {
+      for (const inst in CKEDITOR.instances) {
+        try {
+          CKEDITOR.instances[inst].updateElement();
+        } catch (err) {}
+      }
+    }
+  });
+
+  /* ─── APPLY FORM-CONTROL CLASS TO DJANGO-RENDERED INPUTS ─── */
+  const ppWrap = document.querySelector('.pp-wrap');
+  ppWrap.querySelectorAll('input[type="text"], input[type="number"], input[type="url"]').forEach(el => {
+    if (!el.closest('.pp-counter') && !el.closest('.pp-amenity') && !el.closest('.pp-upload')) {
+      el.classList.add('form-control');
+    }
+  });
+  ppWrap.querySelectorAll('select').forEach(el => el.classList.add('form-select'));
+
+  /* ─── CKEDITOR STANDALONE FALLBACK IF NOT INITIALIZED ─── */
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const descEl = document.querySelector('textarea[name="description"]');
+      if (descEl && typeof CKEDITOR !== 'undefined' && !CKEDITOR.instances[descEl.id]) {
+        try {
+          CKEDITOR.replace(descEl.id, {
+            skin: 'moono-lisa',
+            height: 280,
+            width: '100%'
+          });
+        } catch (e) {}
+      }
+    }, 250);
+  });
+
+  /* ─── INIT ─── */
+  renderWizard();
+
+})();
 </script>
 
 {% endblock %}

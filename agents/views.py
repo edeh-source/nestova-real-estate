@@ -117,10 +117,34 @@ def verification_dashboard(request):
     }
     
     if hasattr(request.user, 'agent_profile'):
-        context['agent'] = request.user.agent_profile
+        agent = request.user.agent_profile
+        # Auto-heal: If confidence score was >= 70, ensure can_post_properties is True
+        if isinstance(agent.verification_data, dict):
+            score = agent.verification_data.get('confidence_score')
+            if score is not None and float(score) >= 70:
+                if not agent.can_post_properties or not agent.id_verified:
+                    agent.can_post_properties = True
+                    agent.id_verified = True
+                    agent.save(update_fields=['can_post_properties', 'id_verified'])
+                if not request.user.can_post_properties or not request.user.id_verified:
+                    request.user.can_post_properties = True
+                    request.user.id_verified = True
+                    request.user.save(update_fields=['can_post_properties', 'id_verified'])
+        context['agent'] = agent
         context['user_type'] = 'agent'
     elif hasattr(request.user, 'company_profile'):
-        context['company'] = request.user.company_profile
+        company = request.user.company_profile
+        if isinstance(company.cac_data, dict):
+            score = company.cac_data.get('name_match_score')
+            if score is not None and float(score) >= 70:
+                if not company.can_post_properties or not company.cac_verified:
+                    company.can_post_properties = True
+                    company.cac_verified = True
+                    company.save(update_fields=['can_post_properties', 'cac_verified'])
+                if not request.user.can_post_properties:
+                    request.user.can_post_properties = True
+                    request.user.save(update_fields=['can_post_properties'])
+        context['company'] = company
         context['user_type'] = 'company'
     else:
         messages.warning(request, "You don't have an agent or company profile to verify.")
@@ -135,6 +159,16 @@ def submit_agent_verification(request):
     agent = request.user.agent_profile
     if agent.verification_status == 'verified':
         messages.info(request, "You are already verified.")
+        return redirect('agents:verification_dashboard')
+
+    # Block re-submission if the agent already passed verification
+    # (confidence ≥ 70 or can_post_properties is True) and status is not rejected
+    if (agent.can_post_properties or agent.id_verified) and agent.verification_status != 'rejected':
+        messages.info(
+            request,
+            "⏳ Your identity verification is already recorded and active. "
+            "You cannot verify again unless an admin manually resets your verification status."
+        )
         return redirect('agents:verification_dashboard')
 
     ctx = {
@@ -208,7 +242,6 @@ def submit_agent_verification(request):
                 if success:
                     verification_success = True
                     api_data = result
-                    agent.id_verified = True
             
             elif id_type == 'vnin' and id_number:
                 success, result = service.verify_vnin(
@@ -218,7 +251,6 @@ def submit_agent_verification(request):
                 if success:
                     verification_success = True
                     api_data = result
-                    agent.id_verified = True
             
             elif id_type == 'bvn' and id_number:
                 success, result = service.verify_bvn(
@@ -228,7 +260,6 @@ def submit_agent_verification(request):
                 if success:
                     verification_success = True
                     api_data = result
-                    agent.id_verified = True
         except Exception as e:
             import traceback
             traceback.print_exc()
@@ -245,12 +276,15 @@ def submit_agent_verification(request):
                 user_profile=agent
             )
             
+            overall_confidence = float(confidence_result.get('overall_confidence', 0))
+            recommendation = confidence_result.get('recommendation', 'auto_reject')
+
             # Store verification data
             agent.verification_data = {
                 'api_response': api_data,
-                'confidence_score': confidence_result['overall_confidence'],
-                'confidence_breakdown': confidence_result['breakdown'],
-                'checks_performed': confidence_result['checks_performed'],
+                'confidence_score': overall_confidence,
+                'confidence_breakdown': confidence_result.get('breakdown', {}),
+                'checks_performed': confidence_result.get('checks_performed', 0),
                 'verified_at': timezone.now().isoformat(),
                 'submitted': {
                     'first_name': first_name,
@@ -260,15 +294,21 @@ def submit_agent_verification(request):
                 }
             }
             
-            overall_confidence = confidence_result['overall_confidence']
-            recommendation = confidence_result['recommendation']
-            
-            # Auto-approve if confidence is high enough
-            if recommendation == 'auto_approve':
+            # Confidence >= 85%: Auto-approve
+            if recommendation == 'auto_approve' or overall_confidence >= 85:
                 agent.verification_status = 'verified'
                 agent.can_post_properties = True
+                agent.id_verified = True
+                agent.id_verification_date = timezone.now()
                 agent.verified_at = timezone.now()
                 agent.save()
+
+                user = request.user
+                user.can_post_properties = True
+                user.id_verified = True
+                user.id_verification_date = timezone.now()
+                user.verification_status = 'verified'
+                user.save()
                 
                 messages.success(
                     request, 
@@ -277,26 +317,44 @@ def submit_agent_verification(request):
                 )
                 return redirect('agents:verification_dashboard')
             
-            # Manual review for medium confidence
-            elif recommendation == 'manual_review':
+            # Confidence 70% – 84%: Manual review path with UNLOCKED property posting
+            elif recommendation == 'manual_review' or overall_confidence >= 70:
                 agent.verification_status = 'in_review'
+                agent.can_post_properties = True   # UNLOCK property posting since confidence >= 70
+                agent.id_verified = True           # Mark passed so re-verification is blocked
+                agent.id_verification_date = timezone.now()
                 agent.save()
+
+                user = request.user
+                user.can_post_properties = True
+                user.id_verified = True
+                user.id_verification_date = timezone.now()
+                user.verification_status = 'in_review'
+                user.save()
                 
                 messages.info(
                     request,
                     f"⏳ Your verification is under review (confidence: {overall_confidence:.0f}%). "
-                    "Our team will review your documents and notify you within 24-48 hours."
+                    "You can now post properties while our team completes the background review."
                 )
                 return redirect('agents:verification_dashboard')
             
-            # Auto-reject for low confidence
+            # Confidence < 70%: Auto-reject
             else:
                 agent.verification_status = 'rejected'
+                agent.can_post_properties = False
+                agent.id_verified = False
                 agent.rejection_reason = (
                     f"Automatic verification failed due to low confidence score ({overall_confidence:.0f}%). "
                     "Please ensure your information matches your ID document exactly and try again."
                 )
                 agent.save()
+
+                user = request.user
+                user.can_post_properties = False
+                user.id_verified = False
+                user.verification_status = 'rejected'
+                user.save()
                 
                 messages.error(
                     request,
@@ -306,8 +364,10 @@ def submit_agent_verification(request):
                 return redirect('agents:verification_dashboard')
         
         else:
-            # API verification failed or not eligible for automatic matching - send to manual review
+            # API verification failed or service unavailable - route to manual review (posting locked until reviewed)
             agent.verification_status = 'in_review'
+            agent.can_post_properties = False
+            agent.id_verified = False
             agent.save()
             
             messages.info(
@@ -326,6 +386,15 @@ def submit_company_verification(request):
     company = request.user.company_profile
     if company.verification_status == 'verified':
         messages.info(request, "Your company is already verified.")
+        return redirect('agents:verification_dashboard')
+
+    # Block re-submission if company already passed verification and is not rejected
+    if (company.can_post_properties or company.cac_verified) and company.verification_status != 'rejected':
+        messages.info(
+            request,
+            "⏳ Your company verification is already recorded. "
+            "You cannot verify again unless an admin manually resets your status."
+        )
         return redirect('agents:verification_dashboard')
 
     if request.method == 'POST':
@@ -357,10 +426,8 @@ def submit_company_verification(request):
                 api_company_name = result.get('company_name') or result.get('name', '')
                 
                 if api_company_name:
-                    # Fuzzy match company names
-                    name_match_score = service._fuzzy_match_name(api_company_name, company.company_name)
+                    name_match_score = float(service._fuzzy_match_name(api_company_name, company.company_name))
                     
-                    # Store verification data
                     company.cac_data = {
                         'api_response': result,
                         'name_match_score': name_match_score,
@@ -374,41 +441,49 @@ def submit_company_verification(request):
                         company.is_verified = True
                         company.verified_at = timezone.now()
                         company.save()
+
+                        user = request.user
+                        user.can_post_properties = True
+                        user.save()
                         
                         messages.success(
                             request,
                             f"✅ Company verification successful! Your CAC registration has been verified "
                             f"with {name_match_score:.0f}% name match. You can now post properties."
                         )
-                        
-                        # TODO: Send approval email notification
-                        # from .notifications import notify_verification_approved
-                        # notify_verification_approved(request.user, 'company')
-                        
                         return redirect('agents:verification_dashboard')
                     
-                    # Manual review for medium confidence (70-90%)
+                    # Manual review for medium confidence (70-90%) - UNLOCK POSTING
                     elif name_match_score >= 70:
                         company.verification_status = 'in_review'
+                        company.can_post_properties = True  # UNLOCK property posting for >= 70%
                         company.save()
+
+                        user = request.user
+                        user.can_post_properties = True
+                        user.save()
                         
                         messages.info(
                             request,
                             f"⏳ Your company verification is under review (name match: {name_match_score:.0f}%). "
-                            "Our team will review your documents and notify you within 24-48 hours."
+                            "You can now post properties while our team finalises the background review."
                         )
-                        
                         return redirect('agents:verification_dashboard')
                     
-                    # Auto-reject for low confidence
+                    # Auto-reject for low confidence (< 70%)
                     else:
                         company.verification_status = 'rejected'
+                        company.can_post_properties = False
                         company.rejection_reason = (
                             f"Company name mismatch. CAC records show '{api_company_name}' "
                             f"but your profile shows '{company.company_name}'. "
                             f"Please update your company name to match CAC records."
                         )
                         company.save()
+
+                        user = request.user
+                        user.can_post_properties = False
+                        user.save()
                         
                         messages.error(
                             request,
@@ -416,7 +491,6 @@ def submit_company_verification(request):
                             f"(match: {name_match_score:.0f}%). Please ensure your company name "
                             "matches your CAC registration exactly."
                         )
-                        
                         return redirect('agents:verification_dashboard')
                 else:
                     # CAC verified but no name in response - manual review
@@ -428,11 +502,11 @@ def submit_company_verification(request):
                         "⏳ Your CAC registration has been verified. Our team will review your "
                         "documents and notify you within 24-48 hours."
                     )
-                    
                     return redirect('agents:verification_dashboard')
             else:
                 # CAC verification failed - send to manual review
                 company.verification_status = 'in_review'
+                company.can_post_properties = False
                 company.save()
                 
                 messages.info(
@@ -440,18 +514,17 @@ def submit_company_verification(request):
                     "⏳ Your company verification documents have been submitted and are under review. "
                     "We'll notify you once the review is complete."
                 )
-                
                 return redirect('agents:verification_dashboard')
         else:
             # No RC number provided - manual review
             company.verification_status = 'in_review'
+            company.can_post_properties = False
             company.save()
             
             messages.info(
                 request,
                 "⏳ Your company verification documents have been submitted and are under review."
             )
-            
             return redirect('agents:verification_dashboard')
 
     return render(request, 'agents/submit_company_verification.html', {'company': company})

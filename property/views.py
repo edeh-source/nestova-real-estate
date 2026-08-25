@@ -93,23 +93,44 @@ def homepage(request):
 
 
 def get_cities_by_state(request):
-    """AJAX endpoint to get cities for a selected state"""
+    """AJAX endpoint to get cities for a selected state. Auto-seeds from Nigeria dataset if empty."""
     state_id = request.GET.get('state_id')
-    
+
     if not state_id:
         return JsonResponse({'cities': []})
-    
+
     try:
-        cities = City.objects.filter(
-            state_id=state_id,
-            is_active=True
-        ).values('id', 'name')
-        
+        state_obj = State.objects.get(id=state_id)
+
+        cities = City.objects.filter(state=state_obj, is_active=True).order_by('name')
+
+        # Auto-seed cities from built-in Nigeria dataset if the state has no cities yet
+        if not cities.exists():
+            try:
+                from property.nigeria_locations import NIGERIA_LOCATIONS, seed_nigeria_locations
+                loc_data = NIGERIA_LOCATIONS.get(state_obj.name)
+                if loc_data:
+                    for c_name in loc_data['cities']:
+                        City.objects.get_or_create(
+                            name=c_name,
+                            state=state_obj,
+                            defaults={'is_active': True}
+                        )
+                    cities = City.objects.filter(state=state_obj, is_active=True).order_by('name')
+            except Exception:
+                pass
+
         return JsonResponse({
-            'cities': list(cities)
+            'status': 'success',
+            'state_id': state_obj.id,
+            'state_name': state_obj.name,
+            'cities': list(cities.values('id', 'name'))
         })
+
+    except State.DoesNotExist:
+        return JsonResponse({'status': 'error', 'cities': [], 'message': 'State not found'}, status=404)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return JsonResponse({'error': str(e), 'cities': []}, status=400)
 
 
 def search_properties(request):

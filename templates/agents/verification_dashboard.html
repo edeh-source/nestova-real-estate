@@ -158,7 +158,11 @@
                 {% if profile.verification_status == 'pending' %}
                 Verification Required
                 {% elif profile.verification_status == 'in_review' %}
-                Under Review
+                    {% if profile.can_post_properties %}
+                    Verification Passed (Under Review)
+                    {% else %}
+                    Under Review
+                    {% endif %}
                 {% elif profile.verification_status == 'verified' %}
                 Verified Account
                 {% elif profile.verification_status == 'rejected' %}
@@ -170,8 +174,11 @@
                 {% if profile.verification_status == 'pending' %}
                 To ensure the safety of our community, all {{ user_type }}s must be verified before listing properties.
                 {% elif profile.verification_status == 'in_review' %}
-                We have received your documents and our team is currently reviewing them. This usually takes 24-48
-                hours.
+                    {% if profile.can_post_properties %}
+                    🎉 <strong>Great news!</strong> Your identity verification score passed the threshold. Your account is <strong>unlocked to post properties</strong> while our team completes the background verification.
+                    {% else %}
+                    We have received your documents and our team is currently reviewing them. This usually takes 24-48 hours.
+                    {% endif %}
                 {% elif profile.verification_status == 'verified' %}
                 Congratulations! Your account is verified. You can now post properties and enjoy full access to our
                 platform.
@@ -217,8 +224,12 @@
             </a>
             {% endif %}
 
-            {% if profile.verification_status == 'verified' %}
-            <a href="{% url 'listings:post_property' %}" class="btn-verify">Post a Property</a>
+            {% if profile.can_post_properties or profile.verification_status == 'verified' %}
+            <div class="mt-4">
+                <a href="{% url 'listings:post_property' %}" class="btn-verify" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bi bi-plus-circle me-1"></i> Post a Property Now
+                </a>
+            </div>
             {% endif %}
 
             {% endwith %}

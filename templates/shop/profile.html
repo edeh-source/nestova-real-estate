@@ -998,7 +998,24 @@
 
   <!-- ======================== VERIFICATION BANNERS ======================== -->
   {% if agent_profile %}
-    {% if agent_profile.verification_status == 'in_review' %}
+    {% if agent_profile.can_post_properties or agent_profile.verification_status == 'verified' %}
+    <!-- AGENT VERIFIED / UNLOCKED -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Agent Identity Verified &amp; Unlocked</h4>
+            <p>Your agent identity verification passed. You can now post properties and earn commissions.</p>
+          </div>
+          <a href="{% url 'listings:post_property' %}" class="btn-verify" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.2);">
+            <i class="bi bi-plus-circle"></i> Post a Property
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif agent_profile.verification_status == 'in_review' %}
     <!-- AGENT IN REVIEW -->
     <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
       <div class="container-xl">
@@ -1032,20 +1049,6 @@
       </div>
     </div>
 
-    {% elif agent_profile.verification_status == 'verified' %}
-    <!-- AGENT VERIFIED -->
-    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
-      <div class="container-xl">
-        <div class="verify-banner-inner ok">
-          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
-          <div class="verify-text">
-            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Agent Profile Verified</h4>
-            <p>Your agent account is verified. You can now list properties and earn commissions.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     {% else %}
     <!-- AGENT PENDING -->
     <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
@@ -1065,7 +1068,24 @@
     {% endif %}
 
   {% elif company_profile %}
-    {% if company_profile.verification_status == 'in_review' %}
+    {% if company_profile.can_post_properties or company_profile.verification_status == 'verified' %}
+    <!-- COMPANY VERIFIED / UNLOCKED -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Company Profile Verified &amp; Unlocked</h4>
+            <p>Your company account is verified. You can now post properties as a registered business.</p>
+          </div>
+          <a href="{% url 'listings:post_property' %}" class="btn-verify" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.2);">
+            <i class="bi bi-plus-circle"></i> Post a Property
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif company_profile.verification_status == 'in_review' %}
     <!-- COMPANY IN REVIEW -->
     <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
       <div class="container-xl">
@@ -1099,20 +1119,6 @@
       </div>
     </div>
 
-    {% elif company_profile.verification_status == 'verified' %}
-    <!-- COMPANY VERIFIED -->
-    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
-      <div class="container-xl">
-        <div class="verify-banner-inner ok">
-          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
-          <div class="verify-text">
-            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Company Profile Verified</h4>
-            <p>Your company account is verified. You can now post properties as a registered business.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     {% else %}
     <!-- COMPANY PENDING -->
     <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
@@ -1132,7 +1138,24 @@
     {% endif %}
 
   {% else %}
-    {% if user.verification_status == 'in_review' %}
+    {% if user.can_post_properties or user.id_verified or user.verification_status == 'verified' %}
+    <!-- USER VERIFIED / UNLOCKED -->
+    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
+      <div class="container-xl">
+        <div class="verify-banner-inner ok">
+          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
+          <div class="verify-text">
+            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Identity Verified &amp; Unlocked</h4>
+            <p>Your identity verification passed. You can now post properties on Nestova.</p>
+          </div>
+          <a href="{% url 'listings:post_property' %}" class="btn-verify" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.2);">
+            <i class="bi bi-plus-circle"></i> Post a Property
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% elif user.verification_status == 'in_review' %}
     <!-- IN REVIEW: Submitted and awaiting manual review -->
     <div class="verify-banner" style="background:rgba(59,130,246,0.04);border-bottom:1px solid rgba(59,130,246,0.1);">
       <div class="container-xl">
@@ -1163,20 +1186,6 @@
       </div>
     </div>
 
-    {% elif user.id_verified %}
-    <!-- VERIFIED: Fully approved -->
-    <div class="verify-banner" style="background:rgba(34,197,94,0.03);border-bottom:1px solid rgba(34,197,94,0.08);">
-      <div class="container-xl">
-        <div class="verify-banner-inner ok">
-          <div class="verify-icon ok"><i class="bi bi-patch-check-fill"></i></div>
-          <div class="verify-text">
-            <h4 class="ok"><i class="bi bi-shield-fill-check me-2"></i>Identity Verified</h4>
-            <p>Your account is verified. You can now post properties on Nestova.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     {% else %}
     <!-- PENDING: Not yet submitted -->
     <div class="verify-banner" style="background:rgba(245,158,11,0.04);border-bottom:1px solid rgba(245,158,11,0.1);">
@@ -1185,7 +1194,7 @@
           <div class="verify-icon warn"><i class="bi bi-shield-exclamation"></i></div>
           <div class="verify-text">
             <h4 class="warn"><i class="bi bi-exclamation-circle-fill me-2"></i>Identity Verification Required</h4>
-            <p>To post properties on our platform, you need to verify your identity. This keeps our community safe and trusted.</p>
+            <p>To post properties on Nestova, you need to verify your identity using your NIN, vNIN, or BVN.</p>
           </div>
           <a href="{% url 'users:submit_user_verification' %}" class="btn-verify">
             <i class="bi bi-shield-check"></i> Verify Now

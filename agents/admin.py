@@ -57,14 +57,25 @@ class AgentAdmin(admin.ModelAdmin):
         queryset.update(
             verification_status='verified',
             can_post_properties=True,
+            id_verified=True,
             verified_by=request.user,
             verified_at=timezone.now()
         )
+        for agent in queryset:
+            agent.user.can_post_properties = True
+            agent.user.id_verified = True
+            agent.user.verification_status = 'verified'
+            agent.user.save(update_fields=['can_post_properties', 'id_verified', 'verification_status'])
         self.message_user(request, f"{queryset.count()} agents approved.")
     approve_agents.short_description = "Approve selected agents"
 
     def reject_agents(self, request, queryset):
-        queryset.update(verification_status='rejected', can_post_properties=False)
+        queryset.update(verification_status='rejected', can_post_properties=False, id_verified=False)
+        for agent in queryset:
+            agent.user.can_post_properties = False
+            agent.user.id_verified = False
+            agent.user.verification_status = 'rejected'
+            agent.user.save(update_fields=['can_post_properties', 'id_verified', 'verification_status'])
         self.message_user(request, f"{queryset.count()} agents rejected.")
     reject_agents.short_description = "Reject selected agents"
 
@@ -224,11 +235,17 @@ class CompanyAdmin(admin.ModelAdmin):
             verified_at=timezone.now(),
             is_verified=True
         )
+        for comp in queryset:
+            comp.user.can_post_properties = True
+            comp.user.save(update_fields=['can_post_properties'])
         self.message_user(request, f"{queryset.count()} companies approved.")
     approve_companies.short_description = "Approve selected companies"
 
     def reject_companies(self, request, queryset):
         queryset.update(verification_status='rejected', can_post_properties=False)
+        for comp in queryset:
+            comp.user.can_post_properties = False
+            comp.user.save(update_fields=['can_post_properties'])
         self.message_user(request, f"{queryset.count()} companies rejected.")
     reject_companies.short_description = "Reject selected companies"
 

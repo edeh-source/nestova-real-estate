@@ -500,15 +500,24 @@ def submit_user_verification(request):
                 }
             }
 
-            overall_confidence = confidence_result['overall_confidence']
-            recommendation     = confidence_result['recommendation']
+            overall_confidence = float(confidence_result.get('overall_confidence', 0))
+            recommendation     = confidence_result.get('recommendation', 'auto_reject')
 
-            if recommendation == 'auto_approve':
+            if recommendation == 'auto_approve' or overall_confidence >= 85:
                 request.user.id_verified = True
                 request.user.can_post_properties = True
                 request.user.id_verification_date = timezone.now()
                 request.user.verification_status = 'verified'
                 request.user.save()
+
+                if hasattr(request.user, 'agent_profile'):
+                    agent = request.user.agent_profile
+                    agent.can_post_properties = True
+                    agent.id_verified = True
+                    agent.id_verification_date = timezone.now()
+                    agent.verification_status = 'verified'
+                    agent.save()
+
                 messages.success(
                     request,
                     f"✅ Verification successful! Your identity has been verified "
@@ -516,19 +525,40 @@ def submit_user_verification(request):
                 )
                 return redirect('shop:profile')
 
-            elif recommendation == 'manual_review':
+            elif recommendation == 'manual_review' or overall_confidence >= 70:
+                request.user.id_verified = True
+                request.user.can_post_properties = True
+                request.user.id_verification_date = timezone.now()
                 request.user.verification_status = 'in_review'
                 request.user.save()
+
+                if hasattr(request.user, 'agent_profile'):
+                    agent = request.user.agent_profile
+                    agent.can_post_properties = True
+                    agent.id_verified = True
+                    agent.id_verification_date = timezone.now()
+                    agent.verification_status = 'in_review'
+                    agent.save()
+
                 messages.info(
                     request,
                     f"⏳ Your verification is under review (confidence: {overall_confidence:.0f}%). "
-                    "Our team will review your information and notify you within 24–48 hours."
+                    "You can now post properties while our team completes the background review."
                 )
                 return redirect('shop:profile')
 
             else:  # auto_reject
+                request.user.id_verified = False
+                request.user.can_post_properties = False
                 request.user.verification_status = 'rejected'
                 request.user.save()
+
+                if hasattr(request.user, 'agent_profile'):
+                    agent = request.user.agent_profile
+                    agent.can_post_properties = False
+                    agent.id_verified = False
+                    agent.verification_status = 'rejected'
+                    agent.save()
                 breakdown = confidence_result.get('breakdown', {})
                 failed_fields = [
                     k.replace('_', ' ').title()

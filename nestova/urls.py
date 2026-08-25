@@ -59,6 +59,7 @@ urlpatterns = [
     path('blog/', include('blogs.urls')),
     path('services/', include('services.urls')),
     path('', include("contact.urls")),
+    path("ckeditor/", include("ckeditor_uploader.urls")),
     path('', include('events.urls', namespace='events')),
     path('valpaint/', include('valpaint.urls')),  # Valpaint URLs with prefix
     

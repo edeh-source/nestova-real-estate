@@ -733,10 +733,43 @@ def profile(request):
 
     # Get agent profile if exists
     agent_profile = getattr(request.user, 'agent_profile', None)
+    if agent_profile:
+        # Auto-heal: If confidence >= 70, ensure can_post_properties is True
+        if isinstance(agent_profile.verification_data, dict):
+            score = agent_profile.verification_data.get('confidence_score')
+            if score is not None and float(score) >= 70:
+                if not agent_profile.can_post_properties or not agent_profile.id_verified:
+                    agent_profile.can_post_properties = True
+                    agent_profile.id_verified = True
+                    agent_profile.save(update_fields=['can_post_properties', 'id_verified'])
+                if not request.user.can_post_properties or not request.user.id_verified:
+                    request.user.can_post_properties = True
+                    request.user.id_verified = True
+                    request.user.save(update_fields=['can_post_properties', 'id_verified'])
     
     # Get company profile if exists
     company_profile = getattr(request.user, 'company_profile', None)
+    if company_profile:
+        if isinstance(company_profile.cac_data, dict):
+            score = company_profile.cac_data.get('name_match_score')
+            if score is not None and float(score) >= 70:
+                if not company_profile.can_post_properties or not company_profile.cac_verified:
+                    company_profile.can_post_properties = True
+                    company_profile.cac_verified = True
+                    company_profile.save(update_fields=['can_post_properties', 'cac_verified'])
+                if not request.user.can_post_properties:
+                    request.user.can_post_properties = True
+                    request.user.save(update_fields=['can_post_properties'])
     
+    # Check direct user verification
+    if isinstance(getattr(request.user, 'verification_data', {}), dict):
+        u_score = getattr(request.user, 'verification_data', {}).get('confidence_score')
+        if u_score is not None and float(u_score) >= 70:
+            if not request.user.can_post_properties or not request.user.id_verified:
+                request.user.can_post_properties = True
+                request.user.id_verified = True
+                request.user.save(update_fields=['can_post_properties', 'id_verified'])
+
     # Agent-specific data
     agent_data = {}
     if agent_profile:

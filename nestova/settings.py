@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'embed_video',
     'django_celery_beat',
+    'ckeditor_uploader',
     'events.apps.EventsConfig',
 ]
 
@@ -382,6 +383,9 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # SECURITY SETTINGS - PRODUCTION
 # ==================================
 
+
+CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -470,7 +474,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
-
+CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
 CKEDITOR_CONFIGS = {
     'default': {
         'skin': 'moono-lisa',  # Updated modern skin
