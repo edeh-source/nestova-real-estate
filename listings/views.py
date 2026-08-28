@@ -444,7 +444,7 @@ def verify_payment(request):
         f"You can list up to {pkg.listing_limit} properties and your listings "
         f"will auto-boost every {pkg.auto_boost_interval_days} days."
     )
-    return redirect('listings:dashboard')
+    return redirect('shop:profile')
 
 
 # ─────────────────────────────────────────────────────────────────────────────
