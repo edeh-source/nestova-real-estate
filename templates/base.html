@@ -23,6 +23,17 @@
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/img/favicon-16x16.png' %}">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/img/apple-touch-icon.png' %}">
 
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#C9A84C">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nestova">
+  <meta name="application-name" content="Nestova">
+  <meta name="msapplication-TileColor" content="#C9A84C">
+  <meta name="msapplication-TileImage" content="{% static 'assets/img/android-chrome-192x192.png' %}">
+
   <!-- Performance: Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2578,6 +2589,21 @@
   <script src="{% static 'assets/js/main.js' %}" defer></script>
 
   {% block extra_scripts %}{% endblock %}
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register("{% static 'sw.js' %}", { scope: '/' })
+          .then(function (registration) {
+            console.log('[PWA] Service Worker registered. Scope:', registration.scope);
+          })
+          .catch(function (err) {
+            console.warn('[PWA] Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
 
 </body>
 
