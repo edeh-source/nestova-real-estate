@@ -1,7 +1,6 @@
 # views.py
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.cache import cache_page
 from .models import Property, State, City, PropertyType, PropertyApplication, Developer, PaymentAccount
 from listings.models import SavedProperty
 from django.conf import settings
@@ -12,7 +11,6 @@ from urllib.parse import quote
 logger = logging.getLogger(__name__)
 
 
-@cache_page(60 * 15)
 def homepage(request):
     """Homepage with property search"""
     
