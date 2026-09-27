@@ -4,7 +4,6 @@
 {% block title %}{% if is_edit %}Edit Property{% else %}Post a Property{% endif %} — NESTOVA{% endblock %}
 
 {% block content %}
-{{ form.media }}
 
 <style>
   /* ─── SCOPED DESIGN TOKENS (dark luxury matching base.html) ─── */
@@ -814,14 +813,12 @@
 
                 <div class="row g-4">
 
-                  <!-- Description (CKEditor) -->
+                  <!-- Description -->
                   <div class="col-12">
                     <label class="pp-label" for="{{ form.description.id_for_label }}">
                       <i class="bi bi-text-paragraph lbl-icon"></i> Property Description <span style="color:var(--gold)">*</span>
                     </label>
-                    <div class="pp-ckeditor-wrap">
-                      {{ form.description }}
-                    </div>
+                    {{ form.description }}
                     <p class="pp-hint"><i class="bi bi-lightbulb"></i> Describe key features, location benefits, nearby amenities (schools, hospitals, malls), finishes, and what makes this property special.</p>
                   </div>
 
@@ -962,17 +959,6 @@
     return total_ > 0 ? ((done / total_) * 100).toFixed(1) + '%' : '0%';
   }
 
-  function refreshCKEditor() {
-    if (typeof CKEDITOR !== 'undefined') {
-      setTimeout(function () {
-        for (const inst in CKEDITOR.instances) {
-          try {
-            CKEDITOR.instances[inst].resize('100%', 280);
-          } catch (e) {}
-        }
-      }, 80);
-    }
-  }
 
   function renderWizard() {
     formSteps.forEach((s, i) => s.classList.toggle('active', i + 1 === current));
@@ -992,10 +978,6 @@
     submitBtn.style.display = current === total ? 'inline-flex' : 'none';
     currentLbl.textContent  = current;
 
-    if (current === 4) {
-      refreshCKEditor();
-    }
-
     // Scroll to top of card
     document.querySelector('.pp-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -1003,8 +985,7 @@
   /* ─── VALIDATION ─── */
   function validateCurrent() {
     const stepEl = document.querySelector(`.pp-form-step[data-step="${current}"]`);
-    // Only validate text/number/select — CKEditor handles itself
-    const fields = stepEl.querySelectorAll('input[type="text"], input[type="number"], select, textarea:not(.cke_source)');
+    const fields = stepEl.querySelectorAll('input[type="text"], input[type="number"], select, textarea');
     let valid = true;
 
     fields.forEach(f => {

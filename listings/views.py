@@ -257,6 +257,26 @@ def edit_property(request, slug):
     })
 
 
+@login_required
+def delete_property(request, slug):
+    """Delete an existing property (owner-only, POST required)."""
+    property_obj = get_object_or_404(Property, slug=slug)
+
+    if property_obj.listed_by != request.user:
+        messages.error(request, "You don't have permission to delete this property.")
+        return redirect('shop:profile')
+
+    if request.method == 'POST':
+        title = property_obj.title
+        property_obj.delete()
+        messages.success(request, f'"{title}" has been deleted successfully.')
+    else:
+        messages.error(request, "Invalid request.")
+
+    return redirect('shop:profile')
+
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Pricing
 # ─────────────────────────────────────────────────────────────────────────────

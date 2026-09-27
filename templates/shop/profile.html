@@ -603,6 +603,18 @@
   color: #ff8a8a;
 }
 
+.btn-dash-sm.danger {
+  background: rgba(220, 50, 50, 0.12);
+  border-color: rgba(220, 50, 50, 0.25);
+  color: #ff8a8a;
+}
+
+.btn-dash-sm.danger:hover {
+  background: rgba(220, 50, 50, 0.22);
+  border-color: rgba(220, 50, 50, 0.45);
+  color: #ffaaaa;
+}
+
 /* ============================================================
    DATA TABLE
    ============================================================ */
@@ -1436,6 +1448,10 @@
               <div class="dash-prop-actions">
                 <a href="{{ prop.get_absolute_url }}" class="btn-dash-sm outline"><i class="bi bi-eye"></i> View</a>
                 <a href="{% url 'listings:edit_property' prop.slug %}" class="btn-dash-sm outline"><i class="bi bi-pencil"></i> Edit</a>
+                <form method="post" action="{% url 'listings:delete_property' prop.slug %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete "{{ prop.title }}"? This cannot be undone.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-dash-sm danger"><i class="bi bi-trash"></i> Delete</button>
+                </form>
               </div>
             </div>
           </div>

@@ -1,6 +1,5 @@
 from django import forms
 from property.models import Property, PropertyImage, State, City
-from ckeditor.widgets import CKEditorWidget
 
 class PropertyForm(forms.ModelForm):
     city = forms.CharField(
@@ -31,7 +30,11 @@ class PropertyForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Property Title'}),
             'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Address'}),
-            'description': CKEditorWidget(config_name='default'),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 6,
+                'placeholder': 'Describe the property — features, condition, nearby amenities, etc.',
+            }),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'bedrooms': forms.NumberInput(attrs={'class': 'form-control'}),
             'bathrooms': forms.NumberInput(attrs={'class': 'form-control'}),

@@ -1818,16 +1818,7 @@
                 </ul>
               </div>
 
-              {% if property.additional_features %}
-              <div class="col-md-6">
-                <div class="amenity-subhead">Additional Details</div>
-                <ul class="features-list">
-                  {% for key, value in property.additional_features.items %}
-                  <li><i class="bi bi-check-circle-fill"></i>{{ key }}: {{ value }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-              {% endif %}
+
             </div>
           </div>
 

@@ -5,9 +5,10 @@ app_name = 'listings'
 
 urlpatterns = [
     # ── Core ──────────────────────────────────────────────────────────────────
-    path('dashboard/',                views.dashboard,      name='dashboard'),
-    path('post/',                     views.post_property,  name='post_property'),
-    path('edit/<slug:slug>/',         views.edit_property,  name='edit_property'),
+    path('dashboard/',                views.dashboard,         name='dashboard'),
+    path('post/',                     views.post_property,     name='post_property'),
+    path('edit/<slug:slug>/',         views.edit_property,     name='edit_property'),
+    path('delete/<slug:slug>/',       views.delete_property,   name='delete_property'),
 
     # ── Pricing & payment ─────────────────────────────────────────────────────
     path('pricing/',                  views.pricing_plans,  name='pricing'),
