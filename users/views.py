@@ -28,8 +28,13 @@ from .tasks import send_password_reset_email_task
 # Get the User model (works with custom user models too)
 
 
+import logging
+
+logger = logging.getLogger('users')
+
 User = get_user_model()
 # Create your views here.
+
 
 
 
@@ -271,9 +276,14 @@ def users_logout(request):
     """
     A method to log out a user out
     """   
-    logout(request)
-    messages.success(request, "Logged Out Successfully")
-    return redirect("users:login")    
+    try:
+        logout(request)
+        messages.success(request, "Logged Out Successfully")
+        return redirect("users:login")
+    except Exception as e:
+        logger.error(f"[USERS LOGOUT ERROR] Exception during user logout: {e}", exc_info=True)
+        raise
+
     
     
     
