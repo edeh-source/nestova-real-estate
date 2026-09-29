@@ -157,7 +157,7 @@ if DEBUG:
             'PASSWORD': os.environ.get('DB_PASSWORD', ''),
             'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
             'PORT': os.environ.get('DB_PORT', '5432'),
-            'CONN_MAX_AGE': 0,
+            'CONN_MAX_AGE': 60,
             'OPTIONS': {
                 'connect_timeout': 10,
             },
@@ -226,10 +226,6 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
 # WhiteNoise configuration for static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
@@ -284,7 +280,7 @@ else:
 # WhiteNoise settings
 WHITENOISE_AUTOREFRESH = DEBUG
 WHITENOISE_USE_FINDERS = DEBUG
-WHITENOISE_MAX_AGE = 0 if DEBUG else 31536000
+WHITENOISE_MAX_AGE = 3600 if DEBUG else 31536000  # 1hr in dev, 1yr in prod
 WHITENOISE_ALLOW_ALL_ORIGINS = False
 
 
@@ -533,11 +529,6 @@ CKEDITOR_CONFIGS = {
             }
         },
         'codeSnippet_theme': 'monokai_sublime',
-        'extraPlugins': ','.join([
-            # ... (existing plugins) ...
-            'clipboard',  # Ensure clipboard plugin is enabled
-            'codesnippet',
-        ]),
     }
 }
 

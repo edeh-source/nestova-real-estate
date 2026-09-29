@@ -6,6 +6,9 @@ from listings.models import SavedProperty
 from django.conf import settings
 import logging
 from urllib.parse import quote
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 
 logger = logging.getLogger(__name__)
@@ -13,70 +16,78 @@ logger = logging.getLogger(__name__)
 
 def homepage(request):
     """Homepage with property search"""
-    
-    try:
-        # Get all states for dropdown
-        states = State.objects.filter(is_active=True)
-        
-        # Get property types
-        property_types = PropertyType.objects.all()
-        
-        # Featured properties
-        featured_properties = Property.objects.filter(
-            is_featured=True
-        ).select_related('state', 'city', 'property_type', 'status', 'agent', 'listed_by')[:6]
-        
-        # Premium properties for carousel
-        premium_properties = Property.objects.filter(
-            is_premium=True
-        ).select_related('state', 'city', 'property_type', 'status', 'agent', 'listed_by').order_by('-created_at')[:3]
-        print("This is premium properties", premium_properties)
-        # Get all properties for display
-        all_properties = Property.objects.select_related(
-            'state', 'city', 'property_type', 'status'
-        )[:10]
-        
-        # Get pricing packages for "Listing Packages & Slots" section
-        from listings.models import ListingPackage
-        pricing_packages = ListingPackage.objects.filter(is_active=True).order_by('price')
-        
-        # Get recent blog posts
-        from blogs.models import Post
-        recent_blog_posts = Post.objects.filter(
-            status='published'
-        ).select_related('author', 'category').order_by('-publish')[:3]
+    # Cache the homepage context for anonymous users only (5 minutes)
+    cache_key = 'homepage_context'
+    context = None
+    if not request.user.is_authenticated:
+        context = cache.get(cache_key)
 
-        # Get featured agents for homepage
-        from agents.models import Agent
-        featured_agents = Agent.objects.filter(
-            is_active=True,
-            verification_status='verified'
-        ).select_related('user')[:6]
+    if context is None:
+        try:
+            # Get all states for dropdown
+            states = State.objects.filter(is_active=True)
+            
+            # Get property types
+            property_types = PropertyType.objects.all()
+            
+            # Featured properties
+            featured_properties = Property.objects.filter(
+                is_featured=True
+            ).select_related('state', 'city', 'property_type', 'status', 'agent', 'listed_by')[:6]
+            
+            # Premium properties for carousel
+            premium_properties = Property.objects.filter(
+                is_premium=True
+            ).select_related('state', 'city', 'property_type', 'status', 'agent', 'listed_by').order_by('-created_at')[:3]
+            # Get all properties for display
+            all_properties = Property.objects.select_related(
+                'state', 'city', 'property_type', 'status'
+            )[:10]
+            
+            # Get pricing packages for "Listing Packages & Slots" section
+            from listings.models import ListingPackage
+            pricing_packages = ListingPackage.objects.filter(is_active=True).order_by('price')
+            
+            # Get recent blog posts
+            from blogs.models import Post
+            recent_blog_posts = Post.objects.filter(
+                status='published'
+            ).select_related('author', 'category').order_by('-publish')[:3]
 
-        # Get featured developers for homepage
-        featured_developers = Developer.objects.filter(
-            is_featured=True,
-            is_active=True
-        ).order_by('-created_at')[:5]
+            # Get featured agents for homepage
+            from agents.models import Agent
+            featured_agents = Agent.objects.filter(
+                is_active=True,
+                verification_status='verified'
+            ).select_related('user')[:6]
 
-        context = {
-            'states': states,
-            'property_types': property_types,
-            'featured_properties': featured_properties,
-            'premium_properties': premium_properties,
-            'all_properties': all_properties,
-            'pricing_packages': pricing_packages,
-            'recent_blog_posts': recent_blog_posts,
-            'latest_posts': recent_blog_posts,  # alias for index.html template
-            'featured_agents': featured_agents,
-            'featured_developers': featured_developers,
-        }
+            # Get featured developers for homepage
+            featured_developers = Developer.objects.filter(
+                is_featured=True,
+                is_active=True
+            ).order_by('-created_at')[:5]
 
-        return render(request, 'estate/index.html', context)
+            context = {
+                'states': states,
+                'property_types': property_types,
+                'featured_properties': featured_properties,
+                'premium_properties': premium_properties,
+                'all_properties': all_properties,
+                'pricing_packages': pricing_packages,
+                'recent_blog_posts': recent_blog_posts,
+                'latest_posts': recent_blog_posts,  # alias for index.html template
+                'featured_agents': featured_agents,
+                'featured_developers': featured_developers,
+            }
 
-    except Exception as e:
-        logger.error(f"Error in homepage view: {str(e)}", exc_info=True)
-        # Return a minimal context to prevent complete failure
+            if not request.user.is_authenticated:
+                cache.set(cache_key, context, 300)  # 5 minutes
+
+        except Exception as e:
+            logger.error(f"Error in homepage view: {str(e)}", exc_info=True)
+            context = None
+
+    if context is None:
         return render(request, 'estate/index.html', {
             'states': [],
             'property_types': [],
@@ -88,6 +99,8 @@ def homepage(request):
             'featured_developers': [],
             'error_message': 'Some content may not be available at the moment.',
         })
+
+    return render(request, 'estate/index.html', context)
 
 
 def get_cities_by_state(request):
@@ -225,6 +238,11 @@ def search_properties(request):
         elif str(bathrooms).isdigit():
             properties = properties.filter(bathrooms=int(bathrooms))
     
+    from django.core.paginator import Paginator
+    paginator = Paginator(properties, 12)
+    page_number = request.GET.get('page')
+    properties = paginator.get_page(page_number)
+
     context = {
         'properties': properties,
         'search_params': request.GET,
@@ -659,10 +677,16 @@ def developer_detail(request, slug):
     page_obj = paginator.get_page(request.GET.get('page'))
 
     # Property counts for tabs
+    from django.db.models import Count, Q
+    counts = all_props.aggregate(
+        total=Count('id'),
+        sale=Count('id', filter=Q(status__name='for_sale')),
+        rent=Count('id', filter=Q(status__name='for_rent')),
+    )
     tab_counts = {
-        'all': all_props.count(),
-        'sale': all_props.filter(status__name='for_sale').count(),
-        'rent': all_props.filter(status__name='for_rent').count(),
+        'all':  counts['total'],
+        'sale': counts['sale'],
+        'rent': counts['rent'],
     }
 
     return render(request, 'estate/developer_detail.html', {

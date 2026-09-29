@@ -366,9 +366,9 @@ class Property(models.Model):
         return reverse('property_detail', kwargs={'slug': self.slug})
     
     def increment_views(self):
-        """Increment view count"""
-        self.views_count += 1
-        self.save(update_fields=['views_count'])
+        """Increment view count atomically using F() to avoid race conditions."""
+        from django.db.models import F
+        Property.objects.filter(pk=self.pk).update(views_count=F('views_count') + 1)
     
     def get_badge_display(self):
         """Return appropriate badge for display"""
